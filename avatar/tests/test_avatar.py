@@ -9,6 +9,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import dialogue
 from tts import cues_from_durations, talema_to_ipa
 
+def sample_suggestions(tree):
+    return [
+        {'tree':tree,'en':'Four is two plus two.','es':'Cuatro es dos más dos.','de':'Vier ist zwei plus zwei.'},
+        {'tree':{'root':'velom','children':[]},'en':'Welcome.','es':'Bienvenido.','de':'Willkommen.'},
+    ]
+
 class AvatarTests(unittest.TestCase):
     def test_trees(self):
         dialogue.validate_speech('bi fura pe si tova tova .')
@@ -28,7 +34,7 @@ class AvatarTests(unittest.TestCase):
     def test_response_and_caption_separation(self):
         tree={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
               {'root':'s','children':[{'root':'tov','children':[]},{'root':'tov','children':[]}]}]}]}
-        data={'trees':[tree],'suggestions':[{'tree':tree},{'tree':{'root':'velom','children':[]}}],
+        data={'trees':[tree],'suggestions':sample_suggestions(tree),
               'en':'Four is two plus two.','es':'Cuatro es dos más dos.','de':'Vier ist zwei plus zwei.',
               'emotion':'warm','turn_move':'ask_topic'}
         response={'status':'completed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(data)}]}]}
@@ -37,7 +43,10 @@ class AvatarTests(unittest.TestCase):
             body=json.loads(call.call_args.args[0].data)
         self.assertEqual(result['talema'],'bi fura pe si tova tova .')
         self.assertEqual(result['en'],data['en'])
-        self.assertEqual(result['suggestions'],['bi fura pe si tova tova .','veloma .'])
+        self.assertEqual(result['suggestions'],[
+            {'talema':'bi fura pe si tova tova .','en':'Four is two plus two.','es':'Cuatro es dos más dos.','de':'Vier ist zwei plus zwei.'},
+            {'talema':'veloma .','en':'Welcome.','es':'Bienvenido.','de':'Willkommen.'},
+        ])
         self.assertFalse(body['store'])
         self.assertEqual(body['input'][-1]['content'],'veloma')
         self.assertTrue(body['text']['format']['strict'])
@@ -51,7 +60,7 @@ class AvatarTests(unittest.TestCase):
     def test_start_is_led_by_model_when_configured(self):
         tree={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
               {'root':'s','children':[{'root':'tov','children':[]},{'root':'tov','children':[]}]}]}]}
-        data={'trees':[tree],'suggestions':[{'tree':tree},{'tree':{'root':'velom','children':[]}}],
+        data={'trees':[tree],'suggestions':sample_suggestions(tree),
               'en':'Four is two and two.','es':'Cuatro es dos y dos.','de':'Vier ist zwei und zwei.',
               'emotion':'warm','turn_move':'ask_topic'}
         response={'status':'completed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(data)}]}]}
@@ -77,7 +86,7 @@ class AvatarTests(unittest.TestCase):
     def test_model_reply_is_spelled_from_nested_tree(self):
         tree={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
               {'root':'s','children':[{'root':'tov','children':[]},{'root':'tov','children':[]}]}]}]}
-        data={'trees':[tree],'suggestions':[{'tree':tree},{'tree':{'root':'velom','children':[]}}],
+        data={'trees':[tree],'suggestions':sample_suggestions(tree),
               'en':'Four is two and two.','es':'Cuatro es dos y dos.','de':'Vier ist zwei und zwei.',
               'emotion':'warm','turn_move':'ask_topic'}
         response={'status':'completed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(data)}]}]}
@@ -89,7 +98,7 @@ class AvatarTests(unittest.TestCase):
 
     def test_unknown_root_repair_explains_bare_root_form(self):
         valid={'trees':[{'root':'b','children':[]}],
-               'suggestions':[{'tree':{'root':'b','children':[]}},{'tree':{'root':'velom','children':[]}}],
+               'suggestions':sample_suggestions({'root':'b','children':[]}),
                'en':'Four.','es':'Cuatro.','de':'Vier.','emotion':'warm','turn_move':'ask_topic'}
         invalid=dict(valid, trees=[{'root':'zqx','children':[]}])
         def response(data):
