@@ -1,0 +1,17 @@
+[project]
+name = "talema-avatar"
+version = "0.1.0"
+description = "A local-first Talema-speaking teaching avatar"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+tts = [
+  "kokoro>=0.9.4",
+  "scipy>=1.11",
+  "torch>=2.2",
+]
+
+[tool.uv]
+package = false

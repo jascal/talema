@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Talema guide avatar</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">T A L E M A · A V A T A R</p>
+        <h1>Learn by speaking Talema.</h1>
+        <p class="lede">A local-first guide for humans and agents. The avatar speaks Talema; captions can follow in English, Spanish, or German.</p>
+      </div>
+
+    </header>
+
+    <section class="stage" aria-label="Luma, your Talema guide">
+      <canvas id="character" width="640" height="480" aria-label="Animated Talema guide with synchronized mouth movement"></canvas>
+      <div class="stage-label">LUMA <span id="characterState">idle</span></div>
+      <div class="subtitles"><div id="liveTalema"></div><div id="liveCaption"></div></div>
+    </section>
+    <section class="controls" aria-label="Avatar controls">
+      <label>Caption language
+        <select id="captionLanguage"><option value="en">English</option><option value="es">Español</option><option value="de">Deutsch</option></select>
+      </label>
+      <button id="start" type="button">Start a lesson</button>
+      <button id="testVoice" class="secondary" type="button">Test voice</button>
+      <button id="stop" class="secondary" type="button">Stop</button>
+      <button id="playReply" class="secondary" type="button" hidden>▶ Play reply</button>
+      <button id="mic" class="secondary" type="button">🎙 Speak</button>
+    </section>
+
+    <section id="conversation" class="conversation" aria-live="polite"></section>
+
+    <form id="composer" class="composer">
+      <input id="message" autocomplete="off" placeholder="Say a Talema sentence, for example: bi fura pe si tova tova ." required>
+      <button type="submit">Send</button>
+    </form>
+    <p id="status" class="status">Ready. Try one of the examples below.</p>
+    <audio id="localAudio" controls preload="none" aria-label="Talema local voice"></audio>
+    <section id="suggestions" class="examples" aria-label="Talema conversation suggestions" hidden>
+      <p>Continue in Talema</p>
+      <div id="suggestionButtons"></div>
+    </section>
+  </main>
+  <script src="/character.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

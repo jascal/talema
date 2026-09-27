@@ -1,0 +1,8 @@
+# Main voice (CPU/GPU local):
+kokoro>=0.9.4
+torch
+scipy
+
+# Diagnostic voice is installed by the operating system:
+# Debian/Ubuntu: sudo apt install espeak-ng
+# macOS: brew install espeak-ng
