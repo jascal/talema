@@ -43,9 +43,9 @@ its model/voice. Keep the existing eSpeak installation required by Kokoro's pipe
 
 - **Start a lesson** resets history and asks Luma to greet, demonstrate, and invite practice.
 - After each model reply, Luma offers two or three context-aware Talema utterances as buttons. Clicking one sends that phrase as the learner's next turn; without model configuration, the offline greeting has no generated suggestions.
-- The opening asks which topic the learner wants. Later model turns must answer the learner,
-  then ask a specific topic question or offer a concrete topic and invite a reaction; greetings
-  should not repeat after the opening.
+- The opening asks which topic the learner wants. Later turns should stay with the learner's
+  stated interest, answer their actual point, and ask a specific follow-up or offer a related
+  example; they should not repeat broad topic-selection questions or greetings.
 - The tutor is prompted to remember recent turns, acknowledge intent, recast mistakes,
   simplify after confusion, and offer one useful next step. These are prompted
   behaviors, not a claim of evaluated teaching competence.
