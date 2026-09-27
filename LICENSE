@@ -1,0 +1,12 @@
+Talema: the founding books, parallel corpus and lexicon
+Copyright (c) 2026 J. Allan Scott
+
+Licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+Full legal text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+Third-party material:
+- German and Spanish source words in the lexicon (data/lexicon.jsonl, source/lexicon.tsv, and the book of roots in
+  books/BUKE_DE_LORE_FIRA.md) derive from the MUSE bilingual dictionaries (Conneau et al., 2017),
+  https://github.com/facebookresearch/MUSE, CC BY-NC 4.0.
+- The de_mt and es_mt fields in data/sentences.jsonl were produced with Helsinki-NLP opus-mt-en-de and
+  opus-mt-en-es (CC BY 4.0).
