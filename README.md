@@ -62,7 +62,7 @@ and X-bar levels add nothing (see `docs/UNIVERSAL_GRAMMAR.md` in the source repo
 |---|---|
 | `books/BUKE_DE_LORE_FIRA.md` | the core book, about 89k tokens: grammar, first words, conventions, tales, agent speech, how the language grows, songs, sayings, the book of roots |
 | `books/volumes/*.md` | field volumes, 2–4k tokens each: `digital`, `mathematics`, `logic`, `physics`, `philosophy`, `morality` |
-| `data/sentences.jsonl` | every sentence of every book (1,545), with its tree and translations |
+| `data/sentences.jsonl` | every sentence of every book (1,561), with its tree and translations |
 | `data/lexicon.jsonl` | every root (6,086): class, English / German / Spanish source words, tier, weight, origin |
 | `source/` | the books' sources: each sentence written as a tree of concepts (`.tl`), plus the lexicon TSVs |
 | `speech/` | a kit for speaking Talema: W3C pronunciation lexicons (IPA; Spanish, Italian, English respellings), voice guidance, a listening test |
@@ -113,7 +113,7 @@ Claims in the books carry marks: `bove` proved, `sere` seen (measured), `pefe` o
 ## Limits
 
 - German and Spanish are machine translations of the English. The English is the authoritative gloss. The
-  translations have not been reviewed by a person.
+  translations have not been reviewed by a person; newly added lines may have empty translations until they are generated.
 - The attributed lines in philosophy and morality are paraphrases in Talema. The books say so ("the words are
   ours, the thoughts are theirs").
 - Pronunciation guidance is untested with audio; see `speech/LISTENING_TEST.md`.
