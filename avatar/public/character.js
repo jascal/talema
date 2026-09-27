@@ -20,11 +20,11 @@ function draw(ms) {
   const glow=ctx.createRadialGradient(320,210,20,320,240,300);
   glow.addColorStop(0,'#34535a'); glow.addColorStop(1,'#111923'); ctx.fillStyle=glow;ctx.fillRect(0,0,640,480);
   ctx.save();ctx.translate(0,Math.sin(t*1.5)*2);
-  // Pink football jersey, white Adidas shoulder stripes and chest mark.
+  // Pink football jersey with white shoulder stripes and a small chest mark.
   ellipse(320,481,155,137,'#d93d83'); ellipse(320,454,118,101,'#f064a2');
   ctx.strokeStyle='#fff1f7';ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
   for(const side of [-1,1]) {
-    for(let stripe=0;stripe<3;stripe++) {
+    for(let stripe=0;stripe<2;stripe++) {
       // Shift parallel tracks along the slope's normal, leaving pink gaps between them.
       const offset=55-stripe*5, y=364+stripe*8;
       ctx.beginPath();ctx.moveTo(320+side*offset,y);
@@ -33,13 +33,11 @@ function draw(ms) {
                         320+side*(offset+70),y+48);ctx.stroke();
     }
   }
-  // A small, clean three-stripe Adidas mark on the chest.
+  // A small, clean three-stripe mark on the chest.
   ctx.fillStyle='#fff7fb';
   for(let i=0;i<3;i++) {
     ctx.beginPath();ctx.moveTo(306+i*9,420);ctx.lineTo(312+i*9,410-i*3);ctx.lineTo(317+i*9,410-i*3);ctx.lineTo(313+i*9,420);ctx.closePath();ctx.fill();
   }
-  ctx.font='bold 10px Arial, sans-serif';ctx.textAlign='center';ctx.fillText('adidas',320,437);
-  ctx.textAlign='start';
   ctx.fillStyle='#9b774d';ctx.fillRect(293,303,54,76);
   ellipse(320,354,29,20,'#9b774d');
   // Blonde curls frame the face and form a soft crown.
