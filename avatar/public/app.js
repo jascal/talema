@@ -1,11 +1,16 @@
 const conversation=document.querySelector('#conversation'), form=document.querySelector('#composer'), input=document.querySelector('#message'), status=document.querySelector('#status'), language=document.querySelector('#captionLanguage'), player=document.querySelector('#localAudio');
 let history=[], bubbles=[], generation=0, controller, audioUrl;
 const suggestions=document.querySelector('#suggestions'), suggestionButtons=document.querySelector('#suggestionButtons');
+let currentSuggestions=[];
 function showSuggestions(items=[]) {
+  currentSuggestions=items;
   suggestionButtons.replaceChildren();
-  for(const text of items) {
+  for(const item of items) {
     const button=document.createElement('button');button.type='button';button.className='suggestion';
-    button.textContent=text;button.dataset.suggestion=text;suggestionButtons.append(button);
+    button.dataset.suggestion=item.talema;
+    const talema=document.createElement('span');talema.className='suggestion-talema';talema.textContent=item.talema;
+    const caption=document.createElement('span');caption.className='suggestion-caption';caption.textContent=item[language.value]||'';
+    button.append(talema,caption);suggestionButtons.append(button);
   }
   suggestions.hidden=suggestionButtons.childElementCount===0;
 }
@@ -76,7 +81,7 @@ suggestionButtons.addEventListener('click',event=>{
   const button=event.target.closest('[data-suggestion]');
   if(button)send(button.dataset.suggestion);
 });
-language.onchange=()=>{bubbles.forEach(({bubble,data})=>bubble.querySelector('.caption').textContent=data[language.value]||'');if(player.dataset.caption)document.querySelector('#liveCaption').textContent=JSON.parse(player.dataset.caption)[language.value];};
+language.onchange=()=>{bubbles.forEach(({bubble,data})=>bubble.querySelector('.caption').textContent=data[language.value]||'');if(player.dataset.caption)document.querySelector('#liveCaption').textContent=JSON.parse(player.dataset.caption)[language.value];showSuggestions(currentSuggestions);};
 const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 let recognition;
 document.querySelector('#mic').onclick=()=>{
