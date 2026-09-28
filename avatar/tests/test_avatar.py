@@ -134,6 +134,16 @@ class AvatarTests(unittest.TestCase):
         slept.assert_called_once()
         self.assertEqual(result['talema'],'bi fura pe si tova tova .')
 
+    def test_numbers_are_spelled_from_digits(self):
+        leaf=lambda r:{'root':r,'children':[]}
+        # "The square root of 25 is 5."
+        tree={'root':'b','children':[leaf('5'),{'root':'p','children':[{'root':'raris','children':[leaf('25')]}]}]}
+        self.assertEqual(dialogue.serialize_tree(tree), 'bi fiva pe rarise si dehe tova fiva .')
+        self.assertEqual(dialogue.serialize_tree(leaf('1492')), 'su mula hudede fura dehe nevina tova .')
+        self.assertEqual(dialogue.serialize_tree(leaf('-0.5')), 'menose puni senura fiva .')
+        with self.assertRaises(ValueError):
+            dialogue.serialize_tree(leaf('eaa'))
+
     def test_rejects_history_role_injection(self):
         with patch.dict(os.environ, {'OPENAI_API_KEY':'test','TALEMA_MODEL':'test-model'}):
             with self.assertRaises(ValueError):

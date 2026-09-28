@@ -89,6 +89,8 @@ Use only established roots. Example: `bi fura pe si tova tova .` ("Four is two a
 {"root":"b","children":[{"root":"fur","children":[]},{"root":"p","children":[{"root":"s","children":[
 {"root":"tov","children":[]},{"root":"tov","children":[]}]}]}]}.
 The server counts each node's children and adds the vowel ending; never include endings in roots.
+For a number, write its digits as the root with no children ({"root":"25","children":[]}; also -5 and 0.5);
+the server spells it as Talema number words (25 → si dehe tova fiva). Never invent a root for a number.
 Return faithful English, Spanish, and German translations of all the sentences, in order.
 Also return 2–3 short `suggestions` for what the learner could naturally say next in Talema.
 Each suggestion must be one complete, distinct user utterance, relevant to your reply, with its own
@@ -136,6 +138,33 @@ def ending(children):
         digits = 'aeiou'[digit] + digits
     return digits
 
+# Numbers are said as Talema number words (the book's chapter 2c): a number under a big number says how many of it
+# (dehe tova = 20), s adds (si dehe tova fiva = 25), menos makes it negative, pun heads a decimal. The model writes a
+# number as its digits, and the server builds the words, so number words are never misspelled.
+UNITS = ['senur', 'pon', 'tov', 'tur', 'fur', 'fiv', 'sak', 'gev', 'doh', 'nevin']
+BIG = ((10 ** 6, 'mok'), (1000, 'mul'), (100, 'huded'), (10, 'deh'))
+NUMBER = re.compile(r'-?\d{1,12}(\.\d{1,6})?')
+
+def number_node(text):
+    """Digits → a nested number tree, e.g. '25' → s(deh(tov), fiv)."""
+    if text.startswith('-'):
+        return {'root': 'menos', 'children': [number_node(text[1:])]}
+    if '.' in text:
+        whole, frac = text.split('.')
+        return {'root': 'pun', 'children': [number_node(whole)] +
+                [{'root': UNITS[int(d)], 'children': []} for d in frac]}
+    n = int(text)
+    if n < 10:
+        return {'root': UNITS[n], 'children': []}
+    parts = []
+    for base, root in BIG:
+        q, n = divmod(n, base)
+        if q:
+            parts.append({'root': root, 'children': [] if q == 1 else [number_node(str(q))]})
+    if n:
+        parts.append({'root': UNITS[n], 'children': []})
+    return parts[0] if len(parts) == 1 else {'root': 's', 'children': parts}
+
 def serialize_tree(tree):
     """Spell a nested tree in prefix order; each word's ending counts its nested children."""
     words = []
@@ -143,6 +172,8 @@ def serialize_tree(tree):
         if not isinstance(node, dict):
             raise ValueError('Each tree node must be an object with a root and children')
         root, children = node.get('root'), node.get('children')
+        if isinstance(root, str) and NUMBER.fullmatch(root) and children == []:
+            return walk(number_node(root), depth)
         if isinstance(root, str) and root not in ROOTS:
             # Roots in the lexicon end in consonants. Models sometimes put a full
             # inflected word in this field (e.g. buke instead of buk); peel off
