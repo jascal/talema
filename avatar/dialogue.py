@@ -337,6 +337,11 @@ for _line in (ROOT / 'data/lexicon.jsonl').read_text().splitlines():
 # Languages whose order words take endings, so a caption word can carry the stem plus a
 # short inflection rather than the bare form.
 STEMMING = {'de', 'es'}
+# German forms the lexicon lists under an order gloss but that are too ambiguous to police.
+# "endlich" is both "finally" and "finite", and the book uses it for the latter, as in
+# "Das Wort Nilik bedeutet mit einem Ende: endlich." Dropping it keeps real finality
+# ("schließlich", "letztendlich") covered without rejecting an ordinary word.
+AMBIGUOUS_ORDER = {('de', 'endlich')}
 
 def _spoken_roots(talema):
     roots = set()
@@ -356,7 +361,7 @@ def _implied_order(roots):
                     implied.add(part)
     return implied
 
-def _order_words_in(caption, words_of_lang, stem_match):
+def _order_words_in(caption, words_of_lang, stem_match, lang='en'):
     """The order words this caption uses.
 
     German and Spanish inflect (Nächstes, último), so there a caption word also counts
@@ -366,6 +371,8 @@ def _order_words_in(caption, words_of_lang, stem_match):
     found = {}
     for word in set(re.findall(r"[^\W\d_]+", caption.lower(), re.UNICODE)):
         for form, gloss in words_of_lang.items():
+            if (lang, form) in AMBIGUOUS_ORDER:
+                continue
             if word == form:
                 found[form] = gloss
             elif stem_match and len(form) >= 4 and word.startswith(form) and len(word) - len(form) <= 2:
@@ -381,7 +388,7 @@ def unsupported_order(caption, talema, lang='en'):
         return ''
     roots = _spoken_roots(talema)
     implied = _implied_order(roots)
-    for word, gloss in _order_words_in(caption, words_of_lang, lang in STEMMING).items():
+    for word, gloss in _order_words_in(caption, words_of_lang, lang in STEMMING, lang).items():
         if not (SYNONYMS.get(gloss, set()) & roots) and gloss not in implied:
             return word
     return ''
@@ -394,19 +401,58 @@ def caption_adds_content(caption, talema):
         return False
     return bool(ENUMERATION.search(caption))
 
-# The most reliable fidelity invariant in this corpus: 99.7% of the 1,553 published
-# captions have exactly as many sentences as the Talema they translate, and none has
-# fewer. The tutor's standing habit is the opposite — it says two sentences in Talema
-# and then elaborates the English, adding a clause the speech never contained ("Hi.
-# What topic do you want?" becoming "Hello! You can greet me with 'hello.' Which
-# topic would you like to explore?"). All four corpus exceptions are that same habit
-# already in print, not counter-examples, so this costs nothing on the books.
+# The most reliable fidelity invariant in this corpus: all 1,553 published captions have
+# exactly as many sentences as the Talema they translate, in every language, and none has
+# fewer, save for the two lines the book itself writes as a restatement. The tutor's
+# standing habit is the opposite — it says two sentences in Talema and then elaborates the
+# English, adding a clause the speech never contained ("Hi. What topic do you want?"
+# becoming "Hello! You can greet me with 'hello.' Which topic would you like to explore?").
+# Every caption that used to break this was a counter artifact or one bad machine
+# translation, all now fixed below.
 CLAIM_MARKER = re.compile(r'^\s*(?:Proved|Seen|Open)\s*:\s*')  # the book's bove / sere / pefe marks
-ALTERNATIVE = re.compile(r'\s*/\s*')                          # "Please sleep. / Sleep!"
+QUOTED = re.compile(r'"[^"]*"|“[^”]*”|„[^“]*“|«[^»]*»')   # a period inside a quote is not a new sentence
+# A period is a full stop even straight after a number ("The answer is 4. Try again."),
+# so it is exempt only between two digits, where it is a decimal point ("0.7", "3.14").
+DECIMAL = re.compile(r'(?<=\d)\.(?=\d)')
+BOUNDARY = re.compile(r'[.!?]+')
+# Quoted speech still holds a sentence, so each span is replaced by this one-character
+# placeholder rather than by nothing: blanking it made `"Hello." "Goodbye."` count as
+# zero sentences, because the punctuation left behind carried no text to count.
+QUOTED_TEXT = '\u2016'   # ‖
 
+def _unquote(text):
+    """Replace each quoted span with a placeholder, keeping the sentence it closed.
+
+    English and German both write the full stop inside the quotation marks, so
+    `Er sagte: "Ich bin das kleinste Wort."` ends its sentence with the closing quote.
+    Dropping the span outright would delete that full stop and run the sentence into
+    whatever follows it, under-counting by one.
+    """
+    def repl(match):
+        ends_sentence = match.group(0).strip('"“»«').rstrip()[-1:] in '.!?'
+        return f' {QUOTED_TEXT}' + ('.' if ends_sentence else '')
+    return QUOTED.sub(repl, text)
+
+# Nothing here tries to recognise a restated utterance, and that is deliberate. The book
+# does write one utterance two ways — "Please sleep. / Sleep!", which machine translation
+# renders "Por favor, duerme. - ¡Duerme!" — and folding the second phrasing into the first
+# is what four successive attempts tried to do. Each was defeated by a caption that reads
+# as a restatement and is not one:
+#
+#   "Welcome - practice now. Say hello."   two sentences, folded to one
+#   "Welcome. - Practice now."             two sentences, folded to one
+#   "Sleep. - Do not sleep."               every content word shared, and the opposite
+#
+# The last one is why no word test can work: "Do not sleep." repeats every content word
+# of "Sleep." and negates it. Telling the two apart needs meaning, and this is a
+# validator, not a semantic analyser. So the counter counts every sentence it is handed.
+# The two authored restatements in the book are named in the parity test instead, where
+# they stay visible and can be checked by hand, rather than hidden inside a shape rule.
 def count_sentences(text):
-    text = ALTERNATIVE.sub(' ', CLAIM_MARKER.sub('', text or ''))
-    return sum(1 for part in re.split(r'[.!?]+', text) if part.strip())
+    # Shield decimals so their point is not read as a full stop, then keep the quote
+    # placeholders countable as the words they stand for.
+    text = DECIMAL.sub(QUOTED_TEXT, _unquote(CLAIM_MARKER.sub('', text or '')))
+    return sum(1 for part in BOUNDARY.split(text) if part.strip())
 
 def caption_adds_a_sentence(caption, talema):
     return count_sentences(caption) > count_sentences(talema)

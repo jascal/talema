@@ -227,22 +227,102 @@ class AvatarTests(unittest.TestCase):
         # The faithful caption for the same speech passes.
         dialogue.check_caption('en', 'Hello! Which topic do you want?', talema)
 
-    def test_sentence_count_ignores_markers_and_alternatives(self):
+    def test_sentence_count_ignores_markers(self):
+        # The book's own claim marks ("Proved:", "Seen:", "Open:") head a sentence the
+        # Talema already carries, so they are stripped before counting.
         self.assertEqual(dialogue.count_sentences('Proved: two and two are four. We have a proof.'), 2)
-        self.assertEqual(dialogue.count_sentences('Please sleep. / Sleep!'), 2)
         self.assertEqual(dialogue.count_sentences('One sentence.'), 1)
         self.assertEqual(dialogue.count_sentences(''), 0)
 
+    def test_a_decimal_point_is_not_a_sentence_boundary(self):
+        self.assertEqual(dialogue.count_sentences('The test takes 0.7 seconds. It works.'), 2)
+        self.assertEqual(dialogue.count_sentences('Version 1.8 follows 2.0.'), 1)
+        self.assertEqual(dialogue.count_sentences('Version 1.8 follows 3.14 and 0.001.'), 1)
+        # But a full stop straight after a number still ends a sentence: the book uses
+        # 0.7, 1.8, 3.14 and 0.001, so the exemption has to be decimals and nothing more.
+        self.assertEqual(dialogue.count_sentences('The answer is 4. Try again.'), 2)
+
+    def test_nothing_after_a_dash_is_hidden_from_the_count(self):
+        # A slash or dash never hides the rest of a caption. Four attempts to treat one
+        # as a restatement marker were each defeated by a caption that reads as a
+        # restatement and is not one, the last being "Sleep. - Do not sleep." -- every
+        # content word shared, and the opposite claim. So nothing is folded: every
+        # sentence after a dash is counted, however short and however much it repeats.
+        for text, want in (
+            ('Welcome - practice now. Say hello.', 2),        # dash mid-sentence
+            ('Welcome / practice now. Say hello.', 2),
+            ('Welcome — let us begin. You can greet me with hello.', 2),
+            ('Welcome. - Practice now.', 2),                  # dash after a finished
+            ('Welcome. - Practice now. - Say hello.', 3),     # ...sentence, twice over
+            ('The test passes. - We are not done yet.', 2),
+            ('The answer is four. - The answer holds.', 2),   # shares a word, adds one
+            ('Welcome. - Say hi.', 2),                        # all words under four letters
+            ('Welcome. / Try it.', 2),
+            ('Sleep. - Do not sleep.', 2),                    # repeats, and negates
+            ('Der Präsident. - Nach der Tagesordnung folgt die gemeinsame Aussprache (Dok.', 2),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(dialogue.count_sentences(text), want)
+                # Each must also be caught against a one-sentence speech, or the added
+                # sentence would pass validation outright.
+                self.assertTrue(dialogue.caption_adds_a_sentence(text, 'veloma .'))
+        # Division is a slash and carries no full stop either way.
+        self.assertEqual(dialogue.count_sentences('12 / 4 = 3'), 1)
+
+    def test_a_restatement_is_not_guessed_at(self):
+        # The book writes one utterance two ways on a few lines. The counter does not try
+        # to recognise that, because it cannot be done from words, so these are counted
+        # for the two sentences they are. They are declared in the parity test below.
+        for text in ('Please sleep. / Sleep!', 'Por favor, duerme. - ¡Duerme!',
+                     'Sleep. - Do not sleep.'):
+            with self.subTest(text=text):
+                self.assertEqual(dialogue.count_sentences(text), 2)
+        # These are already one sentence, with no full stop inside the alternatives.
+        for text in ('I see a dog / dogs.', 'The dog sleeps / slept / will sleep.'):
+            with self.subTest(text=text):
+                self.assertEqual(dialogue.count_sentences(text), 1)
+
+    def test_a_quote_closes_its_sentence_without_counting_twice(self):
+        # English and German write the full stop inside the quotation marks, so the
+        # closing quote is the only terminator. Blanking the span would run the
+        # sentence into the next one and under-count.
+        self.assertEqual(dialogue.count_sentences('Kant said: "Never lie." He meant it.'), 2)
+        self.assertEqual(dialogue.count_sentences('Kant said: "Never lie."'), 1)
+        # A quote inside a sentence is not a boundary at all.
+        self.assertEqual(dialogue.count_sentences('Er sagte "hallo" und ging.'), 1)
+        # The quoted text is a sentence in its own right and has to stay countable:
+        # blanking it left punctuation with nothing behind it, and both counted as zero.
+        self.assertEqual(dialogue.count_sentences('"Hello." "Goodbye."'), 2)
+        self.assertEqual(dialogue.count_sentences('She said "Hello." Then she left.'), 2)
+
     def test_sentence_parity_holds_on_the_published_books(self):
         # The invariant this check rests on, asserted so it cannot quietly rot.
+        #
+        # Two lines are the book's own restatements: it writes one utterance two ways
+        # ("Please sleep. / Sleep!", and the Spanish the translator renders
+        # "Por favor, duerme. - ¡Duerme!"), so those captions hold one sentence more
+        # than the Talema they translate. They are named here rather than absorbed by a
+        # rule in the counter, because any shape that folds them also folds
+        # "Sleep. - Do not sleep." — which repeats every content word and says the
+        # opposite. Naming them keeps the exception visible and checkable by hand; a
+        # silent tolerance would hide the drift this test exists to catch.
+        restated = {'Please sleep. / Sleep!', 'Por favor, duerme. - ¡Duerme!'}
         rows = [json.loads(line) for line in
                 Path(__file__).resolve().parents[2].joinpath('data/sentences.jsonl')
                 .read_text(encoding='utf-8').splitlines() if line.strip()]
-        rows = [r for r in rows if r.get('en', '').strip()]
-        over = [r['en'] for r in rows if dialogue.caption_adds_a_sentence(r['en'], r['talema'])]
-        under = [r for r in rows if dialogue.count_sentences(r['en']) < dialogue.count_sentences(r['talema'])]
-        self.assertEqual(under, [], 'a caption should never drop a sentence the speech spoke')
-        self.assertLess(len(over), len(rows) * 0.005, f'sentence parity too strict: {over[:5]}')
+        for lang, field in (('en', 'en'), ('de', 'de_mt'), ('es', 'es_mt')):
+            checked = [r for r in rows if r.get(field, '').strip()]
+            over = [r[field] for r in checked
+                    if dialogue.count_sentences(r[field]) > dialogue.count_sentences(r['talema'])]
+            under = [r[field] for r in checked
+                     if dialogue.count_sentences(r[field]) < dialogue.count_sentences(r['talema'])]
+            self.assertEqual(sorted(over), sorted(restated & set(over)),
+                             f'{lang} captions invent a sentence: {sorted(set(over) - restated)[:5]}')
+            self.assertEqual(under, [], f'{lang} captions drop a sentence: {under[:5]}')
+            self.assertGreater(len(checked), 1500, f'{lang} corpus unexpectedly small')
+        # Both exceptions are still exactly one sentence more, not a drifting pair.
+        for caption in restated:
+            self.assertEqual(dialogue.count_sentences(caption), 2)
 
     def test_caption_may_not_add_an_order_the_speech_lacks(self):
         # Observed: the Talema asked which vowel, and the caption volunteered
