@@ -88,6 +88,7 @@ the subject particle `p` and object particle `t` each have exactly one child, th
 Use only established roots. Example: `bi fura pe si tova tova .` ("Four is two and two") is
 {"root":"b","children":[{"root":"fur","children":[]},{"root":"p","children":[{"root":"s","children":[
 {"root":"tov","children":[]},{"root":"tov","children":[]}]}]}]}.
+That example only shows the tree format: never say it, or any other example from these instructions, to the learner.
 The server counts each node's children and adds the vowel ending; never include endings in roots.
 For a number, write its digits as the root with no children ({"root":"25","children":[]}; also -5 and 0.5);
 the server spells it as Talema number words (25 → si dehe tova fiva). Never invent a root for a number.
@@ -213,9 +214,10 @@ GREETING = {
     'source': 'core book greeting and topic question',
     'suggestions': [],
 }
-OPENING = ('Begin a beginner lesson. Greet the learner briefly in Talema, introduce one simple useful '
-           'phrase or idea, then ask which topic they would like to explore. Give them a few natural '
-           'Talema replies they could choose from.')
+OPENING = ('Begin a beginner lesson. Greet the learner briefly in Talema and teach one phrase they can say back '
+           'to you right away, such as a greeting or introducing themselves. Do not open with a fact, a number, '
+           'or an example from your instructions. Then ask which topic they would like to explore, and give them '
+           'a few natural Talema replies they could choose from.')
 
 RATE_LIMIT_WAIT = 30   # seconds: wait out a short rate limit once instead of failing the turn
 

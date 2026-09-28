@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -172,5 +173,21 @@ class AvatarTests(unittest.TestCase):
 
     def test_unknown_native_word_phonology(self):
         self.assertEqual(talema_to_ipa('rarise'), 'ˈɾaɾise')
+
+    def test_opening_prompt_locks_out_the_format_example(self):
+        # The persona's only fully-typed Talema sentence must be marked format-only,
+        # so the model cannot echo it as its opening utterance.
+        self.assertIn('never say it', dialogue.PERSONA)
+        self.assertIn('bi fura pe si tova tova', dialogue.PERSONA)
+        self.assertIn('example from these instructions', dialogue.PERSONA)
+        # The OPENING must forbid echoing the example, ask for a say-back phrase,
+        # and itself contain no concrete Talema sentence the tutor could parrot.
+        self.assertIn('example from your instructions', dialogue.OPENING)
+        self.assertIn('a fact, a number', dialogue.OPENING)
+        self.assertIn('say back', dialogue.OPENING)
+        self.assertNotIn('bi fura pe si tova tova', dialogue.OPENING)
+        for sentence in dialogue.OPENING.split('.'):
+            self.assertFalse(re.search(r'[a-z]{3,}\s+[a-z]+\.', sentence),
+                              f'OPENING should not embed a concrete Talema sentence: {sentence!r}')
 
 if __name__=='__main__': unittest.main()
