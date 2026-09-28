@@ -406,33 +406,56 @@ def caption_adds_content(caption, talema):
 # fewer. The tutor's standing habit is the opposite — it says two sentences in Talema
 # and then elaborates the English, adding a clause the speech never contained ("Hi.
 # What topic do you want?" becoming "Hello! You can greet me with 'hello.' Which
-# topic would you like to explore?"). The four captions that used to break this were all
-# counter artifacts, not caption bugs: machine translation had rendered the book's " / "
-# as " - ", so one utterance was counted as two sentences.
+# topic would you like to explore?"). Every caption that used to break this was a
+# counter artifact or one bad machine translation, all now fixed below.
 CLAIM_MARKER = re.compile(r'^\s*(?:Proved|Seen|Open)\s*:\s*')  # the book's bove / sere / pefe marks
-# "Please sleep. / Sleep!" offers one utterance two ways. Machine translation renders the
-# slash as a dash, so the translated captions use " - " instead.
-ALTERNATIVE = re.compile(r'\s+(?:/|–|—|-)\s+')
+# The book offers one utterance two or more ways: "I see a dog / dogs.",
+# "Please sleep. / Sleep!" Machine translation renders the book's slash as a spaced dash,
+# so the translated captions carry " - " instead. A spaced dash is ordinary punctuation
+# as well, and cutting the text at one hides whatever followed it: in
+# "Der Präsident. - Nach der Tagesordnung folgt ..." that swallowed a whole clause, and
+# with it the sentence this counter exists to notice. So only " / " and the translated
+# " - " are read as alternatives, and only when every side is short enough to be a
+# restatement of one short utterance. An em or en dash is never an alternative here.
+ALTERNATIVE = re.compile(r'\s+(?:/|-)\s+')
+MAX_ALTERNATIVE_WORDS = 4
 QUOTED = re.compile(r'"[^"]*"|“[^”]*”|„[^“]*“|«[^»]*»')   # a period inside a quote is not a new sentence
-BOUNDARY = re.compile(r'(?<!\d)[.!?]+(?!\d)')     # "0.7" is one sentence, not two
+# A period is a full stop even straight after a number ("The answer is 4. Try again."),
+# so it is exempt only between two digits, where it is a decimal point ("0.7", "3.14").
+DECIMAL = re.compile(r'(?<=\d)\.(?=\d)')
+BOUNDARY = re.compile(r'[.!?]+')
+# Quoted speech still holds a sentence, so each span is replaced by this one-character
+# placeholder rather than by nothing: blanking it made `"Hello." "Goodbye."` count as
+# zero sentences, because the punctuation left behind carried no text to count.
+QUOTED_TEXT = '\u2016'   # ‖
 
 def _unquote(text):
-    """Drop a quoted span's inner punctuation, keeping the sentence it closed.
+    """Replace each quoted span with a placeholder, keeping the sentence it closed.
 
     English and German both write the full stop inside the quotation marks, so
     `Er sagte: "Ich bin das kleinste Wort."` ends its sentence with the closing quote.
-    Blanking the span outright would delete that full stop and run the sentence into
+    Dropping the span outright would delete that full stop and run the sentence into
     whatever follows it, under-counting by one.
     """
     def repl(match):
         ends_sentence = match.group(0).strip('"“»«').rstrip()[-1:] in '.!?'
-        return ' ' + ('.' if ends_sentence else '')
+        return f' {QUOTED_TEXT}' + ('.' if ends_sentence else '')
     return QUOTED.sub(repl, text)
+
+def _first_alternative(text):
+    """The utterance's first phrasing when the text is one utterance offered several ways."""
+    sides = ALTERNATIVE.split(text)
+    if len(sides) == 1 or any(len(side.split()) > MAX_ALTERNATIVE_WORDS for side in sides):
+        return text
+    return sides[0]
 
 def count_sentences(text):
     # The first alternative is the sentence; the rest is a gloss of it, not a second one.
-    text = ALTERNATIVE.split(CLAIM_MARKER.sub('', text or ''))[0]
-    return sum(1 for part in BOUNDARY.split(_unquote(text)) if part.strip())
+    text = _first_alternative(CLAIM_MARKER.sub('', text or ''))
+    # Shield decimals so their point is not read as a full stop, then keep the quote
+    # placeholders countable as the words they stand for.
+    text = DECIMAL.sub(QUOTED_TEXT, _unquote(text))
+    return sum(1 for part in BOUNDARY.split(text) if part.strip())
 
 def caption_adds_a_sentence(caption, talema):
     return count_sentences(caption) > count_sentences(talema)

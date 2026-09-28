@@ -239,6 +239,19 @@ class AvatarTests(unittest.TestCase):
     def test_a_decimal_point_is_not_a_sentence_boundary(self):
         self.assertEqual(dialogue.count_sentences('The test takes 0.7 seconds. It works.'), 2)
         self.assertEqual(dialogue.count_sentences('Version 1.8 follows 2.0.'), 1)
+        self.assertEqual(dialogue.count_sentences('Version 1.8 follows 3.14 and 0.001.'), 1)
+        # But a full stop straight after a number still ends a sentence: the book uses
+        # 0.7, 1.8, 3.14 and 0.001, so the exemption has to be decimals and nothing more.
+        self.assertEqual(dialogue.count_sentences('The answer is 4. Try again.'), 2)
+
+    def test_a_dash_does_not_hide_the_rest_of_the_caption(self):
+        # A spaced dash is ordinary punctuation too. Cutting the caption at one hid
+        # everything after it, so a caption could add a sentence past the check.
+        self.assertEqual(dialogue.count_sentences('Welcome — let us begin. You can greet me with hello.'), 2)
+        self.assertEqual(dialogue.count_sentences(
+            'Der Präsident. - Nach der Tagesordnung folgt die gemeinsame Aussprache (Dok.'), 2)
+        # Division is a slash, not an alternative, and carries no full stop either way.
+        self.assertEqual(dialogue.count_sentences('12 / 4 = 3'), 1)
 
     def test_a_quote_closes_its_sentence_without_counting_twice(self):
         # English and German write the full stop inside the quotation marks, so the
@@ -248,6 +261,10 @@ class AvatarTests(unittest.TestCase):
         self.assertEqual(dialogue.count_sentences('Kant said: "Never lie."'), 1)
         # A quote inside a sentence is not a boundary at all.
         self.assertEqual(dialogue.count_sentences('Er sagte "hallo" und ging.'), 1)
+        # The quoted text is a sentence in its own right and has to stay countable:
+        # blanking it left punctuation with nothing behind it, and both counted as zero.
+        self.assertEqual(dialogue.count_sentences('"Hello." "Goodbye."'), 2)
+        self.assertEqual(dialogue.count_sentences('She said "Hello." Then she left.'), 2)
 
     def test_sentence_parity_holds_on_the_published_books(self):
         # The invariant this check rests on, asserted so it cannot quietly rot. It is
