@@ -50,6 +50,10 @@ class AvatarTests(unittest.TestCase):
         self.assertFalse(body['store'])
         self.assertEqual(body['input'][-1]['content'],'veloma')
         self.assertTrue(body['text']['format']['strict'])
+        # every book is in the cached prefix, and the prefix is routed by a key that tracks the books' content
+        for name in ('BUKE_DE_LORE_FIRA.md','logic.md','physics.md','philosophy.md','morality.md','digital.md','mathematics.md'):
+            self.assertIn(name, body['instructions'])
+        self.assertEqual(body['prompt_cache_key'], dialogue.CACHE_KEY)
 
     def test_start_uses_book_greeting_without_model(self):
         with patch.dict(os.environ, {'OPENAI_API_KEY':'','TALEMA_MODEL':''}), patch('urllib.request.urlopen') as call:

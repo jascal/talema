@@ -1,4 +1,5 @@
 """Structured, stateless Responses API tutor; credentials stay on the server."""
+import hashlib
 import json
 import os
 import re
@@ -29,7 +30,12 @@ def load_local_env():
         os.environ.setdefault(key, value)
 
 load_local_env()
-BOOK = (ROOT / 'books/BUKE_DE_LORE_FIRA.md').read_text()
+# Every book the tutor learns from: the core first, then each field volume, in a fixed order. The text is identical
+# on every request, so it forms a stable prompt prefix that OpenAI's prompt caching reuses (see CACHE_KEY below).
+BOOK_FILES = [ROOT / 'books/BUKE_DE_LORE_FIRA.md', *sorted((ROOT / 'books/volumes').glob('*.md'))]
+BOOK = ''.join(f"\n\n=== {path.relative_to(ROOT)} ===\n\n" + path.read_text(encoding='utf-8') for path in BOOK_FILES)
+# Requests sharing this key are routed to the same prompt cache; it changes whenever a book changes.
+CACHE_KEY = 'talema-tutor-' + hashlib.sha256(BOOK.encode('utf-8')).hexdigest()[:16]
 ROOTS = {json.loads(line)['root'] for line in (ROOT / 'data/lexicon.jsonl').read_text().splitlines()}
 FIELDS = ('en', 'es', 'de', 'emotion', 'turn_move')
 # A word is a node whose dependents are nested inside it, so the child count (and the ending the server derives
@@ -194,10 +200,14 @@ def reply(message, history, start=False):
         turns.append({'role': item['role'], 'content': item['content']})
     turns.append({'role': 'user', 'content': OPENING if start else message})
     for attempt in range(2):
+        # instructions (persona + books) never vary, so they come first and are cached; only `input` changes.
         payload = {'model': config['model'], 'store': False, 'instructions': PERSONA + BOOK,
+                   'prompt_cache_key': CACHE_KEY,
                    'input': turns, 'max_output_tokens': 4000,
                    'reasoning': {'effort': 'low'},
                    'text': {'format': {'type': 'json_schema', 'name': 'talema_turn', 'strict': True, 'schema': SCHEMA}}}
+        if os.getenv('TALEMA_CACHE_RETENTION'):       # e.g. 24h: keep the cached books between sessions
+            payload['prompt_cache_retention'] = os.environ['TALEMA_CACHE_RETENTION']
         request = urllib.request.Request('https://api.openai.com/v1/responses',
             data=json.dumps(payload).encode(), headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'], 'Content-Type': 'application/json'})
         try:
@@ -254,6 +264,9 @@ def reply(message, history, start=False):
                 })
             data['suggestions'] = translated_suggestions
             data['source'] = config['model']
+            usage = result.get('usage') or {}
+            data['usage'] = {'input_tokens': usage.get('input_tokens', 0),
+                             'cached_tokens': (usage.get('input_tokens_details') or {}).get('cached_tokens', 0)}
             return data
         except (ValueError, KeyError, TypeError) as exc:
             if attempt:
