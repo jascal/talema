@@ -23,14 +23,18 @@ function draw(ms) {
   // Pink football jersey with white shoulder stripes and a small chest mark.
   ellipse(320,481,155,137,'#d93d83'); ellipse(320,454,118,101,'#f064a2');
   ctx.strokeStyle='#fff1f7';ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
+  // Each stripe is the jersey's own shoulder outline (the ellipse above) moved a fixed distance inward along its
+  // normal, so the stripes run down the shoulder at its changing slope and stay parallel, with a pink gap between.
+  const [cx,cy,a,b]=[320,481,155,137];
   for(const side of [-1,1]) {
-    for(let stripe=0;stripe<2;stripe++) {
-      // Shift parallel tracks along the slope's normal, leaving pink gaps between them.
-      const offset=55-stripe*5, y=364+stripe*8;
-      ctx.beginPath();ctx.moveTo(320+side*offset,y);
-      ctx.bezierCurveTo(320+side*(offset+25),y+13,
-                        320+side*(offset+48),y+35,
-                        320+side*(offset+70),y+48);ctx.stroke();
+    for(const inset of [13,24]) {
+      ctx.beginPath();
+      for(let deg=70;deg>=24;deg-=2) {
+        const th=deg*Math.PI/180, nx=Math.cos(th)/a, ny=-Math.sin(th)/b, n=Math.hypot(nx,ny);
+        const x=cx+side*(a*Math.cos(th)-inset*nx/n), y=cy-b*Math.sin(th)-inset*ny/n;
+        deg===70?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.stroke();
     }
   }
   // A small, clean three-stripe mark on the chest.

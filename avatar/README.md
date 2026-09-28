@@ -26,8 +26,8 @@ speaks a short greeting from the book; follow-up conversation needs the credenti
 above. If browser autoplay is blocked after generation, press **Play reply**. The
 example uses GPT-5.4 Mini, which supports the Responses API and structured outputs
 with a 400,000 token context. Credentials stay on the server. API usage is billed
-separately from a ChatGPT subscription; conversation turns and the founding book are
-sent to OpenAI on each turn (with `store: false`). If configuration is missing,
+separately from a ChatGPT subscription; conversation turns and all seven books are
+sent to OpenAI on each turn (with `store: false`), and prompt caching makes repeat turns cheap (see below). If configuration is missing,
 the local book greeting works, and follow-up model replies show a setup error.
 If the API reports `insufficient_quota`, add API billing/credits or adjust the
 project or organization spend limit; a ChatGPT subscription does not fund API calls.
@@ -60,8 +60,24 @@ its model/voice. Keep the existing eSpeak installation required by Kokoro's pipe
 
 ## Implementation and limits
 
-`dialogue.py` sends the full local founding book and the last 24 history messages
-with a tutor persona to the Responses API. It requests one to three nested sentence trees
+`dialogue.py` sends every book (the core and the six field volumes, about 98k tokens) and the last 24 history
+messages with a tutor persona to the Responses API.
+
+**Prompt caching.** The persona and books form the `instructions`, which never change, so they are a stable prompt
+prefix; only the conversation in `input` varies. OpenAI caches that prefix automatically. `prompt_cache_key` (a
+hash of the books) routes every turn to the same cache, and `TALEMA_CACHE_RETENTION=24h` keeps it for a day
+instead of minutes. Measured with GPT-5.4 Mini: first turn 97,759 input tokens, 0 cached; next turn 97,536 of
+97,759 cached (99.8%). Cached tokens are billed at the discounted cached-input rate and are faster. Each reply
+reports `usage.input_tokens` and `usage.cached_tokens`. The API is stateless, so the text still travels with each
+request; caching saves the reprocessing and most of the cost. Avoiding resending it would need `store: true`
+with `previous_response_id`, which keeps conversations on OpenAI's servers.
+
+**Models and rate limits.** The model is `TALEMA_MODEL`; reasoning effort is fixed at low. `gpt-5.4-mini`,
+`gpt-5.6-luna` and `gpt-6-luna` all accept the nested-tree schema, the cache key and 24h retention (tested live).
+A model's tokens-per-minute limit counts the ~98k book tokens on every turn even when they are cached: at the
+200,000 TPM limit this project saw for `gpt-6-luna`, that is about two turns a minute. A short rate limit
+(Retry-After up to 30 s) is waited out once before the turn fails; raise the limit or use a model with a higher
+one for faster conversation. It requests one to three nested sentence trees
 (each node a native root with its dependents nested inside it), plus translations and expression. Because the
 dependents are nested, the child count cannot be wrong: the server counts them, adds each ending, and validates
 the sentence; it allows one repair retry. Loans are intentionally excluded from generated

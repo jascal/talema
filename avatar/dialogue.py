@@ -1,7 +1,9 @@
 """Structured, stateless Responses API tutor; credentials stay on the server."""
+import hashlib
 import json
 import os
 import re
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -29,7 +31,12 @@ def load_local_env():
         os.environ.setdefault(key, value)
 
 load_local_env()
-BOOK = (ROOT / 'books/BUKE_DE_LORE_FIRA.md').read_text()
+# Every book the tutor learns from: the core first, then each field volume, in a fixed order. The text is identical
+# on every request, so it forms a stable prompt prefix that OpenAI's prompt caching reuses (see CACHE_KEY below).
+BOOK_FILES = [ROOT / 'books/BUKE_DE_LORE_FIRA.md', *sorted((ROOT / 'books/volumes').glob('*.md'))]
+BOOK = ''.join(f"\n\n=== {path.relative_to(ROOT)} ===\n\n" + path.read_text(encoding='utf-8') for path in BOOK_FILES)
+# Requests sharing this key are routed to the same prompt cache; it changes whenever a book changes.
+CACHE_KEY = 'talema-tutor-' + hashlib.sha256(BOOK.encode('utf-8')).hexdigest()[:16]
 ROOTS = {json.loads(line)['root'] for line in (ROOT / 'data/lexicon.jsonl').read_text().splitlines()}
 FIELDS = ('en', 'es', 'de', 'emotion', 'turn_move')
 # A word is a node whose dependents are nested inside it, so the child count (and the ending the server derives
@@ -82,6 +89,8 @@ Use only established roots. Example: `bi fura pe si tova tova .` ("Four is two a
 {"root":"b","children":[{"root":"fur","children":[]},{"root":"p","children":[{"root":"s","children":[
 {"root":"tov","children":[]},{"root":"tov","children":[]}]}]}]}.
 The server counts each node's children and adds the vowel ending; never include endings in roots.
+For a number, write its digits as the root with no children ({"root":"25","children":[]}; also -5 and 0.5);
+the server spells it as Talema number words (25 → si dehe tova fiva). Never invent a root for a number.
 Return faithful English, Spanish, and German translations of all the sentences, in order.
 Also return 2–3 short `suggestions` for what the learner could naturally say next in Talema.
 Each suggestion must be one complete, distinct user utterance, relevant to your reply, with its own
@@ -129,6 +138,33 @@ def ending(children):
         digits = 'aeiou'[digit] + digits
     return digits
 
+# Numbers are said as Talema number words (the book's chapter 2c): a number under a big number says how many of it
+# (dehe tova = 20), s adds (si dehe tova fiva = 25), menos makes it negative, pun heads a decimal. The model writes a
+# number as its digits, and the server builds the words, so number words are never misspelled.
+UNITS = ['senur', 'pon', 'tov', 'tur', 'fur', 'fiv', 'sak', 'gev', 'doh', 'nevin']
+BIG = ((10 ** 6, 'mok'), (1000, 'mul'), (100, 'huded'), (10, 'deh'))
+NUMBER = re.compile(r'-?\d{1,12}(\.\d{1,6})?')
+
+def number_node(text):
+    """Digits → a nested number tree, e.g. '25' → s(deh(tov), fiv)."""
+    if text.startswith('-'):
+        return {'root': 'menos', 'children': [number_node(text[1:])]}
+    if '.' in text:
+        whole, frac = text.split('.')
+        return {'root': 'pun', 'children': [number_node(whole)] +
+                [{'root': UNITS[int(d)], 'children': []} for d in frac]}
+    n = int(text)
+    if n < 10:
+        return {'root': UNITS[n], 'children': []}
+    parts = []
+    for base, root in BIG:
+        q, n = divmod(n, base)
+        if q:
+            parts.append({'root': root, 'children': [] if q == 1 else [number_node(str(q))]})
+    if n:
+        parts.append({'root': UNITS[n], 'children': []})
+    return parts[0] if len(parts) == 1 else {'root': 's', 'children': parts}
+
 def serialize_tree(tree):
     """Spell a nested tree in prefix order; each word's ending counts its nested children."""
     words = []
@@ -136,6 +172,8 @@ def serialize_tree(tree):
         if not isinstance(node, dict):
             raise ValueError('Each tree node must be an object with a root and children')
         root, children = node.get('root'), node.get('children')
+        if isinstance(root, str) and NUMBER.fullmatch(root) and children == []:
+            return walk(number_node(root), depth)
         if isinstance(root, str) and root not in ROOTS:
             # Roots in the lexicon end in consonants. Models sometimes put a full
             # inflected word in this field (e.g. buke instead of buk); peel off
@@ -179,6 +217,49 @@ OPENING = ('Begin a beginner lesson. Greet the learner briefly in Talema, introd
            'phrase or idea, then ask which topic they would like to explore. Give them a few natural '
            'Talema replies they could choose from.')
 
+RATE_LIMIT_WAIT = 30   # seconds: wait out a short rate limit once instead of failing the turn
+
+def rate_limit_wait(exc, message):
+    """Seconds OpenAI asks us to wait, from Retry-After or the message ('try again in 14.266s'), else None."""
+    header = exc.headers.get('Retry-After') if exc.headers else None
+    try:
+        return float(header)
+    except (TypeError, ValueError):
+        found = re.search(r'try again in ([\d.]+)\s*s', message)
+        return float(found[1]) if found else None
+
+def post(payload):
+    """POST one Responses request. Every turn carries ~98k book tokens, and a model's tokens-per-minute limit
+    counts them even when cached, so a short rate limit is waited out once before it is reported."""
+    for tries in range(2):
+        request = urllib.request.Request('https://api.openai.com/v1/responses',
+            data=json.dumps(payload).encode(), headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'], 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(request, timeout=120) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as exc:
+            try:
+                detail = json.loads(exc.read().decode('utf-8'))
+                detail = detail.get('error', {}) if isinstance(detail, dict) else {}
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                detail = {}
+            code = str(detail.get('code') or detail.get('type') or '')
+            message = str(detail.get('message') or '')[:300]
+            if exc.code == 429 and code in {'insufficient_quota', 'credit_balance_exhausted',
+                                            'organization_usage_limit_exceeded', 'organization_spend_limit_exceeded',
+                                            'project_spend_limit_exceeded'}:
+                raise RuntimeError(f'OpenAI API quota or spend limit reached ({code}). Check API billing and project limits. {message}') from None
+            if exc.code == 429:
+                seconds = rate_limit_wait(exc, message)
+                if tries == 0 and seconds is not None and seconds <= RATE_LIMIT_WAIT:
+                    time.sleep(seconds + 0.5)
+                    continue
+                wait = f' Retry after {seconds:g} seconds.' if seconds is not None else ' Wait briefly, then retry.'
+                raise RuntimeError(f'OpenAI API rate limit reached ({code or "HTTP 429"}).{wait} {message}') from None
+            raise RuntimeError(f'Model API returned HTTP {exc.code} ({code or "API error"}). Check model access and credentials. {message}') from None
+        except (urllib.error.URLError, TimeoutError):
+            raise RuntimeError('Model service unavailable or timed out; try again.') from None
+
 def reply(message, history, start=False):
     config = configuration()
     if not config['configured']:
@@ -194,34 +275,15 @@ def reply(message, history, start=False):
         turns.append({'role': item['role'], 'content': item['content']})
     turns.append({'role': 'user', 'content': OPENING if start else message})
     for attempt in range(2):
+        # instructions (persona + books) never vary, so they come first and are cached; only `input` changes.
         payload = {'model': config['model'], 'store': False, 'instructions': PERSONA + BOOK,
+                   'prompt_cache_key': CACHE_KEY,
                    'input': turns, 'max_output_tokens': 4000,
                    'reasoning': {'effort': 'low'},
                    'text': {'format': {'type': 'json_schema', 'name': 'talema_turn', 'strict': True, 'schema': SCHEMA}}}
-        request = urllib.request.Request('https://api.openai.com/v1/responses',
-            data=json.dumps(payload).encode(), headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'], 'Content-Type': 'application/json'})
-        try:
-            with urllib.request.urlopen(request, timeout=120) as response:
-                result = json.load(response)
-        except urllib.error.HTTPError as exc:
-            try:
-                detail = json.loads(exc.read().decode('utf-8'))
-                detail = detail.get('error', {}) if isinstance(detail, dict) else {}
-            except (UnicodeDecodeError, json.JSONDecodeError):
-                detail = {}
-            code = str(detail.get('code') or detail.get('type') or '')
-            message = str(detail.get('message') or '')[:300]
-            if exc.code == 429 and code in {'insufficient_quota', 'credit_balance_exhausted',
-                                            'organization_usage_limit_exceeded', 'organization_spend_limit_exceeded',
-                                            'project_spend_limit_exceeded'}:
-                raise RuntimeError(f'OpenAI API quota or spend limit reached ({code}). Check API billing and project limits. {message}') from None
-            if exc.code == 429:
-                retry_after = exc.headers.get('Retry-After') if exc.headers else None
-                wait = f' Retry after {retry_after} seconds.' if retry_after else ' Wait briefly, then retry.'
-                raise RuntimeError(f'OpenAI API rate limit reached ({code or "HTTP 429"}).{wait} {message}') from None
-            raise RuntimeError(f'Model API returned HTTP {exc.code} ({code or "API error"}). Check model access and credentials. {message}') from None
-        except (urllib.error.URLError, TimeoutError):
-            raise RuntimeError('Model service unavailable or timed out; try again.') from None
+        if os.getenv('TALEMA_CACHE_RETENTION'):       # e.g. 24h: keep the cached books between sessions
+            payload['prompt_cache_retention'] = os.environ['TALEMA_CACHE_RETENTION']
+        result = post(payload)
         try:
             if result.get('status') != 'completed':
                 details = result.get('incomplete_details') or {}
@@ -254,6 +316,9 @@ def reply(message, history, start=False):
                 })
             data['suggestions'] = translated_suggestions
             data['source'] = config['model']
+            usage = result.get('usage') or {}
+            data['usage'] = {'input_tokens': usage.get('input_tokens', 0),
+                             'cached_tokens': (usage.get('input_tokens_details') or {}).get('cached_tokens', 0)}
             return data
         except (ValueError, KeyError, TypeError) as exc:
             if attempt:

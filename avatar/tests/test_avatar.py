@@ -50,6 +50,10 @@ class AvatarTests(unittest.TestCase):
         self.assertFalse(body['store'])
         self.assertEqual(body['input'][-1]['content'],'veloma')
         self.assertTrue(body['text']['format']['strict'])
+        # every book is in the cached prefix, and the prefix is routed by a key that tracks the books' content
+        for name in ('BUKE_DE_LORE_FIRA.md','logic.md','physics.md','philosophy.md','morality.md','digital.md','mathematics.md'):
+            self.assertIn(name, body['instructions'])
+        self.assertEqual(body['prompt_cache_key'], dialogue.CACHE_KEY)
 
     def test_start_uses_book_greeting_without_model(self):
         with patch.dict(os.environ, {'OPENAI_API_KEY':'','TALEMA_MODEL':''}), patch('urllib.request.urlopen') as call:
@@ -111,6 +115,34 @@ class AvatarTests(unittest.TestCase):
         self.assertEqual(result['talema'],'ba .')
         self.assertIn('bare-root field',repair)
         self.assertIn('Do not repeat the invalid root',repair)
+
+    def test_short_rate_limit_is_waited_out_once(self):
+        import urllib.error
+        from email.message import Message
+        headers=Message(); headers['Retry-After']='2'
+        limited=urllib.error.HTTPError('u',429,'rate',headers,io.BytesIO(json.dumps({'error':{'code':'rate_limit_exceeded','message':'try again in 2s'}}).encode()))
+        tree={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
+              {'root':'s','children':[{'root':'tov','children':[]},{'root':'tov','children':[]}]}]}]}
+        data={'trees':[tree],'suggestions':sample_suggestions(tree),
+              'en':'Four is two plus two.','es':'Cuatro es dos más dos.','de':'Vier ist zwei plus zwei.',
+              'emotion':'warm','turn_move':'ask_topic'}
+        ok={'status':'completed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(data)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY':'test','TALEMA_MODEL':'test-model'}), \
+             patch('urllib.request.urlopen', side_effect=[limited, io.BytesIO(json.dumps(ok).encode())]), \
+             patch('time.sleep') as slept:
+            result=dialogue.reply('veloma', [])
+        slept.assert_called_once()
+        self.assertEqual(result['talema'],'bi fura pe si tova tova .')
+
+    def test_numbers_are_spelled_from_digits(self):
+        leaf=lambda r:{'root':r,'children':[]}
+        # "The square root of 25 is 5."
+        tree={'root':'b','children':[leaf('5'),{'root':'p','children':[{'root':'raris','children':[leaf('25')]}]}]}
+        self.assertEqual(dialogue.serialize_tree(tree), 'bi fiva pe rarise si dehe tova fiva .')
+        self.assertEqual(dialogue.serialize_tree(leaf('1492')), 'su mula hudede fura dehe nevina tova .')
+        self.assertEqual(dialogue.serialize_tree(leaf('-0.5')), 'menose puni senura fiva .')
+        with self.assertRaises(ValueError):
+            dialogue.serialize_tree(leaf('eaa'))
 
     def test_rejects_history_role_injection(self):
         with patch.dict(os.environ, {'OPENAI_API_KEY':'test','TALEMA_MODEL':'test-model'}):
