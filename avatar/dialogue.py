@@ -411,12 +411,14 @@ def caption_adds_content(caption, talema):
 CLAIM_MARKER = re.compile(r'^\s*(?:Proved|Seen|Open)\s*:\s*')  # the book's bove / sere / pefe marks
 # The book offers one utterance two or more ways: "I see a dog / dogs.",
 # "Please sleep. / Sleep!" Machine translation renders the book's slash as a spaced dash,
-# so the translated captions carry " - " instead. A spaced dash is ordinary punctuation
-# as well, and cutting the text at one hides whatever followed it: in
-# "Der Präsident. - Nach der Tagesordnung folgt ..." that swallowed a whole clause, and
-# with it the sentence this counter exists to notice. So only " / " and the translated
-# " - " are read as alternatives, and only when every side is short enough to be a
-# restatement of one short utterance. An em or en dash is never an alternative here.
+# so the translated captions carry " - " instead. A spaced dash is ordinary punctuation as
+# well, and cutting the caption at one lets it smuggle a sentence past this check:
+# "Welcome - practice now. Say hello." is two sentences, and reading the dash as an
+# alternative reported one. Nothing here can tell a restatement from a fresh sentence by
+# shape alone, so the rule is built not to guess but to bound the damage: a dash is only an
+# alternative when it follows a *finished* sentence and everything after it is a single
+# short sentence, and then that one sentence is dropped rather than counted. A dash whose
+# tail holds a second sentence is never cut, so no added sentence can hide there.
 ALTERNATIVE = re.compile(r'\s+(?:/|-)\s+')
 MAX_ALTERNATIVE_WORDS = 4
 QUOTED = re.compile(r'"[^"]*"|“[^”]*”|„[^“]*“|«[^»]*»')   # a period inside a quote is not a new sentence
@@ -442,11 +444,26 @@ def _unquote(text):
         return f' {QUOTED_TEXT}' + ('.' if ends_sentence else '')
     return QUOTED.sub(repl, text)
 
+def _is_one_sentence(text):
+    """True when this fragment is a single sentence that ends in punctuation."""
+    text = text.strip()
+    if not text or text[-1:] not in '.!?':
+        return False
+    return len([part for part in BOUNDARY.split(text) if part.strip()]) == 1
+
 def _first_alternative(text):
-    """The utterance's first phrasing when the text is one utterance offered several ways."""
+    """The utterance when the caption offers it again another way, else the whole text.
+
+    Cuts only when the first side is a finished sentence and each remaining side is one
+    short sentence, so the sentence being dropped restates what came before it and no
+    second sentence can be lost along with it.
+    """
     sides = ALTERNATIVE.split(text)
-    if len(sides) == 1 or any(len(side.split()) > MAX_ALTERNATIVE_WORDS for side in sides):
+    if len(sides) == 1 or not sides[0].rstrip().endswith(('.', '!', '?')):
         return text
+    for side in sides[1:]:
+        if len(side.split()) > MAX_ALTERNATIVE_WORDS or not _is_one_sentence(side):
+            return text
     return sides[0]
 
 def count_sentences(text):

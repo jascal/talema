@@ -245,13 +245,30 @@ class AvatarTests(unittest.TestCase):
         self.assertEqual(dialogue.count_sentences('The answer is 4. Try again.'), 2)
 
     def test_a_dash_does_not_hide_the_rest_of_the_caption(self):
-        # A spaced dash is ordinary punctuation too. Cutting the caption at one hid
-        # everything after it, so a caption could add a sentence past the check.
+        # A spaced dash is ordinary punctuation too. Cutting the caption at one lets it
+        # smuggle a sentence past the check, so a dash whose tail holds a second
+        # sentence is never read as an alternative -- however short the tail is.
+        self.assertEqual(dialogue.count_sentences('Welcome - practice now. Say hello.'), 2)
+        self.assertEqual(dialogue.count_sentences('Welcome / practice now. Say hello.'), 2)
         self.assertEqual(dialogue.count_sentences('Welcome — let us begin. You can greet me with hello.'), 2)
+        # Nor when the text before the dash is already a finished sentence: only a
+        # single short sentence after it is treated as a restatement.
+        self.assertEqual(dialogue.count_sentences('The test passes. - We are not done yet.'), 2)
         self.assertEqual(dialogue.count_sentences(
             'Der Präsident. - Nach der Tagesordnung folgt die gemeinsame Aussprache (Dok.'), 2)
         # Division is a slash, not an alternative, and carries no full stop either way.
         self.assertEqual(dialogue.count_sentences('12 / 4 = 3'), 1)
+
+    def test_a_restated_utterance_is_counted_once(self):
+        # The book offers one utterance several ways. The first side is a finished
+        # sentence and each alternative is one short sentence, so it is one utterance.
+        for text in ('Please sleep. / Sleep!', 'Please sleep. - Sleep!',
+                     'Por favor, duerme. - ¡Duerme!', 'I see a dog / dogs.',
+                     'The dog sleeps / slept / will sleep.'):
+            with self.subTest(text=text):
+                self.assertEqual(dialogue.count_sentences(text), 1)
+                # And one spoken sentence matches one, so the added-sentence check passes.
+                self.assertFalse(dialogue.caption_adds_a_sentence(text, 'lafe .'))
 
     def test_a_quote_closes_its_sentence_without_counting_twice(self):
         # English and German write the full stop inside the quotation marks, so the
