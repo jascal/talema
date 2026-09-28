@@ -8,7 +8,8 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import dialogue
-from tts import cues_from_durations, talema_to_ipa
+from tts import (_word_phonemes, cues_from_durations, is_word, talema_to_ipa,
+                 talema_words, tokens, word_spans)
 
 def sample_suggestions(tree):
     return [
@@ -17,6 +18,18 @@ def sample_suggestions(tree):
     ]
 
 class AvatarTests(unittest.TestCase):
+    # A stand-in for Kokoro's vocabulary. It deliberately contains the space character,
+    # because the real one does: the model receives the gaps between words and they
+    # shift every later word's timing if the span walk ignores them.
+    vocab = set('abdefhiklmnopstuvɡɾˈ. ')
+
+    def setUp(self):
+        pass
+
+    def _stream(self, text):
+        """The phoneme stream the model actually receives: every character of the
+        phonemized sentence that the vocabulary knows, spaces included."""
+        return [c for c in talema_to_ipa(text) if c in self.vocab]
     def test_trees(self):
         dialogue.validate_speech('bi fura pe si tova tova .')
         for text in ['bi fura pe .', 'bi fura pe si tova tova tova .', 'hello world .', 'bi fura pe si tova tova']:
@@ -24,13 +37,281 @@ class AvatarTests(unittest.TestCase):
                 dialogue.validate_speech(text)
 
     def test_timings_cover_audio_without_overrun(self):
-        cues=cues_from_durations(list('pao'), [2,3,5,4,2], 1.6)
+        cues, word_cues = cues_from_durations(list('pao'), [2,3,5,4,2], 1.6)
         self.assertEqual([c['shape'] for c in cues], ['closed','open','round'])
         self.assertAlmostEqual(cues[0]['start'], .2)
         self.assertAlmostEqual(cues[-1]['end'], 1.4)
         self.assertTrue(all(a['end']==b['start'] for a,b in zip(cues,cues[1:])))
+        # No source words supplied: no per-word cues are produced.
+        self.assertEqual(word_cues, [])
         with self.assertRaises(RuntimeError):
             cues_from_durations(['a'], [1,2], 1)
+
+    def test_word_cues_follow_phoneme_spans(self):
+        # Spans are (start, end) indices into the phoneme stream: first word 'pa',
+        # second word 'oa'.
+        cues, word_cues = cues_from_durations(list('paoa'), [1,2,3,4,5,1], 3.0,
+                                              spans=[(0,2),(2,4)])
+        self.assertEqual(len(word_cues), 2)
+        self.assertAlmostEqual(word_cues[0]['start'], cues[0]['start'])
+        self.assertAlmostEqual(word_cues[0]['end'], cues[1]['end'])
+        self.assertAlmostEqual(word_cues[1]['start'], cues[2]['start'])
+        self.assertAlmostEqual(word_cues[1]['end'], cues[3]['end'])
+        # Every word cue sits inside the audio duration.
+        self.assertTrue(all(0 <= c['start'] <= c['end'] <= 3.0 for c in word_cues))
+
+    def test_spans_cover_every_word_exactly_once(self):
+        for text in ['bi fura 25 pe si tova tova .',
+                     'nu ja-me topi .',
+                     'veloma . voni te topike vasa pe tada .']:
+            with self.subTest(text=text):
+                spoken = tokens(text)
+                words = [token for token in spoken if is_word(token)]
+                stream = self._stream(text)
+                spans = word_spans(spoken, self.vocab)
+                self.assertEqual(len(spans), len(words))
+                # A span can never run past the stream the model actually receives.
+                self.assertTrue(all(end <= len(stream) for _, end in spans))
+                # And each word's phonemes are exactly the slice it claims.
+                for word, (start, end) in zip(words, spans):
+                    expected = [c for c in _word_phonemes(word).replace(' ', '')
+                                if c in self.vocab]
+                    self.assertEqual(stream[start:end], expected)
+
+    def test_spans_skip_characters_the_model_does_not_voice(self):
+        # Digits are dropped from the phoneme stream, so they must not advance the
+        # cursor; the word after a number has to start where the number would, plus
+        # the two spaces that surround it.
+        spoken = tokens('bi 25 pe')
+        self.assertEqual([t for t in spoken if is_word(t)], ['bi', '25', 'pe'])
+        self.assertEqual(word_spans(spoken, self.vocab), [(0, 2), (3, 3), (4, 6)])
+
+    def test_spans_skip_sentence_punctuation(self):
+        # The period between two sentences is voiced but belongs to no word, so the
+        # second sentence must not be shifted by it: "veloma . voni ." spends two
+        # phonemes (period, space) on the gap that the cursor has to step over.
+        spoken = tokens('veloma . voni .')
+        spans = word_spans(spoken, self.vocab)
+        self.assertEqual(spans, [(0, 7), (10, 15)])
+
+    def test_hyphenated_words_are_spoken_and_highlighted(self):
+        self.assertEqual(talema_words('nu ja-me topi .'), ['nu', 'ja-me', 'topi'])
+
+    def test_unvoiced_word_gets_a_zero_width_cue_in_place(self):
+        # A word with no surviving phonemes still advances the subtitle in step,
+        # rather than collapsing to the start of the audio.
+        cues, word_cues = cues_from_durations(list('bia'), [1, 2, 3, 4, 1], 2.0,
+                                              spans=[(0, 2), (2, 2)])
+        self.assertAlmostEqual(word_cues[0]['start'], cues[0]['start'])
+        self.assertAlmostEqual(word_cues[0]['end'], cues[1]['end'])
+        self.assertAlmostEqual(word_cues[1]['start'], cues[2]['start'])
+        self.assertAlmostEqual(word_cues[1]['end'], word_cues[1]['start'])
+
+    def test_bare_vowel_reply_recovers_through_the_repair(self):
+        # The observed failure: asked to say a letter, the model puts the letter in
+        # `root` and the turn dies. The retry must produce speakable Talema.
+        letter = [{'root': 'a', 'children': []}]
+        # "vanam is the name of the first vowel" — the ordinal is spoken, so the
+        # caption's "first" is earned.
+        named = [{'root': 'kar', 'children': [{'root': 'vanam', 'children': []},
+                                               {'root': 'vokel', 'children': [{'root': 'fir', 'children': []}]}]}]
+        suggestions = [{'tree': {'root': 'vonam', 'children': []}, 'en': 'The fourth vowel.',
+                        'es': 'La cuarta vocal.', 'de': 'Der vierte Vokal.'},
+                       {'tree': {'root': 'fir', 'children': [{'root': 'vokel', 'children': []}]},
+                        'en': 'The first vowel.', 'es': 'La primera vocal.', 'de': 'Der erste Vokal.'}]
+        def response(trees, en):
+            data = {'trees': trees, 'suggestions': suggestions, 'en': en, 'es': en,
+                    'de': en, 'emotion': 'warm', 'turn_move': 'ask_followup'}
+            return io.BytesIO(json.dumps({'status': 'completed', 'output': [
+                {'type': 'message', 'content': [{'type': 'output_text', 'text': json.dumps(data)}]}]}).encode())
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'TALEMA_MODEL': 'test-model'}), \
+             patch('urllib.request.urlopen', side_effect=[response(letter, 'A.'),
+                                                          response(named, 'The first vowel is called vanam.')]) as call:
+            result = dialogue.reply('Say the letter a for me.', [])
+            repair = json.loads(call.call_args_list[1].args[0].data)['input'][-1]['content']
+        # It spoke, and what it said is a valid sentence.
+        self.assertEqual(result['talema'], 'kari vanama vokele fira .')
+        dialogue.validate_speech(result['talema'])
+        self.assertIn('vanam', repair)
+        # 'u' is the ending for four dependents, never a root, and stripping vowels
+        # off a bare vowel leaves nothing for the whole-word recovery to recover.
+        for vowel in 'aeiou':
+            with self.subTest(root=vowel):
+                with self.assertRaises(ValueError):
+                    dialogue.serialize_tree({'root': vowel, 'children': []})
+        self.assertEqual(dialogue.ending(4), 'u')
+        repair = dialogue.root_repair("Unknown dictionary root: 'u'")
+        self.assertIn("'u' is an ending, not a root", repair)
+        self.assertIn('no root is a bare vowel', repair)
+        # The generic advice is still present, so the older test's expectations hold.
+        self.assertIn('bare-root field', repair)
+        self.assertIn('Do not repeat the invalid root', repair)
+        # A whole-word slip gets the generic advice without the vowel explanation.
+        self.assertNotIn('is an ending', dialogue.root_repair("Unknown dictionary root: 'buke'"))
+
+    def test_bare_vowel_repair_names_the_word_for_that_vowel(self):
+        # The model reaches for a written letter when asked to say one. The repair has
+        # to hand it the root the book actually uses, or it simply fails again.
+        self.assertEqual(dialogue.vowel_name('a'), 'vanam')
+        self.assertEqual(dialogue.vowel_name('o'), 'vonam')
+        self.assertEqual(dialogue.vowel_name('u'), 'vunam')
+        self.assertIsNone(dialogue.vowel_name('x'))
+        repair = dialogue.root_repair("Unknown dictionary root: 'a'")
+        self.assertIn("'a' is an ending, not a root", repair)
+        self.assertIn("'vanam'", repair)
+        self.assertIn('A written letter cannot be spoken', repair)
+        # A whole-word slip must not be handed a vowel name.
+        self.assertNotIn('vanam', dialogue.root_repair("Unknown dictionary root: 'buke'"))
+
+    def test_persona_rules_out_bare_vowel_roots(self):
+        self.assertIn('No root is ever a bare vowel', dialogue.PERSONA)
+        self.assertIn('endings, not roots', dialogue.PERSONA)
+        self.assertIn('A written letter is not a root either', dialogue.PERSONA)
+        for root in ('vanam', 'venam', 'vinam', 'vonam', 'vunam'):
+            self.assertIn(f'`{root}`', dialogue.PERSONA)
+
+    def test_cache_key_covers_the_persona_and_the_books(self):
+        # Both halves of the cached prefix are hashed, so editing either busts the key.
+        import hashlib
+        expected = 'talema-tutor-' + hashlib.sha256(
+            (dialogue.PERSONA + dialogue.BOOK).encode('utf-8')).hexdigest()[:16]
+        self.assertEqual(dialogue.CACHE_KEY, expected)
+
+    def test_caption_that_enumerates_unsaid_letters_is_rejected(self):
+        # The reported case: Luma said "five vowels" and the English appended the
+        # list, so the caption described more than the speech.
+        talema = 'bi vokela fiva . vone ti pe tada te vokela .'
+        caption = 'Talema has five vowels: a, e, i, o, and u. Would you like to practice a vowel?'
+        self.assertTrue(dialogue.caption_adds_content(caption, talema))
+        with self.assertRaises(dialogue.CaptionError):
+            dialogue.check_caption('en', caption, talema)
+
+    def test_caption_check_does_not_reject_ordinary_captions(self):
+        talema = 'bi vokela fiva . vone ti pe tada te vokela .'
+        # Same content, no invented list.
+        dialogue.check_caption('en', 'Five vowels. Would you like to practise one?', talema)
+        # Longer captions are normal: Talema is denser than English.
+        dialogue.check_caption('en', 'Talema has five vowels. Would you like to practise one of them '
+                                      'and hear how each one sounds?', talema)
+        # A dictionary line that legitimately enumerates is not generated speech, but
+        # it must not be what trips the check on its own either.
+        self.assertFalse(dialogue.caption_adds_content('Four is two and two.', 'bi fura pe si tova tova .'))
+
+    def test_persona_prefers_concrete_elaboration(self):
+        self.assertIn('Be concrete rather than categorical', dialogue.PERSONA)
+        self.assertIn('say its members or give\none specific example', dialogue.PERSONA)
+        # One sentence per sentence, and no sentence of the caption's own.
+        self.assertIn('Every sentence in the Talema gets one sentence in the caption', dialogue.PERSONA)
+        self.assertIn('the caption has no sentence of its own', dialogue.PERSONA)
+        self.assertIn('If a sentence is worth saying, say it in Talema', dialogue.PERSONA)
+
+    def test_order_word_may_ride_inside_a_coined_root(self):
+        # vonam glosses as "vowel-fourth", so saying vonama really does convey
+        # "fourth" even though no ordinal root is spoken on its own.
+        self.assertEqual(dialogue.unsupported_order('The fourth vowel.', 'vonama .'), '')
+        self.assertEqual(dialogue.unsupported_order('The first vowel.', 'vanama .'), '')
+        # A coined root for a different vowel does not license the word.
+        self.assertEqual(dialogue.unsupported_order('The first vowel.', 'vonama .'), 'first')
+
+    def test_caption_may_not_invent_a_sentence(self):
+        # Observed: the Talema said "Hi. What topic do you want?" and the caption
+        # answered with three sentences, one of which Luma never spoke.
+        talema = 'habola . vase topike vone pe tada .'
+        caption = 'Hello! You can greet me with "hello." Which topic would you like to explore?'
+        self.assertEqual(dialogue.count_sentences(talema), 2)
+        self.assertEqual(dialogue.count_sentences(caption), 3)
+        self.assertTrue(dialogue.caption_adds_a_sentence(caption, talema))
+        with self.assertRaises(dialogue.CaptionError) as caught:
+            dialogue.check_caption('en', caption, talema)
+        self.assertIn('may not contain a sentence', str(caught.exception))
+        # The faithful caption for the same speech passes.
+        dialogue.check_caption('en', 'Hello! Which topic do you want?', talema)
+
+    def test_sentence_count_ignores_markers_and_alternatives(self):
+        self.assertEqual(dialogue.count_sentences('Proved: two and two are four. We have a proof.'), 2)
+        self.assertEqual(dialogue.count_sentences('Please sleep. / Sleep!'), 2)
+        self.assertEqual(dialogue.count_sentences('One sentence.'), 1)
+        self.assertEqual(dialogue.count_sentences(''), 0)
+
+    def test_sentence_parity_holds_on_the_published_books(self):
+        # The invariant this check rests on, asserted so it cannot quietly rot.
+        rows = [json.loads(line) for line in
+                Path(__file__).resolve().parents[2].joinpath('data/sentences.jsonl')
+                .read_text(encoding='utf-8').splitlines() if line.strip()]
+        rows = [r for r in rows if r.get('en', '').strip()]
+        over = [r['en'] for r in rows if dialogue.caption_adds_a_sentence(r['en'], r['talema'])]
+        under = [r for r in rows if dialogue.count_sentences(r['en']) < dialogue.count_sentences(r['talema'])]
+        self.assertEqual(under, [], 'a caption should never drop a sentence the speech spoke')
+        self.assertLess(len(over), len(rows) * 0.005, f'sentence parity too strict: {over[:5]}')
+
+    def test_caption_may_not_add_an_order_the_speech_lacks(self):
+        # Observed: the Talema asked which vowel, and the caption volunteered
+        # "which would you like to explore next".
+        talema = 'bee vokela . rake kase vokela .'
+        caption = 'These are the vowels. Which of these would you like to look at next?'
+        self.assertEqual(dialogue.unsupported_order(caption, talema), 'next')
+        with self.assertRaises(dialogue.CaptionError) as caught:
+            dialogue.check_caption('en', caption, talema)
+        self.assertIn('does not say it', str(caught.exception))
+
+    def test_order_check_covers_every_caption_language(self):
+        # Spanish and German must be caught too, or the tutor just elaborates in them.
+        talema = 'bi vokela . rake kase vokela .'
+        for lang, caption, expected in [
+                ('en', 'These are the vowels. Which one next?', 'next'),
+                ('es', 'Estas son las vocales. ¿Cuál siguiente?', 'siguiente'),
+                ('de', 'Das sind die Vokale. Welches als Nächstes?', 'nächste')]:
+            with self.subTest(lang=lang):
+                self.assertEqual(dialogue.unsupported_order(caption, talema, lang), expected)
+                with self.assertRaises(dialogue.CaptionError):
+                    dialogue.check_caption(lang, caption, talema)
+        # The order words come from the lexicon's own de/es columns, not a hardcoded list.
+        for lang, word in (('es', 'cuarto'), ('es', 'último'), ('de', 'vierte'), ('de', 'fünfte')):
+            self.assertIn(word, dialogue.ORDER[lang])
+
+    def test_english_order_words_are_matched_exactly(self):
+        # Stem matching is for inflected languages only: "against" is not "again".
+        self.assertEqual(dialogue.unsupported_order('It ran against the mill.',
+                                                    'runi gone muhile la pe pesa .'), '')
+
+    def test_sentence_count_handles_spanish_punctuation(self):
+        talema = 'habola . vase topike vone pe tada .'
+        self.assertTrue(dialogue.caption_adds_a_sentence(
+            '¡Hola! Puedes saludarme con "hola". ¿Qué tema quieres?', talema))
+        self.assertFalse(dialogue.caption_adds_a_sentence('¡Hola! ¿Qué tema quieres?', talema))
+
+    def test_order_check_accepts_any_synonym_root(self):
+        # first is fir, fis or rimer; last is lasat, lat, latim or sulet. A caption
+        # whose order is carried by any of them is faithful.
+        self.assertEqual(dialogue.unsupported_order('Learn them first.', 'feni te tara fisa .'), '')
+        self.assertEqual(dialogue.unsupported_order('Learn them first.', 'feni te tara fira .'), '')
+        self.assertEqual(dialogue.unsupported_order('The last vowel counts ones.',
+                                                    'saheni te pona pe vokeli lata la .'), '')
+        # And a caption with no order word is untouched.
+        self.assertEqual(dialogue.unsupported_order('Four is two and two.',
+                                                    'bi fura pe si tova tova .'), '')
+
+    def test_order_check_is_quiet_on_the_published_books(self):
+        # Calibrated against data/sentences.jsonl in every caption language, so it does
+        # not reject the corpus.
+        rows = [json.loads(line) for line in
+                Path(__file__).resolve().parents[2].joinpath('data/sentences.jsonl')
+                .read_text(encoding='utf-8').splitlines() if line.strip()]
+        rows = [r for r in rows if r.get('en', '').strip()]
+        for lang, key in (('en', 'en'), ('es', 'es_mt'), ('de', 'de_mt')):
+            subset = [r for r in rows if r.get(key, '').strip()]
+            flagged = [r[key] for r in subset if dialogue.unsupported_order(r[key], r['talema'], lang)]
+            with self.subTest(lang=lang):
+                self.assertLess(len(flagged), len(subset) * 0.005,
+                                f'order check too eager on the {lang} book: {flagged[:3]}')
+
+    def test_caption_repair_points_at_speaking_not_deleting(self):
+        self.assertTrue(issubclass(dialogue.CaptionError, ValueError))
+        long_es = ('Talema tiene cinco vocales: a, e, i, o y u. '
+                   '¿Te gustaría practicar una de ellas ahora?')
+        with self.assertRaises(dialogue.CaptionError) as caught:
+            dialogue.check_caption('es', long_es, 'bi vokela fiva . vone ti pe tada te vokela .')
+        self.assertIn('say more in Talema', str(caught.exception))
 
     def test_response_and_caption_separation(self):
         tree={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
@@ -170,6 +451,60 @@ class AvatarTests(unittest.TestCase):
         headers, body = bytes(connection.output).split(b'\r\n\r\n', 1)
         self.assertIn(b'200 OK', headers)
         self.assertEqual(json.loads(body), expected)
+
+    def test_spans_step_over_the_spaces_the_model_receives(self):
+        # Kokoro's vocabulary holds the space character, so the gap between two words
+        # is itself a phoneme. Ignore it and every later word is off by one.
+        text = 'kari vanama vokele fira .'
+        stream = self._stream(text)
+        spans = word_spans(tokens(text), self.vocab)
+        words = [t for t in tokens(text) if is_word(t)]
+        self.assertIn(' ', stream, 'the test vocabulary must contain the space')
+        for word, (start, end) in zip(words, spans):
+            with self.subTest(word=word):
+                heard = [c for c in stream[start:end] if c != ' ']
+                self.assertEqual(heard, [c for c in _word_phonemes(word) if c in self.vocab])
+        # Each gap between words lands in exactly one span boundary, never inside one.
+        self.assertEqual(spans[-1][1] <= len(stream), True)
+        joined = [c for a, b in spans for c in stream[a:b]]
+        self.assertNotIn(' ', joined, 'no span may swallow the space between two words')
+
+    def test_finally_needs_a_finality_root_not_the_fifth(self):
+        # "Finally" is finality, not ordinality: the book gives it its own root (lil).
+        self.assertEqual(dialogue.SYNONYMS.get('finally'), {'lil'})
+        self.assertEqual(dialogue.unsupported_order('Say it finally.', 'lila .'), '')
+        self.assertEqual(dialogue.unsupported_order('Say it finally.', 'raka .'), 'finally')
+        self.assertEqual(dialogue.unsupported_order('The fifth vowel.', 'vunama .'), '')
+        # And the other two languages follow the same root, not the ordinal.
+        self.assertEqual(dialogue.ORDER['de']['schließlich'], 'finally')
+        self.assertEqual(dialogue.ORDER['es']['finalmente'], 'finally')
+        self.assertEqual(dialogue.unsupported_order('Dímelo finalmente.', 'raka .', 'es'), 'finalmente')
+        self.assertEqual(dialogue.unsupported_order('Sag es schließlich.', 'raka .', 'de'), 'schließlich')
+        self.assertNotEqual(dialogue.ORDER['en'].get('finally'), 'fifth')
+
+    def test_utterance_words_line_up_one_to_one_with_cues(self):
+        # The client pairs word_cues[i] with the i-th highlighted word, so the two
+        # lists must be the same length and advance together across sentences and
+        # over characters the model never voices.
+        import tts
+        text = 'veloma . voni te 25 topike vasa pe tada .'
+        def fake_kokoro(phonemes, token_list=None):
+            spoken = token_list or []
+            spans = word_spans(spoken, self.vocab)
+            stream = [c for c in phonemes if c in self.vocab]
+            cues, word_cues = cues_from_durations(stream, [1] * (len(stream) + 2),
+                                                  float(len(stream)), spans)
+            return b'RIFF', cues, word_cues
+        with patch.object(tts, '_kokoro', side_effect=fake_kokoro):
+            result = tts.utterance(text)
+        self.assertEqual(result['words'], ['veloma', 'voni', 'te', '25', 'topike', 'vasa', 'pe', 'tada'])
+        self.assertEqual(len(result['word_cues']), len(result['words']))
+        cues = result['word_cues']
+        # Ordered, non-overlapping, and never before the first phoneme cue.
+        self.assertGreaterEqual(cues[0]['start'], result['cues'][0]['start'])
+        for earlier, later in zip(cues, cues[1:]):
+            self.assertLessEqual(earlier['end'], later['start'])
+            self.assertLessEqual(earlier['start'], earlier['end'])
 
     def test_unknown_native_word_phonology(self):
         self.assertEqual(talema_to_ipa('rarise'), 'ˈɾaɾise')

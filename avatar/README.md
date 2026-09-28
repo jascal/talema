@@ -51,9 +51,14 @@ its model/voice. Keep the existing eSpeak installation required by Kokoro's pipe
   behaviors, not a claim of evaluated teaching competence.
 - **Stop** cancels pending browser requests and pauses speech. You can interrupt with
   another message. A request already submitted to the model may still finish/bill.
+  <kbd>Esc</kbd> also stops, from anywhere on the page.
 - Audio controls pause/replay/seek; mouth movement follows the audio clock.
-- Captions switch independently and are never synthesized. Subtitles currently
-  show the whole utterance, not individual word highlighting.
+- Captions switch independently and are never synthesized. The live Talema subtitle
+  highlights the word Luma is currently saying, derived from the TTS phoneme cues.
+  Each bubble keeps its own **↻ Replay** button so you can hear a turn again
+  without re-asking the tutor.
+- After each reply the status line shows the model and voice, plus the prompt-cache
+  hit ratio (`NN% cached (X/Y tokens)`) so the cost savings are visible.
 - Microphone input uses browser recognition with an Italian locale, which is not
   trained on Talema. Review/edit its transcript and press Send. Browser recognition
   may send audio to its vendor. Typing is the reliable input path today.
@@ -84,14 +89,79 @@ the sentence; it allows one repair retry. Loans are intentionally excluded from 
 speech for now. Valid syntax does not guarantee correct meaning or captions.
 History lives only in the browser tab; refreshing loses it.
 
-`tts.py` produces WAV and phoneme-derived mouth cues. Timings are model predictions,
-normalized to waveform duration, not independently measured forced alignment.
+**Rejecting a bad root.** A whole word in the `root` field (`buke` for `buk`) is repaired silently by
+peeling the ending. A bare vowel cannot be: `a` `e` `i` `o` `u` are endings, not roots, and no root in the
+lexicon is a bare vowel, so peeling leaves nothing. That is the one mistake that reaches the model again,
+and the retry names it directly — it is told which value was wrong, that it is an ending counting
+dependents, and the table (`a` 0, `e` 1, `i` 2, `o` 3, `u` 4, `ea` 5).
+
+The commonest cause is a learner asking about a letter ("say the letter a"). The model is right about the
+intent and wrong about the form: a written letter is not a root, so it can never be spoken. The retry
+looks up the word the book gives that vowel and hands it over — *use `vanam` in that node, and put the
+letter in the caption* — resolved from the lexicon rather than hardcoded, so it stays right if a root is
+ever renamed. The persona says the same thing up front, so the retry is usually not needed. If a reply
+still fails twice, nothing is spoken and the status line says so: the server will not substitute a
+sentence it could not validate, because wrong Talema is worse than no Talema. Press **Stop** and send
+again, or start a new lesson.
+
+**Captions that add content.** A caption must translate the speech, never extend it. Three shapes are
+caught, each measured against `data/sentences.jsonl` before being adopted.
+
+*An invented sentence.* This is the tutor's standing habit, and the cheapest to catch: Talema is compact,
+so it feels obliged to pay the learner back in English. "Hi. What topic do you want?" (two Talema
+sentences) came back as *"Hello! You can greet me with 'hello.' Which topic would you like to explore?"*
+— three, one of them never spoken. 1,549 of the 1,553 published captions have exactly as many sentences
+as the Talema they translate and **none has fewer**, so the invariant is free. The four exceptions are
+the same habit already in print: `bove bi fura pe si tova tova .` is one sentence, but its English adds
+*"We have a proof."* The count ignores the book's claim markers (`Proved:`, `Seen:`, `Open:`) and slash
+alternatives.
+
+*Enumeration.* The tutor says "five vowels", then writes "Talema has five vowels: a, e, i, o, and u",
+listing something it never said. The check is a caption that both outgrows the speech and enumerates
+literal letters; it matches none of the book's captions, so the dictionary lines, which do legitimately
+enumerate, still pass.
+
+*Order.* The tutor asks "which vowel", then writes "which would you like to look at next". A caption may
+not use an order word unless the speech carries the order. The surface forms for all three caption
+languages are read from the lexicon's own `de` and `es` columns — English *first*, Spanish *primero*,
+*cuarto*, *último*, German *erste*, *vierte*, *fünfte*, *nächste* — so none of them can slip past the
+check, and a new gloss stays covered without touching the code. German and Spanish inflect, so their
+forms also match on a stem plus a short ending (*Nächstes*); English is matched exactly, because
+stem matching would read "**aga**inst" as "again". A caption word is satisfied by any root that carries
+the order (first is `fir`, `fis` or `rimer`), and a coined root carries its order in its own English
+gloss: `vonam` is glossed "vowel-fourth", so saying `vonama` really does convey "fourth". On the corpus
+this flags 0.13% of the English and German captions and none of the Spanish, and the flags are genuine
+errors in the published book rather than false alarms — "This is the fourth rule" is spelled
+`bi ruli fura la`, using the *cardinal* four, not the ordinal.
+
+All three are narrow by design. They catch the shapes that recur; they do not prove a caption is right,
+and a caption can still be wrong without inventing a sentence, enumerating, or implying order. The
+persona carries the real weight: one sentence per sentence, no sentence of its own, be concrete rather
+than categorical, and if a sentence is worth saying, say it in Talema.
+
+**Naming a letter.** Each vowel has a spoken name, coined as a root (`vanam` `venam` `vinam` `vonam`
+`vunam` — the name of the first…fifth vowel) and written into the core book beside the written-letter
+notation. So `kari vanama vokele fira .` ("vanam is the name of the first vowel") is a valid sentence
+the avatar can speak and the exact parser can round-trip. The book still writes the letters as the
+hyphenated gloss `a-a`; that is deliberate notation for a grammar chapter and `validate_speech` still
+rejects it, because a written letter is not a Talema tree. Naming a vowel by position is what makes it
+sayable: the letter itself has no root — `a` `e` `i` `o` `u` are bare vowels and cannot be a node — while
+the ordinals (`fir` `sed` `tit` `kuret` `finat`) already existed. The rest of the sound discussion was
+always speakable: `let` letter, `vokel` vowel, `sonid` sound, `nam` name, `deg` order.
+
+`tts.py` produces WAV, phoneme-derived mouth cues, and per-word highlight cues
+aggregated from those phonemes. Timings are model predictions, normalized to
+waveform duration, not independently measured forced alignment.
+Word spans are walked over the same vocabulary-filtered phoneme stream the model
+receives, so a word the model does not voice (a digit, say) and the periods between
+sentences do not push the highlight out of step.
 The short utterance limit keeps raw phonemes below Kokoro's 510-character limit.
 `character.js` renders the face locally without another avatar service or subscription.
 `/api/respond` accepts `{talema, history, start}`; `/api/utterance` accepts `{talema}`
-and returns base64 WAV, cues, provider and voice. `/api/audio` retains raw WAV output.
-Agents can use the same JSON routes. `/api/health` distinguishes model configuration
-from TTS package availability; it does not prove API access or downloaded voice readiness.
+and returns base64 WAV, cues, words and word cues, provider and voice. `/api/audio`
+retains raw WAV output. Agents can use the same JSON routes. `/api/health`
+distinguishes model configuration from TTS package availability; it does not prove
+API access or downloaded voice readiness.
 
 This remains a loopback development server: no authentication, streaming model/audio,
 Talema ASR, persistent student model, or production hosting controls. Full-book requests
