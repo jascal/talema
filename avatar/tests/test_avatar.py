@@ -229,20 +229,42 @@ class AvatarTests(unittest.TestCase):
 
     def test_sentence_count_ignores_markers_and_alternatives(self):
         self.assertEqual(dialogue.count_sentences('Proved: two and two are four. We have a proof.'), 2)
-        self.assertEqual(dialogue.count_sentences('Please sleep. / Sleep!'), 2)
+        # An alternative restates one utterance, so it is one sentence. Machine
+        # translation renders the book's slash as a dash, so both spellings are counted.
+        self.assertEqual(dialogue.count_sentences('Please sleep. / Sleep!'), 1)
+        self.assertEqual(dialogue.count_sentences('Please sleep. - Sleep!'), 1)
         self.assertEqual(dialogue.count_sentences('One sentence.'), 1)
         self.assertEqual(dialogue.count_sentences(''), 0)
 
+    def test_a_decimal_point_is_not_a_sentence_boundary(self):
+        self.assertEqual(dialogue.count_sentences('The test takes 0.7 seconds. It works.'), 2)
+        self.assertEqual(dialogue.count_sentences('Version 1.8 follows 2.0.'), 1)
+
+    def test_a_quote_closes_its_sentence_without_counting_twice(self):
+        # English and German write the full stop inside the quotation marks, so the
+        # closing quote is the only terminator. Blanking the span would run the
+        # sentence into the next one and under-count.
+        self.assertEqual(dialogue.count_sentences('Kant said: "Never lie." He meant it.'), 2)
+        self.assertEqual(dialogue.count_sentences('Kant said: "Never lie."'), 1)
+        # A quote inside a sentence is not a boundary at all.
+        self.assertEqual(dialogue.count_sentences('Er sagte "hallo" und ging.'), 1)
+
     def test_sentence_parity_holds_on_the_published_books(self):
-        # The invariant this check rests on, asserted so it cannot quietly rot.
+        # The invariant this check rests on, asserted so it cannot quietly rot. It is
+        # exact in all three languages, so it is asserted exactly: a tolerance here
+        # would hide the very caption drift the check exists to catch.
         rows = [json.loads(line) for line in
                 Path(__file__).resolve().parents[2].joinpath('data/sentences.jsonl')
                 .read_text(encoding='utf-8').splitlines() if line.strip()]
-        rows = [r for r in rows if r.get('en', '').strip()]
-        over = [r['en'] for r in rows if dialogue.caption_adds_a_sentence(r['en'], r['talema'])]
-        under = [r for r in rows if dialogue.count_sentences(r['en']) < dialogue.count_sentences(r['talema'])]
-        self.assertEqual(under, [], 'a caption should never drop a sentence the speech spoke')
-        self.assertLess(len(over), len(rows) * 0.005, f'sentence parity too strict: {over[:5]}')
+        for lang, field in (('en', 'en'), ('de', 'de_mt'), ('es', 'es_mt')):
+            checked = [r for r in rows if r.get(field, '').strip()]
+            over = [r[field] for r in checked
+                    if dialogue.count_sentences(r[field]) > dialogue.count_sentences(r['talema'])]
+            under = [r[field] for r in checked
+                     if dialogue.count_sentences(r[field]) < dialogue.count_sentences(r['talema'])]
+            self.assertEqual(over, [], f'{lang} captions invent a sentence: {over[:5]}')
+            self.assertEqual(under, [], f'{lang} captions drop a sentence: {under[:5]}')
+            self.assertGreater(len(checked), 1500, f'{lang} corpus unexpectedly small')
 
     def test_caption_may_not_add_an_order_the_speech_lacks(self):
         # Observed: the Talema asked which vowel, and the caption volunteered
