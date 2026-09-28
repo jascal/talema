@@ -451,18 +451,32 @@ def _is_one_sentence(text):
         return False
     return len([part for part in BOUNDARY.split(text) if part.strip()]) == 1
 
+# A restatement adds no content, so the one signal here that carries meaning is that
+# every content word of the alternative already occurs in the sentence it restates.
+# "Please sleep. / Sleep!" introduces nothing and is one utterance; "Welcome. - Practice
+# now." introduces "practice" and is two. Stems are compared by their first four letters
+# because the shared word is inflected in the translated captions ("Ich sehe einen Hund /
+# Hunde.", "duerme / duerme"). Words shorter than four letters are skipped so a shared
+# article cannot pass for content. This is a subset test, not an overlap one, so an
+# alternative that introduces even one new content word is counted as the sentence it is.
+def _stems(text):
+    return {word[:4] for word in re.findall(r'[^\W\d_]{4,}', text.lower(), re.UNICODE)}
+
 def _first_alternative(text):
     """The utterance when the caption offers it again another way, else the whole text.
 
-    Cuts only when the first side is a finished sentence and each remaining side is one
-    short sentence, so the sentence being dropped restates what came before it and no
-    second sentence can be lost along with it.
+    A side is folded into the first only when all three hold: what precedes the dash is a
+    finished sentence, the side is a single short sentence, and every content word in it
+    already occurs in the first. Failing any one, the side is counted as the sentence it
+    appears to be — so "Welcome. - Practice now. - Say hello." is three, not one.
     """
     sides = ALTERNATIVE.split(text)
     if len(sides) == 1 or not sides[0].rstrip().endswith(('.', '!', '?')):
         return text
+    spoken = _stems(sides[0])
     for side in sides[1:]:
-        if len(side.split()) > MAX_ALTERNATIVE_WORDS or not _is_one_sentence(side):
+        if (len(side.split()) > MAX_ALTERNATIVE_WORDS or not _is_one_sentence(side)
+                or not _stems(side) <= spoken):
             return text
     return sides[0]
 

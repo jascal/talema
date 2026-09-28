@@ -246,25 +246,37 @@ class AvatarTests(unittest.TestCase):
 
     def test_a_dash_does_not_hide_the_rest_of_the_caption(self):
         # A spaced dash is ordinary punctuation too. Cutting the caption at one lets it
-        # smuggle a sentence past the check, so a dash whose tail holds a second
-        # sentence is never read as an alternative -- however short the tail is.
-        self.assertEqual(dialogue.count_sentences('Welcome - practice now. Say hello.'), 2)
-        self.assertEqual(dialogue.count_sentences('Welcome / practice now. Say hello.'), 2)
-        self.assertEqual(dialogue.count_sentences('Welcome — let us begin. You can greet me with hello.'), 2)
-        # Nor when the text before the dash is already a finished sentence: only a
-        # single short sentence after it is treated as a restatement.
-        self.assertEqual(dialogue.count_sentences('The test passes. - We are not done yet.'), 2)
-        self.assertEqual(dialogue.count_sentences(
-            'Der Präsident. - Nach der Tagesordnung folgt die gemeinsame Aussprache (Dok.'), 2)
+        # smuggle a sentence past the check, so a dash is only read as an alternative
+        # when what follows it adds no content of its own. Everything here is counted
+        # for what it is: an unrelated sentence after a dash is still a sentence.
+        for text, want in (
+            ('Welcome - practice now. Say hello.', 2),        # dash mid-sentence
+            ('Welcome / practice now. Say hello.', 2),
+            ('Welcome — let us begin. You can greet me with hello.', 2),
+            ('Welcome. - Practice now.', 2),                  # dash after a finished
+            ('Welcome. - Practice now. - Say hello.', 3),     # ...sentence, twice over
+            ('The test passes. - We are not done yet.', 2),
+            ('The answer is four. - The answer holds.', 2),   # shares a word, adds one
+            ('Der Präsident. - Nach der Tagesordnung folgt die gemeinsame Aussprache (Dok.', 2),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(dialogue.count_sentences(text), want)
+        # Each of those must also be caught when checked against a one-sentence speech,
+        # or the added sentence would pass validation outright.
+        for text in ('Welcome. - Practice now.', 'Welcome. - Practice now. - Say hello.',
+                     'The answer is four. - The answer holds.'):
+            with self.subTest(text=text):
+                self.assertTrue(dialogue.caption_adds_a_sentence(text, 'veloma .'))
         # Division is a slash, not an alternative, and carries no full stop either way.
         self.assertEqual(dialogue.count_sentences('12 / 4 = 3'), 1)
 
     def test_a_restated_utterance_is_counted_once(self):
-        # The book offers one utterance several ways. The first side is a finished
-        # sentence and each alternative is one short sentence, so it is one utterance.
+        # The book offers one utterance several ways. The alternative adds no content
+        # word the first sentence lacks, so it is the same utterance said again.
         for text in ('Please sleep. / Sleep!', 'Please sleep. - Sleep!',
                      'Por favor, duerme. - ¡Duerme!', 'I see a dog / dogs.',
-                     'The dog sleeps / slept / will sleep.'):
+                     'Ich sehe einen Hund / Hunde.', 'The dog sleeps / slept / will sleep.',
+                     'Good morning. - Good morning, Ana.'):
             with self.subTest(text=text):
                 self.assertEqual(dialogue.count_sentences(text), 1)
                 # And one spoken sentence matches one, so the added-sentence check passes.
