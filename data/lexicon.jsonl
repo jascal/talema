@@ -6106,3 +6106,8 @@
 {"root": "fater", "cls": "VERB", "en": "fry", "de": "braten", "es": "freír", "tier": null, "weight": null, "source": "coin:food"}
 {"root": "rasat", "cls": "VERB", "en": "roast", "de": "rösten", "es": "asar", "tier": null, "weight": null, "source": "coin:food"}
 {"root": "vaner", "cls": "NOUN", "en": "waiter", "de": "Kellner", "es": "camarero", "tier": null, "weight": null, "source": "coin:food"}
+{"root": "vanam", "cls": "NOUN", "en": "vowel-first", "de": "Vokal-erste", "es": "vocal-primera", "tier": null, "weight": null, "source": "coin:core"}
+{"root": "venam", "cls": "NOUN", "en": "vowel-second", "de": "Vokal-zweite", "es": "vocal-segunda", "tier": null, "weight": null, "source": "coin:core"}
+{"root": "vinam", "cls": "NOUN", "en": "vowel-third", "de": "Vokal-dritte", "es": "vocal-tercera", "tier": null, "weight": null, "source": "coin:core"}
+{"root": "vonam", "cls": "NOUN", "en": "vowel-fourth", "de": "Vokal-vierte", "es": "vocal-cuarta", "tier": null, "weight": null, "source": "coin:core"}
+{"root": "vunam", "cls": "NOUN", "en": "vowel-fifth", "de": "Vokal-fünfte", "es": "vocal-quinta", "tier": null, "weight": null, "source": "coin:core"}

@@ -34,36 +34,78 @@ IPA = _load_lexicon()
 _KOKORO_PIPELINE = None
 _KOKORO_LOCK = threading.Lock()
 
+TOKEN = re.compile(r"[A-Za-zÀ-ÿ]+(?:-[A-Za-zÀ-ÿ0-9]+)?|[0-9]+|[^\w\s]")
+WORD = re.compile(r"[A-Za-zÀ-ÿ0-9]+(?:-[A-Za-zÀ-ÿ0-9]+)?")
+
+def _word_phonemes(token: str) -> str:
+    """Render one Talema word to IPA, using the lexicon where present."""
+    key = token.lower()
+    if key in IPA:
+        return IPA[key]
+    if re.fullmatch(r"[A-Za-zÀ-ÿ]+", token):
+        # Talema's ordinary roots are simple CV spellings and stress their
+        # first vowel. This fallback is intentionally transparent.
+        chars = token.lower().replace("c", "k").replace("j", "y")
+        chars = chars.replace("x", "ks").replace("q", "k")
+        first_vowel = next((i for i, c in enumerate(chars) if c in "aeiou"), None)
+        if first_vowel is not None:
+            chars = ("ˈ" if first_vowel < len(chars.rstrip("aeiou")) else "") + chars
+        chars = chars.replace("r", "ɾ").replace("g", "ɡ")
+        return chars
+    if token.isdigit():
+        return token
+    return token
+
+def tokens(text: str) -> list[str]:
+    """Split a Talema sentence into word, number and punctuation tokens.
+
+    One tokenizer serves phonemization, the word list and the highlight spans, so the
+    subtitle can never disagree with what is actually spoken.
+    """
+    return TOKEN.findall(text)
+
+def is_word(token: str) -> bool:
+    """True for a token spoken as a word (letters/digits, optionally hyphenated)."""
+    return WORD.fullmatch(token) is not None
+
 def talema_to_ipa(text: str) -> str:
     """Convert Talema words using the checked-in IPA lexicon.
 
     Unknown words are rendered conservatively from their spelling so literal
     names and newly coined roots remain speakable. The explicit lexicon wins.
     """
-    tokens = re.findall(r"[A-Za-zÀ-ÿ]+(?:-[A-Za-zÀ-ÿ0-9]+)?|[0-9]+|[^\w\s]", text)
-    output: list[str] = []
-    for token in tokens:
-        key = token.lower()
-        if key in IPA:
-            output.append(IPA[key])
-            continue
-        if re.fullmatch(r"[A-Za-zÀ-ÿ]+", token):
-            # Talema's ordinary roots are simple CV spellings and stress their
-            # first vowel. This fallback is intentionally transparent.
-            chars = token.lower().replace("c", "k").replace("j", "y")
-            chars = chars.replace("x", "ks").replace("q", "k")
-            first_vowel = next((i for i, c in enumerate(chars) if c in "aeiou"), None)
-            if first_vowel is not None:
-                chars = ("ˈ" if first_vowel < len(chars.rstrip("aeiou")) else "") + chars
-            chars = chars.replace("r", "ɾ").replace("g", "ɡ")
-            output.append(chars)
-        elif token.isdigit():
-            output.append(token)
-        else:
-            output.append(token)
-    return " ".join(output)
+    return " ".join(_word_phonemes(token) for token in tokens(text))
 
-def _kokoro(phonemes: str):
+def talema_words(text: str) -> list[str]:
+    """The spoken word tokens, in order, excluding punctuation."""
+    return [token for token in tokens(text) if is_word(token)]
+
+def word_spans(token_list: list[str], vocab) -> list[tuple[int, int]]:
+    """Map each word token onto its span in the *vocab-filtered* phoneme stream.
+
+    The model only ever sees characters present in ``vocab``, so spans must be walked
+    token by token over that same filtered stream. Two things beyond a plain count
+    matter, and both shift every later word if missed:
+
+    * Digits and other unsupported symbols are dropped, so a word the model never
+      voices must not advance the cursor.
+    * ``talema_to_ipa`` joins tokens with a space, and **Kokoro's vocabulary contains
+      the space character**, so each gap is itself a phoneme the model receives. The
+      cursor has to step over it exactly as the model does.
+    """
+    spans: list[tuple[int, int]] = []
+    cursor = 0
+    gap = 1 if ' ' in vocab else 0
+    for index, token in enumerate(token_list):
+        if index:
+            cursor += gap
+        produced = sum(1 for char in _word_phonemes(token) if char in vocab)
+        if is_word(token):
+            spans.append((cursor, cursor + produced))
+        cursor += produced
+    return spans
+
+def _kokoro(phonemes: str, token_list: list[str] | None = None):
     global _KOKORO_PIPELINE
     from scipy.io import wavfile  # type: ignore
 
@@ -85,18 +127,24 @@ def _kokoro(phonemes: str):
         voice = os.getenv("TALEMA_KOKORO_VOICE", "if_sara")
         result = next(pipeline.generate_from_tokens(tokens=phonemes, voice=voice, speed=0.92))
         samples = result.audio.cpu().numpy()
-        phones = [p for p in phonemes if p in pipeline.model.vocab]
+        vocab = pipeline.model.vocab
+        phones = [p for p in phonemes if p in vocab]
         durations = result.pred_dur.tolist()
+        spans = word_spans(token_list, vocab) if token_list else []
     stream = io.BytesIO()
     wavfile.write(stream, 24000, samples)
-    return stream.getvalue(), cues_from_durations(phones, durations, len(samples) / 24000)
+    cues, word_cues = cues_from_durations(phones, durations, len(samples) / 24000, spans)
+    return stream.getvalue(), cues, word_cues
 
 
-def cues_from_durations(phones, durations, duration):
+def cues_from_durations(phones, durations, duration, spans=None):
+    """Per-phoneme mouth cues and, when word spans are given, per-word highlight cues.
+
+    Model durations are 40 Hz frames with start/end padding. They are normalized to
+    the actual waveform length so cues never drift past the audio.
+    """
     if len(durations) != len(phones) + 2:
         raise RuntimeError("Kokoro timing does not match phonemes")
-    # Model durations are 40 Hz frames, including start/end padding.
-    # Normalize to the actual generated waveform length to avoid end drift.
     scale = duration / sum(durations)
     cursor = durations[0] * scale
     cues = []
@@ -108,7 +156,32 @@ def cues_from_durations(phones, durations, duration):
                  else 'small')
         cues.append({'start': cursor, 'end': end, 'shape': shape})
         cursor = end
-    return cues
+    word_cues: list[dict[str, float]] = []
+    if spans:
+        word_cues = _spans_to_word_cues(spans, cues)
+    return cues, word_cues
+
+
+def _spans_to_word_cues(spans, phoneme_cues: list[dict]) -> list[dict]:
+    """Turn (start, end) phoneme indices into per-word time ranges.
+
+    A word the model did not voice (every character fell outside the vocabulary) gets a
+    zero-width cue where it would have begun, so the subtitle still advances in step.
+    """
+    if not phoneme_cues:
+        return [{'start': 0.0, 'end': 0.0} for _ in spans]
+    last = len(phoneme_cues) - 1
+    word_cues: list[dict] = []
+    for start, end in spans:
+        if end <= start:
+            at = phoneme_cues[min(max(start, 0), last)]['start']
+            word_cues.append({'start': at, 'end': at})
+        else:
+            first = min(max(start, 0), last)
+            stop = min(max(end, start + 1), len(phoneme_cues)) - 1
+            word_cues.append({'start': phoneme_cues[first]['start'],
+                              'end': phoneme_cues[stop]['end']})
+    return word_cues
 
 
 def _wav_bytes_from_kokoro(phonemes):
@@ -119,8 +192,11 @@ def utterance(text):
     if os.getenv('TALEMA_TTS', 'kokoro').lower() != 'kokoro':
         raise ValueError('The animated character currently requires Kokoro timing')
     phonemes = talema_to_ipa(text)
-    audio, cues = _kokoro(phonemes)
+    token_list = tokens(text)
+    audio, cues, word_cues = _kokoro(phonemes, token_list)
     return {'audio': base64.b64encode(audio).decode('ascii'), 'cues': cues,
+            'words': [token for token in token_list if is_word(token)],
+            'word_cues': word_cues,
             'provider': 'kokoro', 'voice': os.getenv('TALEMA_KOKORO_VOICE', 'if_sara')}
 
 def _wav_bytes_from_espeak(phonemes: str) -> bytes:

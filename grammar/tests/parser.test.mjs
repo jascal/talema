@@ -48,7 +48,7 @@ test('all standard exported sentences reconstruct their authored tree shape', ()
     assert.deepEqual(result.sentences[0].tokens.map(t => t.head), sourceParents(row.tree), row.id);
     count++;
   }
-  assert.equal(count, 1560);
+  assert.equal(count, 1637);
 });
 
 test('arity, offsets, relators, loans, and multiple sentences', () => {

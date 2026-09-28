@@ -16,13 +16,18 @@ select,input,button { border:1px solid var(--line); border-radius:10px; padding:
 button { cursor:pointer; background:var(--accent); color:#10131b; border-color:transparent; font-weight:650; }
 button.secondary,.examples button { background:transparent; color:var(--ink); border-color:var(--line); }
 .conversation { min-height:300px; display:grid; gap:12px; margin-bottom:16px; }
-.bubble { max-width:85%; padding:15px 17px; border-radius:16px; border:1px solid var(--line); background:var(--panel); }
+.empty-hint { color:var(--muted); font-size:14px; margin:0; padding:12px 14px; border:1px dashed var(--line); border-radius:12px; background:#ffffff04; }
+.conversation .empty-hint:not(:only-child) { display:none; }
+.bubble { max-width:85%; padding:15px 17px; border-radius:16px; border:1px solid var(--line); background:var(--panel); position:relative; }
 .bubble.user { justify-self:end; border-color:#55617b; }
 .bubble .talema { font-size:1.1rem; color:var(--accent); margin-bottom:8px; }
 .bubble .caption { color:var(--muted); }
 .bubble small { display:block; color:#68748c; margin-top:8px; }
+.bubble button.replay { position:absolute; top:10px; right:10px; background:transparent; color:var(--muted); border:1px solid var(--line); padding:4px 10px; font-size:12px; border-radius:8px; font-weight:500; cursor:pointer; }
+.bubble button.replay:hover { color:var(--accent); border-color:var(--accent); }
 .composer input { flex:1; min-width:220px; }
 .status { color:var(--muted); min-height:24px; }
+kbd { font-family:ui-monospace,monospace; font-size:11px; padding:1px 6px; border:1px solid var(--line); border-radius:5px; background:#181d28; color:var(--ink); }
 #localAudio { width:100%; margin:4px 0 12px; }
 .examples { margin-top:16px; }
 .examples[hidden] { display:none; }
@@ -39,5 +44,6 @@ button.secondary,.examples button { background:transparent; color:var(--ink); bo
 #characterState { color:var(--muted); letter-spacing:0; margin-left:12px; }
 .subtitles { position:absolute; bottom:0; left:0; right:0; padding:35px 24px 16px; text-align:center; background:linear-gradient(transparent,#10131be8); }
 #liveTalema { color:var(--accent); font-size:19px; }
+#liveTalema .word { transition:color .15s, text-shadow .15s, background-color .15s; padding:1px 2px; border-radius:4px; }
+#liveTalema .word.active { color:#10131b; background:var(--accent); box-shadow:0 0 14px #8ee5c066; }
 #liveCaption { color:var(--ink); font-size:15px; }
-.conversation:empty { min-height:0; }

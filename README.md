@@ -62,8 +62,8 @@ and X-bar levels add nothing (see `docs/UNIVERSAL_GRAMMAR.md` in the source repo
 |---|---|
 | `books/BUKE_DE_LORE_FIRA.md` | the core book, about 89k tokens: grammar, first words, conventions, tales, agent speech, how the language grows, songs, sayings, the book of roots |
 | `books/volumes/*.md` | field volumes, 2–4k tokens each: `digital`, `mathematics`, `logic`, `physics`, `philosophy`, `morality` |
-| `data/sentences.jsonl` | every sentence of every book (1,561), with its tree and translations |
-| `data/lexicon.jsonl` | every root (6,086): class, English / German / Spanish source words, tier, weight, origin |
+| `data/sentences.jsonl` | every sentence of every book (1,638), with its tree and translations |
+| `data/lexicon.jsonl` | every root (6,113): class, English / German / Spanish source words, tier, weight, origin |
 | `source/` | the books' sources: each sentence written as a tree of concepts (`.tl`), plus the lexicon TSVs |
 | `speech/` | a kit for speaking Talema: W3C pronunciation lexicons (IPA; Spanish, Italian, English respellings), voice guidance, a listening test |
 

@@ -33,7 +33,9 @@
       <button id="mic" class="secondary" type="button">🎙 Speak</button>
     </section>
 
-    <section id="conversation" class="conversation" aria-live="polite"></section>
+    <section id="conversation" class="conversation" aria-live="polite">
+      <p class="empty-hint">No conversation yet. Press <b>Start a lesson</b> to hear a greeting, or <b>Test voice</b> to check local speech. Type a Talema sentence to send.</p>
+    </section>
 
     <form id="composer" class="composer">
       <input id="message" autocomplete="off" placeholder="Say a Talema sentence, for example: bi fura pe si tova tova ." required>
@@ -42,7 +44,7 @@
     <p id="status" class="status">Ready. Try one of the examples below.</p>
     <audio id="localAudio" controls preload="none" aria-label="Talema local voice"></audio>
     <section id="suggestions" class="examples" aria-label="Talema conversation suggestions" hidden>
-      <p>Continue in Talema</p>
+      <p>Continue in Talema · press <kbd>Esc</kbd> to stop</p>
       <div id="suggestionButtons"></div>
     </section>
   </main>
