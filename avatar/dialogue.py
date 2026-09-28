@@ -403,24 +403,13 @@ def caption_adds_content(caption, talema):
 
 # The most reliable fidelity invariant in this corpus: all 1,553 published captions have
 # exactly as many sentences as the Talema they translate, in every language, and none has
-# fewer. The tutor's standing habit is the opposite — it says two sentences in Talema
-# and then elaborates the English, adding a clause the speech never contained ("Hi.
-# What topic do you want?" becoming "Hello! You can greet me with 'hello.' Which
-# topic would you like to explore?"). Every caption that used to break this was a
-# counter artifact or one bad machine translation, all now fixed below.
+# fewer, save for the two lines the book itself writes as a restatement. The tutor's
+# standing habit is the opposite — it says two sentences in Talema and then elaborates the
+# English, adding a clause the speech never contained ("Hi. What topic do you want?"
+# becoming "Hello! You can greet me with 'hello.' Which topic would you like to explore?").
+# Every caption that used to break this was a counter artifact or one bad machine
+# translation, all now fixed below.
 CLAIM_MARKER = re.compile(r'^\s*(?:Proved|Seen|Open)\s*:\s*')  # the book's bove / sere / pefe marks
-# The book offers one utterance two or more ways: "I see a dog / dogs.",
-# "Please sleep. / Sleep!" Machine translation renders the book's slash as a spaced dash,
-# so the translated captions carry " - " instead. A spaced dash is ordinary punctuation as
-# well, and cutting the caption at one lets it smuggle a sentence past this check:
-# "Welcome - practice now. Say hello." is two sentences, and reading the dash as an
-# alternative reported one. Nothing here can tell a restatement from a fresh sentence by
-# shape alone, so the rule is built not to guess but to bound the damage: a dash is only an
-# alternative when it follows a *finished* sentence and everything after it is a single
-# short sentence, and then that one sentence is dropped rather than counted. A dash whose
-# tail holds a second sentence is never cut, so no added sentence can hide there.
-ALTERNATIVE = re.compile(r'\s+(?:/|-)\s+')
-MAX_ALTERNATIVE_WORDS = 4
 QUOTED = re.compile(r'"[^"]*"|“[^”]*”|„[^“]*“|«[^»]*»')   # a period inside a quote is not a new sentence
 # A period is a full stop even straight after a number ("The answer is 4. Try again."),
 # so it is exempt only between two digits, where it is a decimal point ("0.7", "3.14").
@@ -444,48 +433,25 @@ def _unquote(text):
         return f' {QUOTED_TEXT}' + ('.' if ends_sentence else '')
     return QUOTED.sub(repl, text)
 
-def _is_one_sentence(text):
-    """True when this fragment is a single sentence that ends in punctuation."""
-    text = text.strip()
-    if not text or text[-1:] not in '.!?':
-        return False
-    return len([part for part in BOUNDARY.split(text) if part.strip()]) == 1
-
-# A restatement adds no content, so the one signal here that carries meaning is that
-# every content word of the alternative already occurs in the sentence it restates.
-# "Please sleep. / Sleep!" introduces nothing and is one utterance; "Welcome. - Practice
-# now." introduces "practice" and is two. Stems are compared by their first four letters
-# because the shared word is inflected in the translated captions ("Ich sehe einen Hund /
-# Hunde.", "duerme / duerme"). Words shorter than four letters are skipped so a shared
-# article cannot pass for content. This is a subset test, not an overlap one, so an
-# alternative that introduces even one new content word is counted as the sentence it is.
-def _stems(text):
-    return {word[:4] for word in re.findall(r'[^\W\d_]{4,}', text.lower(), re.UNICODE)}
-
-def _first_alternative(text):
-    """The utterance when the caption offers it again another way, else the whole text.
-
-    A side is folded into the first only when all three hold: what precedes the dash is a
-    finished sentence, the side is a single short sentence, and every content word in it
-    already occurs in the first. Failing any one, the side is counted as the sentence it
-    appears to be — so "Welcome. - Practice now. - Say hello." is three, not one.
-    """
-    sides = ALTERNATIVE.split(text)
-    if len(sides) == 1 or not sides[0].rstrip().endswith(('.', '!', '?')):
-        return text
-    spoken = _stems(sides[0])
-    for side in sides[1:]:
-        if (len(side.split()) > MAX_ALTERNATIVE_WORDS or not _is_one_sentence(side)
-                or not _stems(side) <= spoken):
-            return text
-    return sides[0]
-
+# Nothing here tries to recognise a restated utterance, and that is deliberate. The book
+# does write one utterance two ways — "Please sleep. / Sleep!", which machine translation
+# renders "Por favor, duerme. - ¡Duerme!" — and folding the second phrasing into the first
+# is what four successive attempts tried to do. Each was defeated by a caption that reads
+# as a restatement and is not one:
+#
+#   "Welcome - practice now. Say hello."   two sentences, folded to one
+#   "Welcome. - Practice now."             two sentences, folded to one
+#   "Sleep. - Do not sleep."               every content word shared, and the opposite
+#
+# The last one is why no word test can work: "Do not sleep." repeats every content word
+# of "Sleep." and negates it. Telling the two apart needs meaning, and this is a
+# validator, not a semantic analyser. So the counter counts every sentence it is handed.
+# The two authored restatements in the book are named in the parity test instead, where
+# they stay visible and can be checked by hand, rather than hidden inside a shape rule.
 def count_sentences(text):
-    # The first alternative is the sentence; the rest is a gloss of it, not a second one.
-    text = _first_alternative(CLAIM_MARKER.sub('', text or ''))
     # Shield decimals so their point is not read as a full stop, then keep the quote
     # placeholders countable as the words they stand for.
-    text = DECIMAL.sub(QUOTED_TEXT, _unquote(text))
+    text = DECIMAL.sub(QUOTED_TEXT, _unquote(CLAIM_MARKER.sub('', text or '')))
     return sum(1 for part in BOUNDARY.split(text) if part.strip())
 
 def caption_adds_a_sentence(caption, talema):
