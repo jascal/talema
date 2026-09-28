@@ -1,0 +1,51 @@
+// Normative inverse of lm-sae/dl/conlang/linearize.dl's R2 (head-first order)
+// and R3 (each word's final vowel numeral is its number of children).
+// Input arities are decoded from the written words before entering Souffle.
+// A sentence is valid when its running open-slot count stays positive until
+// the last token and reaches zero there. The first token is the root.
+
+.decl word(s:number, i:number, arity:number)
+.input word(IO=file, filename="word.facts")
+.decl form(s:number, i:number, root:symbol, cls:symbol, literal:number)
+.input form(IO=file, filename="form.facts")
+
+.decl balance(s:number, i:number, slots:number)
+balance(s, 0, 1) :- word(s, 1, _).
+balance(s, i, before + arity - 1) :- word(s, i, arity), balance(s, i - 1, before).
+
+.decl last(s:number, i:number)
+last(s, n) :- word(s, _, _), n = max i : word(s, i, _).
+
+.decl invalid(s:number, reason:symbol)
+.output invalid
+invalid(s, "early_complete") :- balance(s, i, 0), last(s, n), i < n.
+invalid(s, "negative_slots") :- balance(s, _, slots), slots < 0.
+invalid(s, "incomplete") :- last(s, n), balance(s, n, slots), slots != 0.
+
+// A subtree finishes at the first point whose balance is one below its
+// balance before the head. This works even when sibling subtrees nest deeply.
+.decl subtree_end(s:number, head:number, end:number)
+subtree_end(s, head, end) :- word(s, head, _), balance(s, head - 1, before),
+    target = before - 1, end = min j : { balance(s, j, target), j >= head }.
+
+// The parent is the nearest earlier head whose subtree still contains child.
+.decl parent(s:number, child:number, head:number)
+.output parent
+parent(s, child, head) :- word(s, child, _), child > 1,
+    head = max h : { subtree_end(s, h, end), h < child, end >= child }, !invalid(s, _).
+
+// R1: the overt relator is retained as a node. Its kind can be read from the
+// dictionary; bare dependents have no inferred semantic relation. A quoted
+// relator or a standalone dictionary mention is not an argument link.
+.decl explicit_relation(s:number, i:number, kind:symbol)
+explicit_relation(s, i, "subject relator") :- form(s, i, "p", _, 0), word(s, i, 1), i > 1.
+explicit_relation(s, i, "object relator") :- form(s, i, "t", _, 0), word(s, i, 1), i > 1.
+explicit_relation(s, i, "recipient relator") :- form(s, i, "pap", _, 0), word(s, i, 1), i > 1.
+explicit_relation(s, i, "relator") :- form(s, i, _, "ADP", 0), i > 1.
+explicit_relation(s, i, "relator") :- form(s, i, _, "SCONJ", 0), i > 1.
+
+.decl relation(s:number, i:number, kind:symbol)
+.output relation
+relation(s, 1, "root") :- word(s, 1, _), !invalid(s, _).
+relation(s, i, kind) :- explicit_relation(s, i, kind), !invalid(s, _).
+relation(s, i, "dependent") :- word(s, i, _), i > 1, !explicit_relation(s, i, _), !invalid(s, _).
