@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import re
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -185,6 +186,49 @@ OPENING = ('Begin a beginner lesson. Greet the learner briefly in Talema, introd
            'phrase or idea, then ask which topic they would like to explore. Give them a few natural '
            'Talema replies they could choose from.')
 
+RATE_LIMIT_WAIT = 30   # seconds: wait out a short rate limit once instead of failing the turn
+
+def rate_limit_wait(exc, message):
+    """Seconds OpenAI asks us to wait, from Retry-After or the message ('try again in 14.266s'), else None."""
+    header = exc.headers.get('Retry-After') if exc.headers else None
+    try:
+        return float(header)
+    except (TypeError, ValueError):
+        found = re.search(r'try again in ([\d.]+)\s*s', message)
+        return float(found[1]) if found else None
+
+def post(payload):
+    """POST one Responses request. Every turn carries ~98k book tokens, and a model's tokens-per-minute limit
+    counts them even when cached, so a short rate limit is waited out once before it is reported."""
+    for tries in range(2):
+        request = urllib.request.Request('https://api.openai.com/v1/responses',
+            data=json.dumps(payload).encode(), headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'], 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(request, timeout=120) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as exc:
+            try:
+                detail = json.loads(exc.read().decode('utf-8'))
+                detail = detail.get('error', {}) if isinstance(detail, dict) else {}
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                detail = {}
+            code = str(detail.get('code') or detail.get('type') or '')
+            message = str(detail.get('message') or '')[:300]
+            if exc.code == 429 and code in {'insufficient_quota', 'credit_balance_exhausted',
+                                            'organization_usage_limit_exceeded', 'organization_spend_limit_exceeded',
+                                            'project_spend_limit_exceeded'}:
+                raise RuntimeError(f'OpenAI API quota or spend limit reached ({code}). Check API billing and project limits. {message}') from None
+            if exc.code == 429:
+                seconds = rate_limit_wait(exc, message)
+                if tries == 0 and seconds is not None and seconds <= RATE_LIMIT_WAIT:
+                    time.sleep(seconds + 0.5)
+                    continue
+                wait = f' Retry after {seconds:g} seconds.' if seconds is not None else ' Wait briefly, then retry.'
+                raise RuntimeError(f'OpenAI API rate limit reached ({code or "HTTP 429"}).{wait} {message}') from None
+            raise RuntimeError(f'Model API returned HTTP {exc.code} ({code or "API error"}). Check model access and credentials. {message}') from None
+        except (urllib.error.URLError, TimeoutError):
+            raise RuntimeError('Model service unavailable or timed out; try again.') from None
+
 def reply(message, history, start=False):
     config = configuration()
     if not config['configured']:
@@ -208,30 +252,7 @@ def reply(message, history, start=False):
                    'text': {'format': {'type': 'json_schema', 'name': 'talema_turn', 'strict': True, 'schema': SCHEMA}}}
         if os.getenv('TALEMA_CACHE_RETENTION'):       # e.g. 24h: keep the cached books between sessions
             payload['prompt_cache_retention'] = os.environ['TALEMA_CACHE_RETENTION']
-        request = urllib.request.Request('https://api.openai.com/v1/responses',
-            data=json.dumps(payload).encode(), headers={'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'], 'Content-Type': 'application/json'})
-        try:
-            with urllib.request.urlopen(request, timeout=120) as response:
-                result = json.load(response)
-        except urllib.error.HTTPError as exc:
-            try:
-                detail = json.loads(exc.read().decode('utf-8'))
-                detail = detail.get('error', {}) if isinstance(detail, dict) else {}
-            except (UnicodeDecodeError, json.JSONDecodeError):
-                detail = {}
-            code = str(detail.get('code') or detail.get('type') or '')
-            message = str(detail.get('message') or '')[:300]
-            if exc.code == 429 and code in {'insufficient_quota', 'credit_balance_exhausted',
-                                            'organization_usage_limit_exceeded', 'organization_spend_limit_exceeded',
-                                            'project_spend_limit_exceeded'}:
-                raise RuntimeError(f'OpenAI API quota or spend limit reached ({code}). Check API billing and project limits. {message}') from None
-            if exc.code == 429:
-                retry_after = exc.headers.get('Retry-After') if exc.headers else None
-                wait = f' Retry after {retry_after} seconds.' if retry_after else ' Wait briefly, then retry.'
-                raise RuntimeError(f'OpenAI API rate limit reached ({code or "HTTP 429"}).{wait} {message}') from None
-            raise RuntimeError(f'Model API returned HTTP {exc.code} ({code or "API error"}). Check model access and credentials. {message}') from None
-        except (urllib.error.URLError, TimeoutError):
-            raise RuntimeError('Model service unavailable or timed out; try again.') from None
+        result = post(payload)
         try:
             if result.get('status') != 'completed':
                 details = result.get('incomplete_details') or {}

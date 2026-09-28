@@ -116,6 +116,24 @@ class AvatarTests(unittest.TestCase):
         self.assertIn('bare-root field',repair)
         self.assertIn('Do not repeat the invalid root',repair)
 
+    def test_short_rate_limit_is_waited_out_once(self):
+        import urllib.error
+        from email.message import Message
+        headers=Message(); headers['Retry-After']='2'
+        limited=urllib.error.HTTPError('u',429,'rate',headers,io.BytesIO(json.dumps({'error':{'code':'rate_limit_exceeded','message':'try again in 2s'}}).encode()))
+        tree={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
+              {'root':'s','children':[{'root':'tov','children':[]},{'root':'tov','children':[]}]}]}]}
+        data={'trees':[tree],'suggestions':sample_suggestions(tree),
+              'en':'Four is two plus two.','es':'Cuatro es dos más dos.','de':'Vier ist zwei plus zwei.',
+              'emotion':'warm','turn_move':'ask_topic'}
+        ok={'status':'completed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(data)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY':'test','TALEMA_MODEL':'test-model'}), \
+             patch('urllib.request.urlopen', side_effect=[limited, io.BytesIO(json.dumps(ok).encode())]), \
+             patch('time.sleep') as slept:
+            result=dialogue.reply('veloma', [])
+        slept.assert_called_once()
+        self.assertEqual(result['talema'],'bi fura pe si tova tova .')
+
     def test_rejects_history_role_injection(self):
         with patch.dict(os.environ, {'OPENAI_API_KEY':'test','TALEMA_MODEL':'test-model'}):
             with self.assertRaises(ValueError):

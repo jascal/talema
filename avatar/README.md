@@ -70,7 +70,14 @@ instead of minutes. Measured with GPT-5.4 Mini: first turn 97,759 input tokens, 
 97,759 cached (99.8%). Cached tokens are billed at the discounted cached-input rate and are faster. Each reply
 reports `usage.input_tokens` and `usage.cached_tokens`. The API is stateless, so the text still travels with each
 request; caching saves the reprocessing and most of the cost. Avoiding resending it would need `store: true`
-with `previous_response_id`, which keeps conversations on OpenAI's servers. It requests one to three nested sentence trees
+with `previous_response_id`, which keeps conversations on OpenAI's servers.
+
+**Models and rate limits.** The model is `TALEMA_MODEL`; reasoning effort is fixed at low. `gpt-5.4-mini`,
+`gpt-5.6-luna` and `gpt-6-luna` all accept the nested-tree schema, the cache key and 24h retention (tested live).
+A model's tokens-per-minute limit counts the ~98k book tokens on every turn even when they are cached: at the
+200,000 TPM limit this project saw for `gpt-6-luna`, that is about two turns a minute. A short rate limit
+(Retry-After up to 30 s) is waited out once before the turn fails; raise the limit or use a model with a higher
+one for faster conversation. It requests one to three nested sentence trees
 (each node a native root with its dependents nested inside it), plus translations and expression. Because the
 dependents are nested, the child count cannot be wrong: the server counts them, adds each ending, and validates
 the sentence; it allows one repair retry. Loans are intentionally excluded from generated
