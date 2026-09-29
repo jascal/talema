@@ -16,7 +16,13 @@ feelings or experiences alone. Cell E adds one sentence telling her the last vol
 There are three scripted conversations of eight learner turns each (after the tutor's opening), about different
 things and deliberately unlike the play's market, so the test measures generalisation and not remembered lines.
 
-    python avatar/experiments/conversation_ab.py run   [--base-ref REF] [--out results/ab2.json]
+By default the learner writes Talema, so the tutor must first read it. With --learner english the learner writes the
+same turns in English (and every cell's prompt gets one sentence saying so), which removes comprehension from the test:
+what is left is what she says back. It is the same switch as the app's "I write in" control (dialogue.reply's
+`language`), so the experiment tests exactly what the UI does.
+
+    python avatar/experiments/conversation_ab.py run   [--base-ref REF] [--out results/ab2.json] [--learner english]
+    python avatar/experiments/conversation_ab.py compare results/ab2.json results/ab3_english.json
     python avatar/experiments/conversation_ab.py judge results/ab2.json
     python avatar/experiments/conversation_ab.py show  results/ab2.json      (also reads ab2.judged.json)
 
@@ -175,20 +181,22 @@ def cells(base_ref: str) -> dict[str, dict]:
     return made
 
 
-def call(cell: dict, message: str, history: list[dict], start: bool) -> dict:
-    """One tutor turn with the cell's books, prompt and schema swapped in."""
+def call(cell: dict, message: str, history: list[dict], start: bool, language: str) -> dict:
+    """One tutor turn with the cell's books, prompt and schema swapped in. `language` is what the app's
+    "I write in" control sends, so the experiment and the UI share one code path."""
     saved = (dialogue.PERSONA, dialogue.BOOK, dialogue.CACHE_KEY, dialogue.SCHEMA)
     dialogue.PERSONA, dialogue.BOOK, dialogue.CACHE_KEY, dialogue.SCHEMA = (
         cell["persona"], cell["book"], cell["key"], cell["schema"])
     try:
-        return dialogue.reply(message, history, start)
+        return dialogue.reply(message, history, start, language)
     finally:
         dialogue.PERSONA, dialogue.BOOK, dialogue.CACHE_KEY, dialogue.SCHEMA = saved
 
 
-def run(base_ref: str, out: Path) -> None:
+def run(base_ref: str, out: Path, learner: str = "talema") -> None:
     convs = compile_conversations()
     made = cells(base_ref)
+    print("the learner writes:", learner)
     play = in_the_play()
     print("cells:")
     for name, c in made.items():
@@ -221,14 +229,14 @@ def run(base_ref: str, out: Path) -> None:
                     continue
                 start = rnd == 0
                 turn = None if start else conv["turns"][rnd - 1]
-                message = "" if start else turn["talema"]
-                record = {"conv": ci, "cell": name, "round": rnd, "learner": turn,
+                message = "" if start else turn["en" if learner == "english" else "talema"]
+                record = {"conv": ci, "cell": name, "round": rnd, "learner": turn, "language": learner,
                           "sent": "Begin a beginner lesson." if start else message}
                 for attempt in range(4):
                     counter["n"] = 0
                     began = time.time()
                     try:
-                        record["data"] = call(cell, message, history[(ci, name)][-24:], start)
+                        record["data"] = call(cell, message, history[(ci, name)][-24:], start, learner)
                         record.pop("error", None)
                         break
                     except RuntimeError as exc:
@@ -466,6 +474,32 @@ def show(path: Path) -> None:
     print(f"\ninput tokens over all tutor turns: {tin:,} ({cached:,} cached)")
 
 
+def measures(path: Path) -> dict[tuple, dict]:
+    """(conv, cell, round) -> mean judged fit and natural, from a results file and its .judged.json."""
+    judged = json.loads(path.with_suffix(".judged.json").read_text())
+    acc: dict[tuple, dict] = {}
+    for j in judged:
+        a = acc.setdefault((j["conv"], j["cell"], j["round"]), {"fit": [], "natural": []})
+        a["fit"].append(j["fit"]); a["natural"].append(j["natural"])
+    return {k: {m: sum(v) / len(v) for m, v in d.items()} for k, d in acc.items()}
+
+
+def compare(first: Path, second: Path) -> None:
+    """How much better is each cell in `second` than in `first`, on the same learner turns?"""
+    a, b = measures(first), measures(second)
+    print(f"second minus first, paired by conversation, cell and round ({first.name} -> {second.name})\n")
+    print(f"{'cell':<6}{'n':>4}{'fit':>26}{'natural':>26}")
+    for cell in sorted({k[1] for k in a} & {k[1] for k in b}):
+        keys = [k for k in a if k[1] == cell and k in b]
+        row = []
+        for metric in ("fit", "natural"):
+            diffs = [b[k][metric] - a[k][metric] for k in keys]
+            m, lo, hi = boot(diffs)
+            row.append(f"{m:+.2f} [{lo:+.2f}, {hi:+.2f}]" + (" *" if lo > 0 or hi < 0 else "  "))
+        print(f"{cell:<6}{len(keys):>4}{row[0]:>26}{row[1]:>26}")
+    print("\n(* = the interval excludes 0)")
+
+
 def transcript(path: Path, conv: int) -> None:
     results = [r for r in json.loads(path.read_text()) if r.get("conv", 0) == conv]
     names = sorted({r["cell"] for r in results})
@@ -490,20 +524,26 @@ if __name__ == "__main__":
     r = sub.add_parser("run")
     r.add_argument("--base-ref", default="main", help="git ref of the books without the play")
     r.add_argument("--out", type=Path, default=HERE / "results" / "ab2.json")
+    r.add_argument("--learner", choices=["talema", "english"], default="talema", help="the language the learner writes in")
     j = sub.add_parser("judge")
     j.add_argument("path", type=Path)
     j.add_argument("--passes", type=int, default=2)
     s = sub.add_parser("show")
     s.add_argument("path", type=Path)
+    c = sub.add_parser("compare")
+    c.add_argument("first", type=Path)
+    c.add_argument("second", type=Path)
     t = sub.add_parser("transcript")
     t.add_argument("path", type=Path)
     t.add_argument("conv", type=int)
     args = ap.parse_args()
     if args.cmd == "run":
-        run(args.base_ref, args.out)
+        run(args.base_ref, args.out, args.learner)
     elif args.cmd == "judge":
         judge(args.path, args.passes)
     elif args.cmd == "show":
         show(args.path)
+    elif args.cmd == "compare":
+        compare(args.first, args.second)
     else:
         transcript(args.path, args.conv)

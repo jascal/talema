@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from tts import available, synthesize, utterance
-from dialogue import reply, configuration
+from dialogue import reply, configuration, LEARNER_LANGUAGES
 
 PUBLIC = Path(__file__).resolve().parent / "public"
 CONTENT_TYPES = {
@@ -30,7 +30,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path == "/api/health":
-            body = json.dumps({"ok": True, "service": "talema-avatar", "tts": available(), "dialogue": configuration()}).encode()
+            body = json.dumps({"ok": True, "service": "talema-avatar", "tts": available(), "dialogue": configuration(),
+                               "input_languages": list(LEARNER_LANGUAGES)}).encode()
             self._send(200, body, "application/json")
             return
         asset = (PUBLIC / ("index.html" if path == "/" else path.lstrip("/"))).resolve()
@@ -68,7 +69,10 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(audio)
                 return
-            body = json.dumps(reply(talema, payload.get("history", []), payload.get("start") is True), ensure_ascii=False).encode("utf-8")
+            # `talema` is the learner's message: Talema by default, English when `language` is "english".
+            language = payload.get("language", "talema")
+            body = json.dumps(reply(talema, payload.get("history", []), payload.get("start") is True, language),
+                              ensure_ascii=False).encode("utf-8")
             self._send(200, body, "application/json; charset=utf-8")
         except (ValueError, json.JSONDecodeError, RuntimeError, ImportError) as exc:
             self._send(400, json.dumps({"error": str(exc)}).encode(), "application/json")

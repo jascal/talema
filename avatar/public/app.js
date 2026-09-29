@@ -9,6 +9,7 @@
   const inputEl = document.querySelector('#message');
   const statusEl = document.querySelector('#status');
   const languageEl = document.querySelector('#captionLanguage');
+  const inputLanguageEl = document.querySelector('#inputLanguage');
   const playerEl = document.querySelector('#localAudio');
   const suggestionsEl = document.querySelector('#suggestions');
   const suggestionButtonsEl = document.querySelector('#suggestionButtons');
@@ -43,6 +44,32 @@
 
   function selectedLanguage() { return languageEl.value; }
 
+  // The language the learner writes in. Talema is the real test: Luma has to read it. English takes reading
+  // out of it, so what is left is her answer; the same switch lets a person or an agent tell the two apart.
+  const PLACEHOLDER = {
+    talema: 'Say a Talema sentence, for example: bi fura pe si tova tova .',
+    english: 'Write in English; Luma answers in Talema.',
+  };
+  const HINT = { talema: 'Type any Talema sentence to send it.', english: 'Type in English and Luma will answer in Talema.' };
+  const INPUT_LANGUAGE_KEY = 'talema.inputLanguage';
+
+  function inputLanguage() { return inputLanguageEl.value; }
+
+  // What a suggestion sends: its Talema, or its English when the learner writes English.
+  function suggestionText(button) {
+    return inputLanguage() === 'english' ? (button.dataset.en || button.dataset.suggestion) : button.dataset.suggestion;
+  }
+
+  // The starter chips carry both texts; show the one that will be sent.
+  function labelStarterChips() {
+    const english = inputLanguage() === 'english';
+    document.querySelector('#hintWrite').textContent = HINT[inputLanguage()];
+    for (const chip of starterChipsEl.querySelectorAll('[data-suggestion]')) {
+      chip.firstChild.textContent = english ? chip.dataset.en : chip.dataset.suggestion;
+      chip.querySelector('span').textContent = english ? chip.dataset.suggestion : chip.dataset.en;
+    }
+  }
+
   function captionText(data, lang) { return (data && data[lang]) || ''; }
 
   function currentCaption(data) { return captionText(data, selectedLanguage()); }
@@ -57,13 +84,15 @@
       button.type = 'button';
       button.className = 'suggestion';
       button.dataset.suggestion = item.talema;
-      const talema = document.createElement('span');
-      talema.className = 'suggestion-talema';
-      talema.textContent = item.talema;
+      button.dataset.en = item.en || '';
+      const english = inputLanguage() === 'english';
+      const main = document.createElement('span');
+      main.className = 'suggestion-talema';
+      main.textContent = english ? (item.en || item.talema) : item.talema;
       const caption = document.createElement('span');
       caption.className = 'suggestion-caption';
-      caption.textContent = captionText(item, selectedLanguage());
-      button.append(talema, caption);
+      caption.textContent = english ? item.talema : captionText(item, selectedLanguage());
+      button.append(main, caption);
       suggestionButtonsEl.append(button);
     }
     suggestionsEl.hidden = suggestionButtonsEl.childElementCount === 0;
@@ -75,6 +104,7 @@
     const talema = document.createElement('div');
     talema.className = 'talema';
     talema.textContent = data.talema || '';
+    if (data.lang) talema.lang = data.lang;
     const caption = document.createElement('div');
     caption.className = 'caption';
     caption.textContent = currentCaption(data);
@@ -252,14 +282,14 @@
       conversationEl.replaceChildren();
       bubbles = [];
     } else {
-      renderBubble('user', { talema: text });
+      renderBubble('user', { talema: text, lang: inputLanguage() === 'english' ? 'en' : undefined });
     }
     window.character.state('thinking');
     setStatus(start ? 'Starting a fresh lesson…' : 'Luma is preparing a reply…');
     try {
       const data = await post(
         '/api/respond',
-        { talema: text, history: history.slice(-24), start },
+        { talema: text, history: history.slice(-24), start, language: inputLanguage() },
         signal,
       );
       if (turn !== generation) return;
@@ -322,14 +352,14 @@
 
   suggestionButtonsEl.addEventListener('click', event => {
     const button = event.target.closest('[data-suggestion]');
-    if (button) send(button.dataset.suggestion);
+    if (button) send(suggestionText(button));
   });
 
   // The empty state carries the same affordance as the running conversation, so the
   // two share one shape and one handler rather than teaching the page two patterns.
   starterChipsEl.addEventListener('click', event => {
     const button = event.target.closest('[data-suggestion]');
-    if (button) send(button.dataset.suggestion);
+    if (button) send(suggestionText(button));
   });
 
   conversationEl.addEventListener('click', event => {
@@ -345,6 +375,17 @@
       liveCaptionEl.textContent = currentCaption(JSON.parse(playerEl.dataset.caption));
     }
     showSuggestions(currentSuggestions);
+  });
+
+  inputLanguageEl.addEventListener('change', () => {
+    const language = inputLanguage();
+    inputEl.placeholder = PLACEHOLDER[language];
+    labelStarterChips();
+    showSuggestions(currentSuggestions);
+    try { localStorage.setItem(INPUT_LANGUAGE_KEY, language); } catch { /* the choice is just not remembered */ }
+    setStatus(language === 'english'
+      ? 'You write in English; Luma reads it and answers in Talema. This applies from your next message.'
+      : 'You write in Talema, and Luma has to read it. This applies from your next message.');
   });
 
   // Escape stops whatever is in flight, from anywhere on the page. The listener sits
@@ -368,14 +409,25 @@
     if (recognition) { recognition.stop(); return; }
     stop();
     recognition = new Recognition();
-    recognition.lang = 'it-IT';
+    // Talema has no recognizer; Italian is the nearest. English input can use a real one.
+    const english = inputLanguage() === 'english';
+    recognition.lang = english ? 'en-US' : 'it-IT';
     window.character.state('listening');
-    setStatus('Listening. Review the transcript before sending; recognition is not trained for Talema.');
+    setStatus(english ? 'Listening. Review the transcript before sending.'
+      : 'Listening. Review the transcript before sending; recognition is not trained for Talema.');
     recognition.onresult = e => { inputEl.value = e.results[0][0].transcript; inputEl.focus(); };
     recognition.onerror = () => { setStatus('Could not transcribe. Please type your message.'); };
     recognition.onend = () => { recognition = null; window.character.state('idle'); };
     recognition.start();
   });
+
+  // Restore the last choice of input language.
+  try {
+    const saved = localStorage.getItem(INPUT_LANGUAGE_KEY);
+    if (saved === 'talema' || saved === 'english') inputLanguageEl.value = saved;
+  } catch { /* storage may be blocked; the default is Talema */ }
+  inputEl.placeholder = PLACEHOLDER[inputLanguage()];
+  labelStarterChips();
 
   fetch('/api/health').then(r => r.json()).then(data => {
     setStatus(data.dialogue.configured

@@ -135,6 +135,23 @@ BOOK:\n"""
 # hashing the books alone would keep a key whose prefix no longer matches what is sent.
 CACHE_KEY = 'talema-tutor-' + hashlib.sha256((PERSONA + BOOK).encode('utf-8')).hexdigest()[:16]
 
+# The learner may write Talema (the default: Luma has to read it, which is the real test) or English (which takes
+# reading out of the test, so what is left is her answer). Only one sentence of the instructions changes.
+LEARNER_LANGUAGES = ('talema', 'english')
+ENGLISH_NOTE = ("Speak ONLY Talema, represented by the `trees` field. The learner writes to you in English: read it,\n"
+                "and answer only in Talema.\n")
+
+def persona_for(language):
+    """The tutor's instructions for a learner who writes `language`."""
+    if language not in LEARNER_LANGUAGES:
+        raise ValueError(f"language must be one of: {', '.join(LEARNER_LANGUAGES)}")
+    if language == 'talema':
+        return PERSONA
+    old = "Speak ONLY Talema, represented by the `trees` field.\n"
+    if PERSONA.count(old) != 1:
+        raise RuntimeError('The persona no longer has the sentence that the English note replaces.')
+    return PERSONA.replace(old, ENGLISH_NOTE)
+
 def configuration():
     model = os.getenv('TALEMA_MODEL', '')
     return {'configured': bool(model and os.getenv('OPENAI_API_KEY')), 'model': model}
@@ -504,7 +521,8 @@ def root_repair(issue):
         advice = ('This is a bare-root field, not a written-word field. ' + tail)
     return f'{issue}. {advice}'
 
-def reply(message, history, start=False):
+def reply(message, history, start=False, language='talema'):
+    persona = persona_for(language)        # also rejects an unknown language before anything is spent
     config = configuration()
     if not config['configured']:
         if start:
@@ -520,8 +538,8 @@ def reply(message, history, start=False):
     turns.append({'role': 'user', 'content': OPENING if start else message})
     for attempt in range(2):
         # instructions (persona + books) never vary, so they come first and are cached; only `input` changes.
-        payload = {'model': config['model'], 'store': False, 'instructions': PERSONA + BOOK,
-                   'prompt_cache_key': CACHE_KEY,
+        payload = {'model': config['model'], 'store': False, 'instructions': persona + BOOK,
+                   'prompt_cache_key': CACHE_KEY if language == 'talema' else CACHE_KEY + '-' + language,
                    'input': turns, 'max_output_tokens': 4000,
                    'reasoning': {'effort': 'low'},
                    'text': {'format': {'type': 'json_schema', 'name': 'talema_turn', 'strict': True, 'schema': SCHEMA}}}

@@ -43,6 +43,13 @@ its model/voice. Keep the existing eSpeak installation required by Kokoro's pipe
 ## Interaction
 
 - **Start a lesson** resets history and asks Luma to greet, demonstrate, and invite practice.
+- **I write in** (beside the message box) chooses the language you write to Luma in. *Talema* is the default and the
+  real test: she has to read what you write and answer. *English* takes reading out of it: she reads your English
+  and still answers only in Talema, so what you see is her answer alone. It is how to tell a stiff reply from a
+  misread one, and it is the same switch the experiment in `avatar/experiments/` uses, so what that measures is what
+  the app does. The choice is remembered by the browser, applies from your next message, and changes one sentence of
+  her instructions (`dialogue.persona_for`) and the cache key. Suggestion buttons and the starter chips show, and
+  send, English when you write English; the microphone then listens for English.
 - After each model reply, Luma offers two or three context-aware Talema utterances as buttons, each with a translation in the selected caption language. Clicking one sends that phrase as the learner's next turn; without model configuration, the offline greeting has no generated suggestions.
 - The opening asks which topic the learner wants. Later turns should stay with the learner's
   stated interest, answer their actual point, and ask a specific follow-up or offer a related
@@ -60,8 +67,8 @@ its model/voice. Keep the existing eSpeak installation required by Kokoro's pipe
   without re-asking the tutor.
 - After each reply the status line shows the model and voice, plus the prompt-cache
   hit ratio (`NN% cached (X/Y tokens)`) so the cost savings are visible.
-- Microphone input uses browser recognition with an Italian locale, which is not
-  trained on Talema. Review/edit its transcript and press Send. Browser recognition
+- Microphone input uses browser recognition: an Italian locale when you write Talema, which is not
+  trained on Talema, and an English one when you write English. Review/edit its transcript and press Send. Browser recognition
   may send audio to its vendor. Typing is the reliable input path today.
 
 ## Implementation and limits
@@ -158,7 +165,8 @@ receives, so a word the model does not voice (a digit, say) and the periods betw
 sentences do not push the highlight out of step.
 The short utterance limit keeps raw phonemes below Kokoro's 510-character limit.
 `character.js` renders the face locally, in the browser, without another avatar service or
-subscription. `/api/respond` accepts `{talema, history, start}`; `/api/utterance` accepts `{talema}`
+subscription. `/api/respond` accepts `{talema, history, start, language}` (`talema` is the learner's message, in Talema or, with
+`language: "english"`, in English; `/api/health` lists the `input_languages`); `/api/utterance` accepts `{talema}`
 and returns base64 WAV, cues, words and word cues, provider and voice. `/api/audio`
 retains raw WAV output. Agents can use the same JSON routes. `/api/health`
 distinguishes model configuration from TTS package availability; it does not prove
