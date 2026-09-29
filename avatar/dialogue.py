@@ -51,6 +51,39 @@ def vowel_name(vowel):
     if len(vowel) == 1 and vowel in 'aeiou':
         return GLOSS.get(f"vowel-{VOWEL_ORDER['aeiou'.index(vowel)]}")
     return None
+
+
+# The five vowel names used to sit in the persona, and she brought them up unprompted (about 3% of replies in the
+# experiments: "Hello." answered with "The first vowel is called vanam."). Taking them out altogether made questions
+# about a letter worse (a failure and more repairs in a probe), so they are given only when the learner has been
+# asking about letters. The note goes after the books, so the cached prefix (persona + books) is the same every turn.
+LETTER_WORDS = re.compile(r'\b(letters?|vowels?|consonants?|sounds?|alphabet|spell(?:ing|ed)?|pronounc\w*)\b', re.I)
+LETTER_ROOTS = ({GLOSS[w] for w in ('letter', 'vowel', 'consonant', 'sound', 'alphabet') if w in GLOSS}
+                | {r for r in (vowel_name(v) for v in 'aeiou') if r})
+
+def mentions_letters(text):
+    """Whether a learner's message, in English or in Talema, is about letters, vowels or sounds."""
+    if LETTER_WORDS.search(text):
+        return True
+    for word in text.lower().split():
+        found = re.fullmatch(r'(.*[^aeiou])([aeiou]+)', word.strip('.'))
+        if found and found[1] in LETTER_ROOTS:
+            return True
+    return False
+
+
+def asks_about_letters(message, history):
+    """The current message or either of the learner's last two: a follow-up about a letter still needs the names."""
+    earlier = [t['content'] for t in history if t['role'] == 'user'][-2:]
+    return any(mentions_letters(text) for text in [message, *earlier])
+
+
+def letter_note():
+    names = ', '.join(f"the {order} `{vowel_name(v)}`" for order, v in zip(VOWEL_ORDER, 'aeiou') if vowel_name(v))
+    return ('\n\nThe learner is asking about a letter or a sound. A written letter is not a root, so it can never be '
+            f'spoken: name the vowel with the word the book gives it: {names}. Put the letter in the caption, not in `root`.\n')
+
+
 FIELDS = ('en', 'es', 'de', 'emotion', 'turn_move')
 # A word is a node whose dependents are nested inside it, so the child count (and the ending the server derives
 # from it) follows from the structure: a model cannot miscount its way into an incomplete sentence.
@@ -108,12 +141,12 @@ never put a complete Talema word, an inflected form, or a phrase such as `buke d
 No root is ever a bare vowel. `a` `e` `i` `o` `u` are endings, not roots: each is the vowel that counts a
 word's dependents (a 0, e 1, i 2, o 3, u 4, ea 5, and so on). To say a word with four dependents, give a
 real root four children and let the server add the `u`; never write `u` itself as a root.
-A written letter is not a root either, so it can never be spoken. When the learner asks about a letter or
-a sound, name the vowel with the word the book gives it: the first vowel is `vanam`, the second `venam`,
-the third `vinam`, the fourth `vonam`, the fifth `vunam`. Put the letter in the caption, not in `root`.
+A written letter is not a root either, so it can never be spoken. Only when the learner asks about a letter
+or a sound, use the word the book gives that vowel (you are given the words then), and put the letter in the
+caption, not in `root`. Otherwise never bring up letters, vowels or their names.
 Nest every dependent inside its head, in the order you want them said. Relation words are nodes too:
 the subject particle `p` and object particle `t` each have exactly one child, the word they mark.
-Use only established roots. Example: `bi fura pe si tova tova .` ("Four is two and two") is
+Use only established roots. Example: `bi fura pe si tova tova .` is
 {"root":"b","children":[{"root":"fur","children":[]},{"root":"p","children":[{"root":"s","children":[
 {"root":"tov","children":[]},{"root":"tov","children":[]}]}]}]}.
 That example only shows the tree format: never say it, or any other example from these instructions, to the learner.
@@ -535,10 +568,11 @@ def reply(message, history, start=False, language='talema'):
         if not isinstance(item, dict) or item.get('role') not in ('user', 'assistant') or not isinstance(item.get('content'), str) or len(item['content']) > 2000:
             raise ValueError('Invalid conversation history')
         turns.append({'role': item['role'], 'content': item['content']})
+    note = '' if start or not asks_about_letters(message, turns) else letter_note()
     turns.append({'role': 'user', 'content': OPENING if start else message})
     for attempt in range(2):
         # instructions (persona + books) never vary, so they come first and are cached; only `input` changes.
-        payload = {'model': config['model'], 'store': False, 'instructions': persona + BOOK,
+        payload = {'model': config['model'], 'store': False, 'instructions': persona + BOOK + note,
                    'prompt_cache_key': CACHE_KEY if language == 'talema' else CACHE_KEY + '-' + language,
                    'input': turns, 'max_output_tokens': 4000,
                    'reasoning': {'effort': 'low'},

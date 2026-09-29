@@ -167,8 +167,51 @@ class AvatarTests(unittest.TestCase):
         self.assertIn('No root is ever a bare vowel', dialogue.PERSONA)
         self.assertIn('endings, not roots', dialogue.PERSONA)
         self.assertIn('A written letter is not a root either', dialogue.PERSONA)
+        # The five names used to be listed here, and she brought them up unprompted (3% of replies in the
+        # experiment: "Hello." answered with "The first vowel is called vanam."). They are appended after the
+        # books only when the learner asks about letters (test_letter_note_*), so the persona only says when.
         for root in ('vanam', 'venam', 'vinam', 'vonam', 'vunam'):
-            self.assertIn(f'`{root}`', dialogue.PERSONA)
+            self.assertNotIn(root, dialogue.PERSONA)
+        self.assertIn('Only when the learner asks about a letter', dialogue.PERSONA)
+        self.assertIn('Otherwise never bring up letters, vowels or their names', dialogue.PERSONA)
+        self.assertEqual([dialogue.vowel_name(v) for v in 'aeiou'], ['vanam', 'venam', 'vinam', 'vonam', 'vunam'])
+
+    def test_letter_questions_are_recognised_in_english_and_talema(self):
+        for text in ('What is the first vowel?', 'Please say the letter a.', 'How do I spell it?', 'Say a hard sound.',
+                     'kari vanama vokele fira .', 'lete ka vasa .'):
+            with self.subTest(text=text):
+                self.assertTrue(dialogue.mentions_letters(text))
+        for text in ('Hello.', 'I enjoy this book.', 'Why?', 'I do not understand this sentence.', 'vaha .'):
+            with self.subTest(text=text):
+                self.assertFalse(dialogue.mentions_letters(text))
+
+    def test_letter_note_follows_a_letter_question_for_two_more_turns(self):
+        history = [{'role': 'user', 'content': 'What is the first vowel?'}, {'role': 'assistant', 'content': 'vanama .'}]
+        self.assertTrue(dialogue.asks_about_letters('And the second?', history))
+        history += [{'role': 'user', 'content': 'And the second?'}, {'role': 'assistant', 'content': 'venama .'},
+                    {'role': 'user', 'content': 'Thanks.'}, {'role': 'assistant', 'content': 'pesa .'}]
+        self.assertFalse(dialogue.asks_about_letters('Tell me about the market.', history))
+
+    def test_letter_note_names_all_five_vowels(self):
+        note = dialogue.letter_note()
+        for root in ('vanam', 'venam', 'vinam', 'vonam', 'vunam'):
+            self.assertIn(root, note)
+        self.assertIn('not in `root`', note)
+
+    def test_the_note_is_sent_after_the_books_and_only_about_letters(self):
+        sent = []
+
+        def fake_post(payload):
+            sent.append(payload)
+            raise RuntimeError('stop here')
+        with patch.object(dialogue, 'post', fake_post):
+            for message in ('Hello.', 'What is the first vowel?'):
+                with self.assertRaises(RuntimeError):
+                    dialogue.reply(message, [])
+        plain, asked = (p['instructions'] for p in sent[:2])
+        self.assertEqual(plain, dialogue.PERSONA + dialogue.BOOK)
+        self.assertEqual(asked, dialogue.PERSONA + dialogue.BOOK + dialogue.letter_note())
+        self.assertEqual(sent[0]['prompt_cache_key'], sent[1]['prompt_cache_key'])
 
     def test_cache_key_covers_the_persona_and_the_books(self):
         # Both halves of the cached prefix are hashed, so editing either busts the key.
@@ -671,6 +714,9 @@ class AvatarTests(unittest.TestCase):
         # so the model cannot echo it as its opening utterance.
         self.assertIn('never say it', dialogue.PERSONA)
         self.assertIn('bi fura pe si tova tova', dialogue.PERSONA)
+        # its English gloss leaked once ("Four is two and two" to a learner who said "I enjoy this book"), so the persona
+        # shows the tree without saying what it means
+        self.assertNotIn('Four is two and two', dialogue.PERSONA)
         self.assertIn('example from these instructions', dialogue.PERSONA)
         # The OPENING must forbid echoing the example, ask for a say-back phrase,
         # and itself contain no concrete Talema sentence the tutor could parrot.
