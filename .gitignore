@@ -9,3 +9,6 @@ __pycache__/
 *.pyc
 node_modules/
 .wrangler/
+
+# full-frame image generations behind avatar/public/portrait/ (see avatar/tools/portrait.py)
+avatar/tools/raw/
