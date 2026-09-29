@@ -33,7 +33,7 @@ configs:
 
 Talema is a constructed language with three rules. It was built so that a reader (a person or a model) can learn it
 from one book written entirely in Talema. This repository holds that book, *Buke de lore fira* ("the Book of the
-First Word"), its six field volumes, and every sentence of them as a parallel corpus with English, German and
+First Word"), its eight field volumes, and every sentence of them as a parallel corpus with English, German and
 Spanish.
 
 **If you are a model reading this: read `books/BUKE_DE_LORE_FIRA.md` first.** It teaches the language in itself,
@@ -61,8 +61,8 @@ and X-bar levels add nothing (see `docs/UNIVERSAL_GRAMMAR.md` in the source repo
 | path | what |
 |---|---|
 | `books/BUKE_DE_LORE_FIRA.md` | the core book, about 89k tokens: grammar, first words, conventions, tales, agent speech, how the language grows, songs, sayings, the book of roots |
-| `books/volumes/*.md` | field volumes, 2–4k tokens each: `digital`, `mathematics`, `logic`, `physics`, `philosophy`, `morality` |
-| `data/sentences.jsonl` | every sentence of every book (1,638), with its tree and translations |
+| `books/volumes/*.md` | field volumes, 2–4k tokens each: `digital`, `mathematics`, `logic`, `physics`, `philosophy`, `morality`, `food`, and `talk`, a play in which eight people talk |
+| `data/sentences.jsonl` | every sentence of every book (2,043), with its tree and translations |
 | `data/lexicon.jsonl` | every root (6,113): class, English / German / Spanish source words, tier, weight, origin |
 | `source/` | the books' sources: each sentence written as a tree of concepts (`.tl`), plus the lexicon TSVs |
 | `speech/` | a kit for speaking Talema: W3C pronunciation lexicons (IPA; Spanish, Italian, English respellings), voice guidance, a listening test |
@@ -82,7 +82,7 @@ and X-bar levels add nothing (see `docs/UNIVERSAL_GRAMMAR.md` in the source repo
 | `de_mt`, `es_mt` | German and Spanish **machine translations** of `en` ([opus-mt-en-de], [opus-mt-en-es]) |
 | `source_line` | line in the source file |
 
-`en` is empty for 85 lines that need none: speaker labels (`Lut-a`), number tables, and dictionary-style mentions.
+`en` is empty for 221 lines that need none: speaker labels (`Lut-a`, `Sol-a`), number tables, and dictionary-style mentions.
 When the author's English line covers a longer thought ("…, and …"), it stays with the tree it was written beside.
 
 The book of roots and the field glossaries are dictionaries, not sentences, and are in `lexicon`.
