@@ -25,8 +25,34 @@ window.character = {
   }
 };
 
-const shapes = {rest:[19,2],closed:[21,1],round:[10,15],wide:[26,8],open:[20,20],teeth:[22,5],small:[16,8]};
-let mouth = [19, 2];
+// Half-width, aperture, rounding, upper teeth, tongue, smile. All features share
+// this pose, so a rounded vowel cannot leave teeth or a smile outside the lips.
+const shapes = {
+  rest:   [21, 0, 0, 0, 0, 0.65],
+  closed: [20, 0, 0, 0, 0, 0],
+  round:  [10, 17, 1, 0.05, 0.1, 0],
+  wide:   [25, 9, 0, 0.85, 0.15, 0.12],
+  open:   [21, 26, 0.15, 0.55, 0.65, 0],
+  teeth:  [21, 4, 0, 1, 0, 0],
+  small:  [18, 8, 0.1, 0.35, 0.2, 0],
+};
+let mouth = [...shapes.rest];
+
+function mouthTarget(time, speaking) {
+  if (!speaking) return shapes.rest;
+  const index = cues.findIndex(c => time >= c.start && time < c.end);
+  if (index < 0) return shapes.rest;
+  const cue = cues[index], next = cues[index + 1];
+  const current = shapes[cue.shape] || shapes.rest;
+  // Prepare the next vowel near a boundary, but preserve the complete lip seal
+  // for p/b/m. Pauses also retain a closed, relaxed mouth.
+  if (!next || cue.shape === 'closed' || next.shape === 'closed' ||
+      cue.shape === 'rest' || next.shape === 'rest' || next.start - cue.end > 0.01) return current;
+  const window = Math.min(0.035, (cue.end - cue.start) * 0.3);
+  const mix = window > 0 ? Math.max(0, 1 - (cue.end - time) / window) * 0.5 : 0;
+  const upcoming = shapes[next.shape] || shapes.rest;
+  return current.map((v, i) => v + (upcoming[i] - v) * mix);
+}
 
 // ── easing ────────────────────────────────────────────────────────────────────
 // Frame-rate independent approach: value += (target - value) * (1 - e^(-rate*dt)).
@@ -93,7 +119,8 @@ function buildEnergyEnvelope() {
     const at = i * ENERGY_STEP;
     let near = 0;
     for (const cue of cues) {
-      const distance = at < cue.start ? cue.start - at : at - cue.end;
+      if (cue.shape === 'rest') continue;
+      const distance = Math.max(0, cue.start - at, at - cue.end);
       if (distance < ENERGY_WINDOW) near += 1 - distance / ENERGY_WINDOW;
     }
     raw[i] = near;
@@ -125,12 +152,14 @@ function draw(ms) {
   last = t;
   const speaking = !player.paused && !player.ended;
   const now = speaking ? player.currentTime : -1;
-  const cue = speaking ? cues.find(c => now >= c.start && now < c.end) : null;
-  const target = shapes[cue && cue.shape || 'rest'];
-  mouth = mouth.map((v, i) => approach(v, target[i], 26, dt));
+  const target = mouthTarget(now, speaking);
+  mouth = mouth.map((v, i) => approach(v, target[i], target[1] === 0 ? 48 : 30, dt));
+  // A short plosive must reach contact during its cue; easing alone can leave
+  // the lips open for the entire p/b/m when it follows a wide vowel.
+  if (target === shapes.closed) mouth[1] = 0;
   const energy = speaking ? approach(lookahead.energy, energyAt(now), 14, dt) : approach(lookahead.energy, 0, 9, dt);
   lookahead.energy = energy;
-  const openness = Math.max(0, Math.min(1, (mouth[1] - 8) / 12));
+  const openness = Math.max(0, Math.min(1, mouth[1] / 26));
 
   // Settle toward this state's pose.
   const want = POSES[state] || POSES.idle;
@@ -150,6 +179,7 @@ function draw(ms) {
   ctx.save();
   ctx.translate(pose.x + sway * 0.5, pose.y + breath + talkBob);
   drawJersey(t, breath, energy);
+  drawNecklace(t, energy);
   ctx.restore();
 
   // The head turns on a pivot at the neck, so the hair and face move as one and the
@@ -266,9 +296,27 @@ function drawJersey(t, breath, energy) {
     ctx.closePath();
     ctx.fill();
   }
-  ctx.fillStyle = '#9b774d';
-  ctx.fillRect(293, 303, 54, 76);
-  ellipse(320, 354, 29, 20, '#9b774d');
+  // A tapered neck with a small under-chin shadow, returning to the face's
+  // skin tone below the jaw. The curved base meets the shirt without a square edge.
+  const skin = ctx.createLinearGradient(0, 330, 0, 375);
+  skin.addColorStop(0, '#b68b65');
+  skin.addColorStop(0.45, '#cda173');
+  skin.addColorStop(1, '#d2a77c');
+  ctx.fillStyle = skin;
+  ctx.beginPath();
+  ctx.moveTo(286, 315);
+  ctx.lineTo(354, 315);
+  ctx.bezierCurveTo(354, 340, 347, 354, 357, 370);
+  ctx.quadraticCurveTo(320, 386, 283, 370);
+  ctx.bezierCurveTo(293, 354, 286, 340, 286, 315);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#ffd1e2';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(283, 371);
+  ctx.quadraticCurveTo(320, 388, 357, 371);
+  ctx.stroke();
 }
 
 // ── hair ──────────────────────────────────────────────────────────────────────
@@ -280,7 +328,20 @@ function drawHair(t, energy) {
   hairSway = approach(hairSway, pose.x * 0.5, 6, 1 / 60);
   const drift = Math.sin(t * 0.9) * 1.4 + hairSway;
 
-  ellipse(320 + drift * 0.2, 225, 108, 170, '#a87328');
+  // The lower hair turns outward behind the jaw and finishes above the collar.
+  // Keep the throat clear so these sections read as hair, not straps or a beard.
+  ctx.fillStyle = '#b58132';
+  ctx.beginPath();
+  ctx.moveTo(320, 55);
+  ctx.bezierCurveTo(432, 55, 448, 270, 413, 324);
+  ctx.bezierCurveTo(407, 342, 384, 359, 365, 351);
+  ctx.quadraticCurveTo(383, 333, 369, 308);
+  ctx.lineTo(271, 308);
+  ctx.quadraticCurveTo(258, 332, 274, 348);
+  ctx.bezierCurveTo(254, 356, 232, 339, 226, 321);
+  ctx.bezierCurveTo(194, 266, 208, 55, 320, 55);
+  ctx.closePath();
+  ctx.fill();
   // Curls read as hair rather than as a row of balls when they overlap into one mass,
   // so the lobes are drawn wide and low-contrast with only a soft sheen on each.
   const curls = [
@@ -294,27 +355,34 @@ function drawHair(t, energy) {
     ellipse(x - 3 + drift * 0.25, y - 4, r * 0.46, r * 0.38, '#efc65c');
   }
   for (const side of [-1, 1]) {
-    ctx.fillStyle = '#c68a30';
+    const offset = drift * 0.5 + hairLag;
+    const tipY = side === -1 ? 344 : 350;
+    ctx.fillStyle = '#d6a03c';
     ctx.beginPath();
-    ctx.moveTo(320 + side * 78 + drift * 0.2, 137);
-    ctx.bezierCurveTo(320 + side * 111 + drift, 187, 320 + side * 99 + drift, 226, 320 + side * 91 + drift, 260);
-    ctx.bezierCurveTo(320 + side * 82 + drift, 299, 320 + side * 103 + drift, 332, 320 + side * 87 + drift, 366);
-    ctx.bezierCurveTo(320 + side * 81 + drift, 382, 320 + side * 69 + drift, 391, 320 + side * 62 + drift, 393);
-    ctx.bezierCurveTo(320 + side * 71 + drift, 367, 320 + side * 59 + drift, 350, 320 + side * 66 + drift, 324);
-    ctx.bezierCurveTo(320 + side * 49 + drift, 283, 320 + side * 57 + drift, 243, 320 + side * 57 + drift, 205);
+    ctx.moveTo(320 + side * 78 + offset, 137);
+    ctx.bezierCurveTo(320 + side * 110 + offset, 185,
+      320 + side * 103 + offset, 231, 320 + side * 96 + offset, 267);
+    ctx.bezierCurveTo(320 + side * 87 + offset, 305,
+      320 + side * 96 + offset, 326, 320 + side * 61 + offset, tipY);
+    ctx.bezierCurveTo(320 + side * 76 + offset, 323,
+      320 + side * 65 + offset, 308, 320 + side * 66 + offset, 283);
+    ctx.bezierCurveTo(320 + side * 59 + offset, 250,
+      320 + side * 57 + offset, 222, 320 + side * 57 + offset, 205);
     ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = '#f0c65f';
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'rgba(246, 205, 106, 0.65)';
+    ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(320 + side * 86 + drift * 0.5, 178);
-    ctx.bezierCurveTo(320 + side * 76 + drift * 0.8, 225, 320 + side * 78 + drift * 0.8, 262, 320 + side * 85 + drift * 0.8, 288);
+    ctx.moveTo(320 + side * 86 + offset, 178);
+    ctx.bezierCurveTo(320 + side * 94 + offset, 231,
+      320 + side * 77 + offset, 280, 320 + side * 82 + offset, 306);
+    ctx.quadraticCurveTo(320 + side * 85 + offset, 320,
+      320 + side * 73 + offset, tipY - 13);
     ctx.stroke();
-    ellipse(320 + side * 64 + drift, 374, 9, 12, '#e5b64d');
   }
-  ellipse(216, 230, 12, 20, '#c08e5f');
-  ellipse(424, 230, 12, 20, '#c08e5f');
+  drawEar(216, -1);
+  drawEar(424, 1);
   for (const x of [222, 418]) {
     ellipse(x, 255, 3.2, 3.2, '#f5d474');
     ctx.save();
@@ -336,6 +404,53 @@ function drawHair(t, energy) {
   }
 }
 
+// Ears sit behind the face; detail stays on the exposed outer half. Mirroring
+// local coordinates keeps both folds directed inward toward the cheek.
+function drawEar(x, side) {
+  ctx.save();
+  ctx.translate(x, 230);
+  ctx.scale(side, 1);
+  const skin = ctx.createLinearGradient(-5, 0, 12, 0);
+  skin.addColorStop(0, '#b78560');
+  skin.addColorStop(0.65, '#cda173');
+  skin.addColorStop(1, '#dbb087');
+  ctx.fillStyle = skin;
+  ctx.beginPath();
+  ctx.moveTo(-5, -16);
+  ctx.bezierCurveTo(2, -23, 12, -18, 12, -8);
+  ctx.bezierCurveTo(13, 2, 8, 10, 6, 17);
+  ctx.bezierCurveTo(4, 23, -4, 23, -6, 16);
+  ctx.quadraticCurveTo(-10, 0, -5, -16);
+  ctx.closePath();
+  ctx.fill();
+
+  // Shallow concha, shaded softly rather than drawn as a dark hole.
+  ellipse(2, 1, 4.5, 9, 'rgba(150, 91, 68, 0.24)');
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#e3b992';
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(-2, -15);
+  ctx.bezierCurveTo(6, -20, 10, -13, 9, -5);
+  ctx.quadraticCurveTo(9, 4, 5, 10);
+  ctx.stroke();
+
+  // Inner fold forks near the top and curves into the bowl above the lobe.
+  ctx.strokeStyle = 'rgba(143, 91, 64, 0.55)';
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  ctx.moveTo(4, -11);
+  ctx.quadraticCurveTo(-1, -7, 2, -2);
+  ctx.quadraticCurveTo(7, 3, 1, 9);
+  ctx.moveTo(2, -2);
+  ctx.quadraticCurveTo(0, -6, -3, -7);
+  ctx.stroke();
+  ellipse(-1, 6, 2.4, 3.8, '#cda173');
+  ellipse(0, 16, 3.3, 3.6, 'rgba(233, 185, 148, 0.42)');
+  ctx.restore();
+}
+
 // ── face ──────────────────────────────────────────────────────────────────────
 function drawFace(t, energy, openness) {
   // Face: wider through the jaw with a blunt chin. A narrow taper here read as a long
@@ -345,8 +460,8 @@ function drawFace(t, energy, openness) {
   ctx.moveTo(320, 108);
   ctx.bezierCurveTo(386, 108, 420, 156, 422, 210);
   ctx.bezierCurveTo(425, 258, 408, 296, 380, 320);
-  ctx.quadraticCurveTo(352, 338, 320, 340);
-  ctx.quadraticCurveTo(288, 338, 260, 320);
+  ctx.quadraticCurveTo(352, 338 + openness * 4, 320, 340 + openness * 5);
+  ctx.quadraticCurveTo(288, 338 + openness * 4, 260, 320);
   ctx.bezierCurveTo(232, 296, 215, 258, 218, 210);
   ctx.bezierCurveTo(220, 156, 254, 108, 320, 108);
   ctx.closePath();
@@ -365,8 +480,7 @@ function drawFace(t, energy, openness) {
   drawEyes(t, energy);
   drawBrows(t, energy);
   drawNose();
-  drawMouth(openness);
-  drawNecklace(t, energy);
+  drawMouth();
 }
 
 // Cheeks warm while she speaks and stay warm for a friendly mood. Kept translucent so
@@ -467,75 +581,148 @@ function drawNose() {
   ctx.stroke();
 }
 
-function drawMouth(openness) {
-  // Soft rose lipstick stays visible at rest and follows each speaking shape.
-  function mouthShape(rx, ry, color, spread = 0) {
-    ctx.fillStyle = color;
+function drawMouth() {
+  const [width, aperture, round, teeth, tongue, smile] = mouth;
+  const h = Math.max(0, aperture);
+  const corner = -smile * 3;
+  const top = -h * 0.36;
+  const bottom = h * 0.64;
+  ctx.save();
+  ctx.translate(320, 293);
+  ctx.lineCap = 'round';
+
+  // A single contour owns the lips and the aperture. Rounded vowels use fuller
+  // side walls; spread vowels taper to corners. The upper lip has a subtle bow.
+  function contour(w, upper, lower) {
+    const shoulder = 0.62 + round * 0.3;
     ctx.beginPath();
-    ctx.moveTo(320 - rx, 293);
-    ctx.bezierCurveTo(320 - rx * 0.72, 291 - ry * 0.32, 320 - rx * 0.32, 292 - ry, 320, 292 - ry);
-    ctx.bezierCurveTo(320 + rx * 0.32, 292 - ry, 320 + rx * 0.72, 291 - ry * 0.32, 320 + rx, 293);
-    ctx.bezierCurveTo(320 + rx * 0.82, 294 + ry * 0.4, 320 + rx * 0.48, 294 + ry, 320, 294 + ry + spread);
-    ctx.bezierCurveTo(320 - rx * 0.48, 294 + ry, 320 - rx * 0.82, 294 + ry * 0.4, 320 - rx, 293);
+    ctx.moveTo(-w, corner);
+    ctx.bezierCurveTo(-w * shoulder, upper, -w * 0.3, upper - 1, 0, upper + 0.7);
+    ctx.bezierCurveTo(w * 0.3, upper - 1, w * shoulder, upper, w, corner);
+    ctx.bezierCurveTo(w * shoulder, lower, w * 0.4, lower + 1, 0, lower + 1);
+    ctx.bezierCurveTo(-w * 0.4, lower + 1, -w * shoulder, lower, -w, corner);
+    ctx.closePath();
+  }
+
+  // Lip colour is shaded rather than outlined with a second, unrelated smile.
+  const lip = ctx.createLinearGradient(0, top - 4, 0, bottom + 5);
+  lip.addColorStop(0, '#984652');
+  lip.addColorStop(0.48, '#b76270');
+  lip.addColorStop(1, '#d18488');
+  contour(width + 2, top - 3, bottom + 3);
+  ctx.fillStyle = lip;
+  ctx.fill();
+
+  if (h > 0.65) {
+    contour(width, top, bottom);
+    ctx.fillStyle = '#42242c';
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+
+    // The tongue sits low in the cavity. Both it and the dental arch are clipped
+    // to the actual opening, including during transitions into an O or a closure.
+    ctx.globalAlpha = tongue;
+    ellipse(0, bottom + 2, width * 0.68, Math.max(2, h * 0.25), '#bd737e');
+    ctx.globalAlpha = teeth;
+    const toothBottom = top + Math.min(5.5, 2 + h * 0.22);
+    const enamel = ctx.createLinearGradient(0, top, 0, toothBottom);
+    enamel.addColorStop(0, '#cdbbb0');
+    enamel.addColorStop(1, '#fff2dc');
+    ctx.fillStyle = enamel;
+    ctx.beginPath();
+    ctx.moveTo(-width * 0.82, top - 4);
+    ctx.lineTo(width * 0.82, top - 4);
+    ctx.lineTo(width * 0.78, toothBottom - 1.5);
+    ctx.quadraticCurveTo(0, toothBottom + 1.5, -width * 0.78, toothBottom - 1.5);
     ctx.closePath();
     ctx.fill();
-  }
-  mouthShape(mouth[0] + 3, Math.max(4, mouth[1] + 3), '#b84f70', openness * 3);
-  mouthShape(mouth[0], Math.max(1, mouth[1] - 1), '#572638', openness * 2);
-  if (mouth[1] > 4) {
-    mouthShape(mouth[0] - 3, Math.max(1, mouth[1] - 3), '#402832', openness);
-    ctx.fillStyle = '#fff0df';
+    // A restrained central division, avoiding a row of floating white blocks.
+    ctx.strokeStyle = 'rgba(117, 88, 80, 0.18)';
+    ctx.lineWidth = 0.65;
     ctx.beginPath();
-    ctx.moveTo(306, 289);
-    ctx.quadraticCurveTo(320, 287, 334, 289);
-    ctx.lineTo(333, 292);
-    ctx.quadraticCurveTo(320, 290, 307, 292);
-    ctx.closePath();
-    ctx.fill();
+    ctx.moveTo(0, top);
+    ctx.lineTo(0, toothBottom);
+    ctx.stroke();
+    ctx.restore();
+  } else {
+    ctx.strokeStyle = '#874653';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(-width, corner);
+    ctx.quadraticCurveTo(0, 1 + smile * 3, width, corner);
+    ctx.stroke();
   }
-  ctx.strokeStyle = '#e58ba0';
-  ctx.lineWidth = 1.5;
+
+  // Highlight follows the lower lip, never crosses the cavity or rounded corners.
+  ctx.strokeStyle = 'rgba(255, 205, 190, 0.36)';
+  ctx.lineWidth = 1.1;
   ctx.beginPath();
-  ctx.moveTo(298, 291);
-  ctx.quadraticCurveTo(308, 287, 316, 291);
-  ctx.quadraticCurveTo(320, 294, 324, 291);
-  ctx.quadraticCurveTo(333, 287, 342, 291);
+  ctx.moveTo(-width * 0.38, bottom + 2.7);
+  ctx.quadraticCurveTo(0, bottom + 4.2, width * 0.38, bottom + 2.7);
   ctx.stroke();
-  // The lip seam deepens into a smile as the mouth closes. Without it she sits at rest
-  // with a flat line for a mouth, which is what made an idle avatar look severe; a
-  // speaking shape should flatten back to neutral rather than keep the smile.
-  const smile = Math.max(0, 1 - openness * 2.4);
-  ctx.strokeStyle = '#8c3852';
-  ctx.lineWidth = 1.8;
-  ctx.beginPath();
-  ctx.moveTo(299, 295 - smile * 6);
-  ctx.quadraticCurveTo(320, 304 + smile * 4, 341, 295 - smile * 6);
-  ctx.stroke();
-  if (smile > 0.45) {
-    // A soft dimple at each corner, which is what makes a drawn smile read as one.
-    ctx.globalAlpha = (smile - 0.45) * 1.5;
-    ctx.strokeStyle = '#b0764c';
-    ctx.lineWidth = 1.6;
-    for (const x of [299, 341]) {
-      ctx.beginPath();
-      ctx.moveTo(x, 293 - smile * 5);
-      ctx.quadraticCurveTo(x - 4, 288, x - 3, 282);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
+  ctx.restore();
 }
 
 function drawNecklace(t, energy) {
-  const swing = Math.sin(t * 2.1) * energy * 3;
-  ctx.strokeStyle = '#8ee5c0';
-  ctx.lineWidth = 3;
+  // Anchored to the torso/neck transform, so a head tilt cannot pull the chain
+  // off the neck. Both strands meet the bail, rather than ending above the pendant.
+  const swing = Math.sin(t * 2.1) * energy * 1.5;
+  const center = 320 + swing;
+  ctx.save();
   ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(294, 380);
-  ctx.quadraticCurveTo(320 + swing, 403, 346, 380);
+  function chain(offset = 0) {
+    ctx.beginPath();
+    ctx.moveTo(291, 351 + offset);
+    ctx.bezierCurveTo(290, 364 + offset, 301, 380 + offset, center, 389 + offset);
+    ctx.bezierCurveTo(338, 380 + offset, 350, 364 + offset, 349, 351 + offset);
+  }
+  chain(1);
+  ctx.strokeStyle = 'rgba(96, 66, 49, 0.3)';
+  ctx.lineWidth = 2.8;
   ctx.stroke();
-  ellipse(320 + swing, 403, 5, 7, '#8ee5c0');
+  const metal = ctx.createLinearGradient(290, 350, 350, 390);
+  metal.addColorStop(0, '#b29356');
+  metal.addColorStop(0.35, '#ffe5a1');
+  metal.addColorStop(0.7, '#d4b56e');
+  metal.addColorStop(1, '#f7dc95');
+  chain();
+  ctx.strokeStyle = metal;
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+
+  // Small connecting ring and a gold bezel around the green pendant.
+  ctx.strokeStyle = '#eed28c';
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.ellipse(center, 391, 2.3, 3.2, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ellipse(center + 0.8, 402, 9.4, 11.3, 'rgba(87, 43, 62, 0.22)');
+  ellipse(center, 400, 9, 11, '#ba9655');
+  ellipse(center, 399.5, 7.7, 9.5, '#f5d795');
+  const stone = ctx.createLinearGradient(center - 6, 391, center + 6, 409);
+  stone.addColorStop(0, '#b9f2d6');
+  stone.addColorStop(0.45, '#6fc9ab');
+  stone.addColorStop(1, '#348f83');
+  ellipse(center, 399.5, 6.3, 8, stone);
+
+  // A small engraved leaf on the face: central vein and two pairs of branches.
+  ctx.strokeStyle = '#397e6d';
+  ctx.lineWidth = 0.85;
+  ctx.beginPath();
+  ctx.moveTo(center - 1.5, 404.5);
+  ctx.quadraticCurveTo(center + 1.5, 400, center + 0.5, 394.5);
+  ctx.moveTo(center, 401.5);
+  ctx.lineTo(center - 3, 398.5);
+  ctx.moveTo(center + 0.7, 399.5);
+  ctx.lineTo(center + 3.4, 397);
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(238, 255, 238, 0.75)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.ellipse(center, 399.5, 5, 6.8, 0, Math.PI * 1.05, Math.PI * 1.55);
+  ctx.stroke();
+  ctx.restore();
 }
 
 requestAnimationFrame(draw);
