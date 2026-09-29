@@ -436,6 +436,83 @@ class AvatarTests(unittest.TestCase):
         self.assertEqual(result['source'],'test-model')
         self.assertEqual(body['input'][-1]['content'], dialogue.OPENING)
 
+    def _model_reply(self):
+        tree = {'root': 'b', 'children': [{'root': 'fur', 'children': []}, {'root': 'p', 'children': [
+                {'root': 's', 'children': [{'root': 'tov', 'children': []}, {'root': 'tov', 'children': []}]}]}]}
+        data = {'trees': [tree], 'suggestions': sample_suggestions(tree),
+                'en': 'Four is two and two.', 'es': 'Cuatro es dos y dos.', 'de': 'Vier ist zwei und zwei.',
+                'emotion': 'warm', 'turn_move': 'ask_followup'}
+        return {'status': 'completed', 'output': [{'type': 'message', 'content': [{'type': 'output_text', 'text': json.dumps(data)}]}]}
+
+    def test_writing_english_changes_one_sentence_of_the_instructions(self):
+        # "I write in" is a test surface, so what it changes must be exactly one thing, and the same thing the
+        # experiment in avatar/experiments recorded: the sentence that says what the learner writes.
+        self.assertIs(dialogue.persona_for('talema'), dialogue.PERSONA)
+        english = dialogue.persona_for('english')
+        self.assertEqual(dialogue.ENGLISH_NOTE,
+                         'Speak ONLY Talema, represented by the `trees` field. The learner writes to you in English: read it,\n'
+                         'and answer only in Talema.\n')
+        self.assertEqual(english.replace(dialogue.ENGLISH_NOTE, 'Speak ONLY Talema, represented by the `trees` field.\n'),
+                         dialogue.PERSONA)
+        with self.assertRaisesRegex(ValueError, 'language must be one of'):
+            dialogue.persona_for('klingon')
+
+    def test_an_english_turn_is_sent_with_its_own_instructions_and_cache_key(self):
+        response = self._model_reply()
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'TALEMA_MODEL': 'test-model'}), \
+             patch('urllib.request.urlopen', side_effect=lambda *a, **k: io.BytesIO(json.dumps(response).encode())) as call:
+            dialogue.reply('Two plus two is four.', [], language='english')
+            english = json.loads(call.call_args.args[0].data)
+            dialogue.reply('bi fura pe si tova tova .', [])
+            talema = json.loads(call.call_args.args[0].data)
+        self.assertEqual(english['input'][-1]['content'], 'Two plus two is four.')
+        self.assertIn('The learner writes to you in English', english['instructions'])
+        self.assertEqual(english['prompt_cache_key'], dialogue.CACHE_KEY + '-english')
+        self.assertNotEqual(english['prompt_cache_key'], talema['prompt_cache_key'])
+        # the default is untouched: the same instructions and the same cache as before the option existed
+        self.assertEqual(talema['instructions'], dialogue.PERSONA + dialogue.BOOK)
+        self.assertEqual(talema['prompt_cache_key'], dialogue.CACHE_KEY)
+
+    def test_an_unknown_language_is_refused_before_anything_is_spent(self):
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'TALEMA_MODEL': 'test-model'}), \
+             patch('urllib.request.urlopen') as call:
+            with self.assertRaises(ValueError):
+                dialogue.reply('hi', [], language='klingon')
+        call.assert_not_called()
+
+    def _post(self, path, payload):
+        from server import Handler
+        body = json.dumps(payload).encode()
+
+        class Connection:
+            def __init__(self):
+                self.input = io.BytesIO(f'POST {path} HTTP/1.0\r\nContent-Length: {len(body)}\r\n\r\n'.encode() + body)
+                self.output = bytearray()
+            def makefile(self, *args): return self.input
+            def sendall(self, data): self.output.extend(data)
+        connection = Connection()
+        return connection, Handler, body
+
+    def test_http_respond_passes_the_input_language_through(self):
+        for payload, expected in (({'talema': 'Two plus two is four.', 'language': 'english'}, 'english'),
+                                  ({'talema': 'bi fura pe si tova tova .'}, 'talema')):
+            connection, Handler, _ = self._post('/api/respond', payload)
+            with patch('server.reply', return_value={'talema': 'veloma .'}) as reply:
+                Handler(connection, ('127.0.0.1', 1), object())
+            self.assertEqual(reply.call_args.args[3], expected)
+            headers, _body = bytes(connection.output).split(b'\r\n\r\n', 1)
+            self.assertIn(b'200 OK', headers)
+
+    def test_http_respond_rejects_an_unknown_language(self):
+        connection, Handler, _ = self._post('/api/respond', {'talema': 'hi', 'language': 'klingon'})
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'TALEMA_MODEL': 'test-model'}), \
+             patch('urllib.request.urlopen') as call:
+            Handler(connection, ('127.0.0.1', 1), object())
+        call.assert_not_called()
+        headers, body = bytes(connection.output).split(b'\r\n\r\n', 1)
+        self.assertIn(b'400', headers)
+        self.assertIn('language must be one of', json.loads(body)['error'])
+
     def test_nested_trees_spell_their_own_endings(self):
         four={'root':'b','children':[{'root':'fur','children':[]},{'root':'p','children':[
               {'root':'s','children':[{'root':'tov','children':[]},{'root':'tov','children':[]}]}]}]}

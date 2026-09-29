@@ -1,0 +1,5208 @@
+[
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Welcome! I am happy. What topic would you like?",
+   "es": "¡Bienvenido! Estoy feliz. ¿Qué tema te gustaría?",
+   "de": "Willkommen! Ich bin glücklich. Welches Thema möchtest du?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "veloma . bi lapa pe ma . raki pe te topika pe tada .",
+   "suggestions": [
+    {
+     "talema": "voni pe te foda pe ma .",
+     "en": "I want food.",
+     "es": "Quiero comida.",
+     "de": "Ich möchte Essen."
+    },
+    {
+     "talema": "voni pe te mama pe ma .",
+     "en": "I want mathematics.",
+     "es": "Quiero matemáticas.",
+     "de": "Ich möchte Mathematik."
+    },
+    {
+     "talema": "voni pe te filofa pe ma .",
+     "en": "I want philosophy.",
+     "es": "Quiero filosofía.",
+     "de": "Ich möchte filosofía."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101238,
+    "cached_tokens": 100751
+   }
+  },
+  "api_calls": 2,
+  "seconds": 25.2
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello. I am Luma. What would you like?",
+   "es": "Hola. Soy Luma. ¿Qué te gustaría?",
+   "de": "Hallo. Ich bin Luma. Was möchtest du?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . leve fere ma . rake kige ve vone tada .",
+   "suggestions": [
+    {
+     "talema": "habela .",
+     "en": "Hello.",
+     "es": "Hola.",
+     "de": "Hallo."
+    },
+    {
+     "talema": "rake kige ve vone tada .",
+     "en": "What would you like?",
+     "es": "¿Qué te gustaría?",
+     "de": "Was möchtest du?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108228,
+    "cached_tokens": 0
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.1
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello! Which topic would you like to explore: food, movies, or logic?",
+   "es": "¡Hola! ¿Qué tema te gustaría explorar: comida, películas o lógica?",
+   "de": "Hallo! Welches Thema möchtest du erkunden: Essen, Filme oder Logik?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . rake topika . bi topiki fa foda so naga mama fe fila .",
+   "suggestions": [
+    {
+     "talema": "be topiki fa foda .",
+     "en": "I choose food.",
+     "es": "Elijo la comida.",
+     "de": "Ich wähle Essen."
+    },
+    {
+     "talema": "be topiki fa fila .",
+     "en": "I choose movies.",
+     "es": "Elijo las películas.",
+     "de": "Ich wähle Filme."
+    },
+    {
+     "talema": "be topike gogika .",
+     "en": "I choose logic.",
+     "es": "Elijo Logik.",
+     "de": "Ich wähle Logik."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100886,
+    "cached_tokens": 0
+   }
+  },
+  "api_calls": 1,
+  "seconds": 14.0
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello. What would you like?",
+   "es": "Hola. ¿Qué te gustaría?",
+   "de": "Hallo. Was möchtest du?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . vasi te vona pe tada .",
+   "suggestions": [
+    {
+     "talema": "voni te foda pe ma .",
+     "en": "I want food.",
+     "es": "Quiero comida.",
+     "de": "Ich möchte Essen."
+    },
+    {
+     "talema": "voni te mamaka pe ma .",
+     "en": "I want mathematics.",
+     "es": "Quiero matemáticas.",
+     "de": "Ich möchte Mathematik."
+    },
+    {
+     "talema": "voni te nerina pe ma .",
+     "en": "I want conversation.",
+     "es": "Quiero conversación.",
+     "de": "Ich möchte Gespräch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108360,
+    "cached_tokens": 0
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.1
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello! Which topic would you like to explore: food, mathematics, or language?",
+   "es": "¡Hola! ¿Qué tema te gustaría explorar: comida, matemáticas o lenguaje?",
+   "de": "Hallo! Welches Thema möchtest du erkunden: Essen, Mathematik oder Sprache?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . raki te tada bete topiko fa mama naga . bi vone te topiko fa mama naga pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi vone te fa pe ma .",
+     "en": "I want food.",
+     "es": "Quiero comida.",
+     "de": "Ich möchte Essen."
+    },
+    {
+     "talema": "bi vone te mama pe ma .",
+     "en": "I want mathematics.",
+     "es": "Quiero matemáticas.",
+     "de": "Ich möchte Mathematik."
+    },
+    {
+     "talema": "bi vone te naga pe ma .",
+     "en": "I want language.",
+     "es": "Quiero lenguaje.",
+     "de": "Ich möchte Sprache."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108404,
+    "cached_tokens": 0
+   }
+  },
+  "api_calls": 1,
+  "seconds": 13.4
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 1,
+  "learner": {
+   "en": "My day is bad.",
+   "talema": "bi bada pe dage mena ."
+  },
+  "sent": "My day is bad.",
+  "data": {
+   "en": "My day is bad. What about your day?",
+   "es": "Mi día es malo. ¿Qué pasa con tu día?",
+   "de": "Mein Tag ist schlecht. Wie ist dein Tag?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi bada pe dage mena . rake vase pe dage mena .",
+   "suggestions": [
+    {
+     "talema": "bi bada pe dage mena .",
+     "en": "My day is bad.",
+     "es": "Mi día es malo.",
+     "de": "Mein Tag ist schlecht."
+    },
+    {
+     "talema": "rake vase pe daga .",
+     "en": "Ask what about the day.",
+     "es": "Pregunta qué pasa con el día.",
+     "de": "Frage, was mit dem Tag ist."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100717,
+    "cached_tokens": 100672
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.8
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 1,
+  "learner": {
+   "en": "My day is bad.",
+   "talema": "bi bada pe dage mena ."
+  },
+  "sent": "My day is bad.",
+  "data": {
+   "en": "My day is not happy.",
+   "es": "Mi día no es feliz.",
+   "de": "Mein Tag ist nicht glücklich.",
+   "emotion": "thoughtful",
+   "turn_move": "ask_followup",
+   "talema": "lapi fa pe ma . re pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi sarisa pe ma .",
+     "en": "I am sad.",
+     "es": "Estoy triste.",
+     "de": "Ich bin traurig."
+    },
+    {
+     "talema": "bi timuda pe ma .",
+     "en": "I am tired.",
+     "es": "Estoy cansado.",
+     "de": "Ich bin müde."
+    },
+    {
+     "talema": "rake pe tada .",
+     "en": "I ask you.",
+     "es": "Te pregunto.",
+     "de": "Ich frage dich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108188,
+    "cached_tokens": 108146
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.1
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 1,
+  "learner": {
+   "en": "My day is bad.",
+   "talema": "bi bada pe dage mena ."
+  },
+  "sent": "My day is bad.",
+  "data": {
+   "en": "Oh. I’m sorry. What happened to you?",
+   "es": "Oh. Lo siento. ¿Qué te pasó?",
+   "de": "Oh. Es tut mir leid. Was ist dir passiert?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . rasore pe tada . vasi hapa pe tada .",
+   "suggestions": [
+    {
+     "talema": "dage pe bada .",
+     "en": "The day is bad.",
+     "es": "El día es malo.",
+     "de": "Der Tag ist schlecht."
+    },
+    {
+     "talema": "dage pe guta .",
+     "en": "The day is good.",
+     "es": "El día es bueno.",
+     "de": "Der Tag ist gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100850,
+    "cached_tokens": 100804
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.6
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 1,
+  "learner": {
+   "en": "My day is bad.",
+   "talema": "bi bada pe dage mena ."
+  },
+  "sent": "My day is bad.",
+  "data": {
+   "en": "Oh, day. I am sad that your day is bad.",
+   "es": "Oh, día. Me entristece que tu día sea malo.",
+   "de": "Oh, Tag. Es tut mir leid, dass dein Tag schlecht ist.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . pe daga . pe bade pe ma .",
+   "suggestions": [
+    {
+     "talema": "pe lape pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "pe timude pe ma .",
+     "en": "I am tired.",
+     "es": "Estoy cansado.",
+     "de": "Ich bin müde."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108315,
+    "cached_tokens": 108278
+   }
+  },
+  "api_calls": 1,
+  "seconds": 2.9
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 1,
+  "learner": {
+   "en": "My day is bad.",
+   "talema": "bi bada pe dage mena ."
+  },
+  "sent": "My day is bad.",
+  "data": {
+   "en": "Oh, your day is bad. Are you sad?",
+   "es": "Oh, tu día es malo. ¿Estás triste?",
+   "de": "Oh, dein Tag ist schlecht. Bist du traurig?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . raki te bi daga pe tada pe sarisa .",
+   "suggestions": [
+    {
+     "talema": "raki te bi ma pe sarisa pe tada .",
+     "en": "I am sad.",
+     "es": "Estoy triste.",
+     "de": "Ich bin traurig."
+    },
+    {
+     "talema": "raki te bi daga pe tada pe lapa .",
+     "en": "Your day is happy.",
+     "es": "Tu día es feliz.",
+     "de": "Dein Tag ist glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108374,
+    "cached_tokens": 108322
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.8
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 2,
+  "learner": {
+   "en": "I lose my book.",
+   "talema": "losi te buke mena pe ma ."
+  },
+  "sent": "I lose my book.",
+  "data": {
+   "en": "Sorry. Where is the book?",
+   "es": "Lo siento. ¿Dónde está el libro?",
+   "de": "Tut mir leid. Wo ist das Buch?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "risora . rake vode pe buka .",
+   "suggestions": [
+    {
+     "talema": "be sere pe ma .",
+     "en": "I see it.",
+     "es": "Lo veo.",
+     "de": "Ich sehe es."
+    },
+    {
+     "talema": "rake sere te buka .",
+     "en": "Do you see the book?",
+     "es": "¿Ves el libro?",
+     "de": "Siehst du das Buch?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101195,
+    "cached_tokens": 100741
+   }
+  },
+  "api_calls": 2,
+  "seconds": 25.4
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 2,
+  "learner": {
+   "en": "I lose my book.",
+   "talema": "losi te buke mena pe ma ."
+  },
+  "sent": "I lose my book.",
+  "data": {
+   "en": "I’m sorry. Where did you lose your book?",
+   "es": "Lo siento. ¿Dónde perdiste tu libro?",
+   "de": "Das tut mir leid. Wo hast du dein Buch verloren?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "risora . raki te vode te buka pe tada .",
+   "suggestions": [
+    {
+     "talema": "fine te buka .",
+     "en": "I found the book.",
+     "es": "Encontré el libro.",
+     "de": "Ich habe das Buch gefunden."
+    },
+    {
+     "talema": "lose te buka .",
+     "en": "I lost the book.",
+     "es": "Perdí el libro.",
+     "de": "Ich habe das Buch verloren."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108213,
+    "cached_tokens": 108185
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.3
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 2,
+  "learner": {
+   "en": "I lose my book.",
+   "talema": "losi te buke mena pe ma ."
+  },
+  "sent": "I lose my book.",
+  "data": {
+   "en": "Oh. I’m sorry. Where did you see your book?",
+   "es": "Oh. Lo siento. ¿Dónde viste tu libro?",
+   "de": "Oh. Es tut mir leid. Wo hast du dein Buch gesehen?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . bi rasora pe ma . rake vode buka .",
+   "suggestions": [
+    {
+     "talema": "seri pe ma te buka .",
+     "en": "I saw my book.",
+     "es": "Vi mi libro.",
+     "de": "Ich sah mein Buch."
+    },
+    {
+     "talema": "hele pe tada .",
+     "en": "Help me.",
+     "es": "Ayúdame.",
+     "de": "Hilf mir."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100879,
+    "cached_tokens": 100847
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.8
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 2,
+  "learner": {
+   "en": "I lose my book.",
+   "talema": "losi te buke mena pe ma ."
+  },
+  "sent": "I lose my book.",
+  "data": {
+   "en": "Oh. I can help you.",
+   "es": "Ah. Puedo ayudarte.",
+   "de": "Oh. Ich kann dir helfen.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . kene heli pe ma te tada .",
+   "suggestions": [
+    {
+     "talema": "vode bi buka de ma .",
+     "en": "Where is my book?",
+     "es": "¿Dónde está mi libro?",
+     "de": "Wo ist mein Buch?"
+    },
+    {
+     "talema": "be sere pe ma .",
+     "en": "I see it.",
+     "es": "Lo veo.",
+     "de": "Ich sehe es."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108341,
+    "cached_tokens": 108312
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.5
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 2,
+  "learner": {
+   "en": "I lose my book.",
+   "talema": "losi te buke mena pe ma ."
+  },
+  "sent": "I lose my book.",
+  "data": {
+   "en": "Sorry.",
+   "es": "Lo siento.",
+   "de": "Es tut mir leid.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "risora .",
+   "suggestions": [
+    {
+     "talema": "be fi na de ba .",
+     "en": "I do not find the book.",
+     "es": "No encuentro el libro.",
+     "de": "Ich finde das Buch nicht."
+    },
+    {
+     "talema": "be ve ba .",
+     "en": "I have the book.",
+     "es": "Tengo el libro.",
+     "de": "Ich habe das Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108403,
+    "cached_tokens": 108371
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.6
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 3,
+  "learner": {
+   "en": "Can you help me?",
+   "talema": "tobe keni te heli te ma pe tada pe tada ."
+  },
+  "sent": "Can you help me?",
+  "data": {
+   "en": "I help you. Where did you see the book?",
+   "es": "Te ayudo. ¿Dónde viste el libro?",
+   "de": "Ich helfe dir. Wo hast du das Buch gesehen?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "be heli pe ma te tada . vode seri pe tada te buka .",
+   "suggestions": [
+    {
+     "talema": "be seri pe ma te buka .",
+     "en": "I see the book.",
+     "es": "Veo el libro.",
+     "de": "Ich sehe das Buch."
+    },
+    {
+     "talema": "be fini pe ma te buka .",
+     "en": "I find the book.",
+     "es": "Encuentro el libro.",
+     "de": "Ich finde das Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100767,
+    "cached_tokens": 100741
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.4
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 3,
+  "learner": {
+   "en": "Can you help me?",
+   "talema": "tobe keni te heli te ma pe tada pe tada ."
+  },
+  "sent": "Can you help me?",
+  "data": {
+   "en": "I can help you. I’m sorry you lost your book. Do you want me to help you find it?",
+   "es": "Puedo ayudarte. Siento que hayas perdido tu libro. ¿Quieres que te ayude a encontrarlo?",
+   "de": "Ich kann dir helfen. Es tut mir leid, dass du dein Buch verloren hast. Soll ich dir helfen, es zu finden?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "be ke hife te tada . ri pe ma te tada . ri te ve te be buka pe tada .",
+   "suggestions": [
+    {
+     "talema": "be ke hife te tada .",
+     "en": "I can help you.",
+     "es": "Puedo ayudarte.",
+     "de": "Ich kann dir helfen."
+    },
+    {
+     "talema": "ro pe ma te ve te buka pe tada .",
+     "en": "I ask you about your book.",
+     "es": "Te pregunto por tu libro.",
+     "de": "Ich frage dich nach deinem Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108240,
+    "cached_tokens": 108210
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.8
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 3,
+  "learner": {
+   "en": "Can you help me?",
+   "talema": "tobe keni te heli te ma pe tada pe tada ."
+  },
+  "sent": "Can you help me?",
+  "data": {
+   "en": "Oh. Where is the book?",
+   "es": "Oh. ¿Dónde está el libro?",
+   "de": "Oh. Wo ist das Buch?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . rake vode buka .",
+   "suggestions": [
+    {
+     "talema": "bi bure te buka pe ma .",
+     "en": "I’m looking for the book.",
+     "es": "Estoy buscando el libro.",
+     "de": "Ich suche das Buch."
+    },
+    {
+     "talema": "bi sere te buka pe ma .",
+     "en": "I see the book.",
+     "es": "Veo el libro.",
+     "de": "Ich sehe das Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100907,
+    "cached_tokens": 100876
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.4
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 3,
+  "learner": {
+   "en": "Can you help me?",
+   "talema": "tobe keni te heli te ma pe tada pe tada ."
+  },
+  "sent": "Can you help me?",
+  "data": {
+   "en": "Yes, I can help you.",
+   "es": "Sí, puedo ayudarte.",
+   "de": "Ja, ich kann dir helfen.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "besa . me keni hela pe tada .",
+   "suggestions": [
+    {
+     "talema": "me nede pe tada .",
+     "en": "I need you.",
+     "es": "Te necesito.",
+     "de": "Ich brauche dich."
+    },
+    {
+     "talema": "me nene pe tada .",
+     "en": "I understand you.",
+     "es": "Te entiendo.",
+     "de": "Ich verstehe dich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108367,
+    "cached_tokens": 108338
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.5
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 3,
+  "learner": {
+   "en": "Can you help me?",
+   "talema": "tobe keni te heli te ma pe tada pe tada ."
+  },
+  "sent": "Can you help me?",
+  "data": {
+   "en": "Yes. I help you.",
+   "es": "Sí. Te ayudo.",
+   "de": "Ja. Ich helfe dir.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "besa . heli pe ma te tada .",
+   "suggestions": [
+    {
+     "talema": "dake pe tada .",
+     "en": "Thank you.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "bi pe ma te buka .",
+     "en": "I lost the book.",
+     "es": "Perdí el libro.",
+     "de": "Ich habe das Buch verloren."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108421,
+    "cached_tokens": 108400
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.5
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 4,
+  "learner": {
+   "en": "I do not have money.",
+   "talema": "vi te mede kina pe ma ."
+  },
+  "sent": "I do not have money.",
+  "data": {
+   "en": "I’m sorry you have no money. Do you want to buy a book?",
+   "es": "Siento que no tengas dinero. ¿Quieres comprar un libro?",
+   "de": "Es tut mir leid, dass du kein Geld hast. Möchtest du ein Buch kaufen?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "re mede te tada . bi vi meda kina pe ma . rake te bi vone te buka pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi neda pe ma .",
+     "en": "I need help.",
+     "es": "Necesito ayuda.",
+     "de": "Ich brauche Hilfe."
+    },
+    {
+     "talema": "bi vone te buka pe ma .",
+     "en": "I want a book.",
+     "es": "Quiero un libro.",
+     "de": "Ich möchte ein Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100797,
+    "cached_tokens": 100764
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.6
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 4,
+  "learner": {
+   "en": "I do not have money.",
+   "talema": "vi te mede kina pe ma ."
+  },
+  "sent": "I do not have money.",
+  "data": {
+   "en": "I do not have money. Do you need help with food?",
+   "es": "No tengo dinero. ¿Necesitas ayuda con comida?",
+   "de": "Ich habe kein Geld. Brauchst du Hilfe mit Essen?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi fa vi meda pe ma . raki te hele mite foda pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi fa vi meda pe ma .",
+     "en": "I do not have money.",
+     "es": "No tengo dinero.",
+     "de": "Ich habe kein Geld."
+    },
+    {
+     "talema": "be vi foda pe ma .",
+     "en": "I have food.",
+     "es": "Tengo comida.",
+     "de": "Ich habe Essen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108278,
+    "cached_tokens": 108237
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.7
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 4,
+  "learner": {
+   "en": "I do not have money.",
+   "talema": "vi te mede kina pe ma ."
+  },
+  "sent": "I do not have money.",
+  "data": {
+   "en": "Oh. I’m sorry for you.",
+   "es": "Oh. Lo siento por ti.",
+   "de": "Oh. Es tut mir leid für dich.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . bi rasora pe tada .",
+   "suggestions": [
+    {
+     "talema": "bo va pe ma te buka .",
+     "en": "I have a book.",
+     "es": "Tengo un libro.",
+     "de": "Ich habe ein Buch."
+    },
+    {
+     "talema": "bi va pe ma .",
+     "en": "I have money.",
+     "es": "Tengo dinero.",
+     "de": "Ich habe Geld."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100930,
+    "cached_tokens": 100904
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.2
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 4,
+  "learner": {
+   "en": "I do not have money.",
+   "talema": "vi te mede kina pe ma ."
+  },
+  "sent": "I do not have money.",
+  "data": {
+   "en": "Oh, I do not have money.",
+   "es": "Oh, no tengo dinero.",
+   "de": "Oh, ich habe kein Geld.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "pe ma . bi fa ve te meda . poha .",
+   "suggestions": [
+    {
+     "talema": "pe ma .",
+     "en": "I have money.",
+     "es": "Tengo dinero.",
+     "de": "Ich habe Geld."
+    },
+    {
+     "talema": "pe ma .",
+     "en": "I have a book.",
+     "es": "Tengo un libro.",
+     "de": "Ich habe ein Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108393,
+    "cached_tokens": 108364
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.8
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 4,
+  "learner": {
+   "en": "I do not have money.",
+   "talema": "vi te mede kina pe ma ."
+  },
+  "sent": "I do not have money.",
+  "data": {
+   "en": "Oh. I’m sorry. That’s hard for you.",
+   "es": "Oh. Lo siento. Eso es difícil para ti.",
+   "de": "Oh. Es tut mir leid. Das ist schwer für dich.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . risora . bi sira pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi neda heli pe ma te bapa .",
+     "en": "I need help with bread.",
+     "es": "Necesito ayuda con pan.",
+     "de": "Ich brauche Hilfe mit Brot."
+    },
+    {
+     "talema": "bi vona te lapela .",
+     "en": "I want an apple.",
+     "es": "Quiero una manzana.",
+     "de": "Ich möchte einen Apfel."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108446,
+    "cached_tokens": 108418
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 5,
+  "learner": {
+   "en": "Maybe I am wrong.",
+   "talema": "bo faga mika pe ma ."
+  },
+  "sent": "Maybe I am wrong.",
+  "data": {
+   "en": "My day is bad. What happened to you?",
+   "es": "Mi día es malo. ¿Qué te pasó?",
+   "de": "Mein Tag ist schlecht. Was ist dir passiert?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi bade dage mena pe ma . vase hape pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi bade dage mena pe ma .",
+     "en": "My day is bad.",
+     "es": "Mi día es malo.",
+     "de": "Mein Tag ist schlecht."
+    },
+    {
+     "talema": "bi lape dage mena pe ma .",
+     "en": "My day is happy.",
+     "es": "Mi día es feliz.",
+     "de": "Mein Tag ist glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100834,
+    "cached_tokens": 100794
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.6
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 5,
+  "learner": {
+   "en": "Maybe I am wrong.",
+   "talema": "bo faga mika pe ma ."
+  },
+  "sent": "Maybe I am wrong.",
+  "data": {
+   "en": "Maybe I am wrong. Are you wrong?",
+   "es": "Quizá me equivoco. ¿Te equivocas?",
+   "de": "Vielleicht liege ich falsch. Liegt du falsch?",
+   "emotion": "thoughtful",
+   "turn_move": "ask_followup",
+   "talema": "bi fage mika pe ma . bi faga pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi rira pe ma .",
+     "en": "I am right.",
+     "es": "Tengo razón.",
+     "de": "Ich habe recht."
+    },
+    {
+     "talema": "bi faga pe tada .",
+     "en": "You are wrong.",
+     "es": "Te equivocas.",
+     "de": "Du liegst falsch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108311,
+    "cached_tokens": 108275
+   }
+  },
+  "api_calls": 1,
+  "seconds": 13.3
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 5,
+  "learner": {
+   "en": "Maybe I am wrong.",
+   "talema": "bo faga mika pe ma ."
+  },
+  "sent": "Maybe I am wrong.",
+  "data": {
+   "en": "Maybe. You are not wrong.",
+   "es": "Quizá. No estás equivocado.",
+   "de": "Vielleicht. Du liegst nicht falsch.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "mika . bi faga pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi vuba pe ma .",
+     "en": "I have doubt.",
+     "es": "Tengo dudas.",
+     "de": "Ich habe Zweifel."
+    },
+    {
+     "talema": "bi guta pe ma .",
+     "en": "I am good.",
+     "es": "Estoy bien.",
+     "de": "Mir geht es gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100954,
+    "cached_tokens": 100927
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.9
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 5,
+  "learner": {
+   "en": "Maybe I am wrong.",
+   "talema": "bo faga mika pe ma ."
+  },
+  "sent": "Maybe I am wrong.",
+  "data": {
+   "en": "Maybe I am wrong.",
+   "es": "Quizá estoy equivocado.",
+   "de": "Vielleicht liege ich falsch.",
+   "emotion": "thoughtful",
+   "turn_move": "react",
+   "talema": "mike bi faga pe ma .",
+   "suggestions": [
+    {
+     "talema": "bi faga pe ma .",
+     "en": "I am wrong.",
+     "es": "Estoy equivocado.",
+     "de": "Ich liege falsch."
+    },
+    {
+     "talema": "bi rira pe ma .",
+     "en": "I am right.",
+     "es": "Tengo razón.",
+     "de": "Ich habe recht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108421,
+    "cached_tokens": 108390
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.8
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 5,
+  "learner": {
+   "en": "Maybe I am wrong.",
+   "talema": "bo faga mika pe ma ."
+  },
+  "sent": "Maybe I am wrong.",
+  "data": {
+   "en": "Ah. Maybe I am not wrong.",
+   "es": "Ah. Quizás no estoy equivocado.",
+   "de": "Ach. Vielleicht liege ich nicht falsch.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "habiha . mika . bi faga fe ma .",
+   "suggestions": [
+    {
+     "talema": "bi timuda pe ma .",
+     "en": "I am tired.",
+     "es": "Estoy cansado.",
+     "de": "Ich bin müde."
+    },
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108473,
+    "cached_tokens": 108443
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.3
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 6,
+  "learner": {
+   "en": "Why do you help me?",
+   "talema": "helo te ma vaha pe tada ."
+  },
+  "sent": "Why do you help me?",
+  "data": {
+   "en": "I help you because you are learning.",
+   "es": "Te ayudo porque estás aprendiendo.",
+   "de": "Ich helfe dir, weil du lernst.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "heli pe ma te tada . fene pe tada .",
+   "suggestions": [
+    {
+     "talema": "fene pe ma .",
+     "en": "I am learning.",
+     "es": "Estoy aprendiendo.",
+     "de": "Ich lerne."
+    },
+    {
+     "talema": "raki pe tada te hela .",
+     "en": "Can you help?",
+     "es": "¿Puedes ayudar?",
+     "de": "Kannst du helfen?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100862,
+    "cached_tokens": 100831
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.3
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 6,
+  "learner": {
+   "en": "Why do you help me?",
+   "talema": "helo te ma vaha pe tada ."
+  },
+  "sent": "Why do you help me?",
+  "data": {
+   "en": "I help you. What are you learning?",
+   "es": "Te ayudo. ¿Qué estás aprendiendo?",
+   "de": "Ich helfe dir. Was lernst du?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi hele pe ma pe tada . vase te fene pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi faga pe ma .",
+     "en": "I am wrong.",
+     "es": "Estoy equivocado.",
+     "de": "Ich liege falsch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108341,
+    "cached_tokens": 108308
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.8
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 6,
+  "learner": {
+   "en": "Why do you help me?",
+   "talema": "helo te ma vaha pe tada ."
+  },
+  "sent": "Why do you help me?",
+  "data": {
+   "en": "Oh. I help you because you ask. Do you understand?",
+   "es": "Oh. Te ayudo porque preguntas. ¿Entiendes?",
+   "de": "Oh. Ich helfe dir, weil du fragst. Verstehst du?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . bu hela pe ma te tada peke bi raka pe tada . bi nena pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "bo nena pe ma te tada .",
+     "en": "I understand you.",
+     "es": "Te entiendo.",
+     "de": "Ich verstehe dich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100979,
+    "cached_tokens": 100951
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.8
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 6,
+  "learner": {
+   "en": "Why do you help me?",
+   "talema": "helo te ma vaha pe tada ."
+  },
+  "sent": "Why do you help me?",
+  "data": {
+   "en": "Oh, I help you because I am a teacher.",
+   "es": "Oh, te ayudo porque soy profesor.",
+   "de": "Oh, ich helfe dir, weil ich Lehrer bin.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . heli te ma pe tada . peke bi keha pe ma .",
+   "suggestions": [
+    {
+     "talema": "dake pe tada .",
+     "en": "Thank you.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "bi hasa pe ma .",
+     "en": "I am fine.",
+     "es": "Estoy bien.",
+     "de": "Mir geht es gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108445,
+    "cached_tokens": 108418
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.2
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 6,
+  "learner": {
+   "en": "Why do you help me?",
+   "talema": "helo te ma vaha pe tada ."
+  },
+  "sent": "Why do you help me?",
+  "data": {
+   "en": "Because you asked. I help you.",
+   "es": "Porque preguntaste. Te ayudo.",
+   "de": "Weil du gefragt hast. Ich helfe dir.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "peke bi raka pe tada . bo hela pe ma pe tada .",
+   "suggestions": [
+    {
+     "talema": "dake pe tada .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108502,
+    "cached_tokens": 108470
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.0
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 7,
+  "learner": {
+   "en": "You are kind.",
+   "talema": "bi kinada pe tada ."
+  },
+  "sent": "You are kind.",
+  "data": {
+   "en": "I am glad. I can help you. Can I help you about the book?",
+   "es": "Me alegra. Puedo ayudarte. ¿Puedo ayudarte con el libro?",
+   "de": "Ich freue mich. Ich kann dir helfen. Kann ich dir wegen des Buches helfen?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi golada pe ma . kene hele pe tada . raki te kene hele pe tada pi tada bete buke la .",
+   "suggestions": [
+    {
+     "talema": "be kene hele pe tada .",
+     "en": "I can help you.",
+     "es": "Puedo ayudarte.",
+     "de": "Ich kann dir helfen."
+    },
+    {
+     "talema": "be vone pe buka .",
+     "en": "I want a book.",
+     "es": "Quiero un libro.",
+     "de": "Ich möchte ein Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100887,
+    "cached_tokens": 100859
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.1
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 7,
+  "learner": {
+   "en": "You are kind.",
+   "talema": "bi kinada pe tada ."
+  },
+  "sent": "You are kind.",
+  "data": {
+   "en": "Thank you. Can you practice the word “kind”?",
+   "es": "Gracias. ¿Puedes practicar la palabra «amable»?",
+   "de": "Danke. Kannst du das Wort „freundlich“ üben?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "dahe te tada . raki te le kinada pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi kinada pe ma .",
+     "en": "I am kind.",
+     "es": "Soy amable.",
+     "de": "Ich bin freundlich."
+    },
+    {
+     "talema": "bi kinada pe tada .",
+     "en": "You are kind.",
+     "es": "Eres amable.",
+     "de": "Du bist freundlich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108369,
+    "cached_tokens": 108338
+   }
+  },
+  "api_calls": 1,
+  "seconds": 14.0
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 7,
+  "learner": {
+   "en": "You are kind.",
+   "talema": "bi kinada pe tada ."
+  },
+  "sent": "You are kind.",
+  "data": {
+   "en": "Thanks. You are kind.",
+   "es": "Gracias. Eres amable.",
+   "de": "Danke. Du bist freundlich.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . bi kinada pe tada .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101015,
+    "cached_tokens": 100976
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.6
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 7,
+  "learner": {
+   "en": "You are kind.",
+   "talema": "bi kinada pe tada ."
+  },
+  "sent": "You are kind.",
+  "data": {
+   "en": "Oh, I thank you. You are kind.",
+   "es": "Oh, te doy las gracias. Eres amable.",
+   "de": "Oh, ich danke dir. Du bist freundlich.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . di te tada pe ma . bi kinada pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi guta pe ma .",
+     "en": "I am good.",
+     "es": "Estoy bien.",
+     "de": "Mir geht es gut."
+    },
+    {
+     "talema": "di te tada pe ma .",
+     "en": "I thank you.",
+     "es": "Te doy las gracias.",
+     "de": "Ich danke dir."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108475,
+    "cached_tokens": 108442
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.6
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 7,
+  "learner": {
+   "en": "You are kind.",
+   "talema": "bi kinada pe tada ."
+  },
+  "sent": "You are kind.",
+  "data": {
+   "en": "Thanks. You are kind.",
+   "es": "Gracias. Eres amable.",
+   "de": "Danke. Du bist freundlich.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . bi kinada pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi kinada pe rida .",
+     "en": "My friend is kind.",
+     "es": "Mi amigo es amable.",
+     "de": "Mein Freund ist freundlich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108530,
+    "cached_tokens": 108499
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.6
+ },
+ {
+  "conv": 0,
+  "cell": "A",
+  "round": 8,
+  "learner": {
+   "en": "Thank you. Goodbye.",
+   "talema": "dahi te tada pe ma . goseda ."
+  },
+  "sent": "Thank you. Goodbye.",
+  "data": {
+   "en": "Goodbye.",
+   "es": "Adiós.",
+   "de": "Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "offer_topic",
+   "talema": "badisa .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi bada pe daga .",
+     "en": "The day is bad.",
+     "es": "El día es malo.",
+     "de": "Der Tag ist schlecht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100929,
+    "cached_tokens": 100884
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.6
+ },
+ {
+  "conv": 0,
+  "cell": "B",
+  "round": 8,
+  "learner": {
+   "en": "Thank you. Goodbye.",
+   "talema": "dahi te tada pe ma . goseda ."
+  },
+  "sent": "Thank you. Goodbye.",
+  "data": {
+   "en": "I thank you. Bye.",
+   "es": "Te doy las gracias. Adiós.",
+   "de": "Ich danke dir. Tschüss.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "dahi te tada pe ma . badisa .",
+   "suggestions": [
+    {
+     "talema": "dahi te tada pe ma .",
+     "en": "I thank you.",
+     "es": "Te doy las gracias.",
+     "de": "Ich danke dir."
+    },
+    {
+     "talema": "habela .",
+     "en": "Hello.",
+     "es": "Hola.",
+     "de": "Hallo."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108398,
+    "cached_tokens": 108366
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.4
+ },
+ {
+  "conv": 0,
+  "cell": "C",
+  "round": 8,
+  "learner": {
+   "en": "Thank you. Goodbye.",
+   "talema": "dahi te tada pe ma . goseda ."
+  },
+  "sent": "Thank you. Goodbye.",
+  "data": {
+   "en": "Thanks. Goodbye.",
+   "es": "Gracias. Adiós.",
+   "de": "Danke. Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . goseda .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "goseda .",
+     "en": "Goodbye.",
+     "es": "Adiós.",
+     "de": "Auf Wiedersehen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101455,
+    "cached_tokens": 101036
+   }
+  },
+  "api_calls": 2,
+  "seconds": 9.3
+ },
+ {
+  "conv": 0,
+  "cell": "D",
+  "round": 8,
+  "learner": {
+   "en": "Thank you. Goodbye.",
+   "talema": "dahi te tada pe ma . goseda ."
+  },
+  "sent": "Thank you. Goodbye.",
+  "data": {
+   "en": "Thanks. Bye.",
+   "es": "Gracias. Adiós.",
+   "de": "Danke. Tschüss.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . badisa .",
+   "suggestions": [
+    {
+     "talema": "lape pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "risora .",
+     "en": "Sorry.",
+     "es": "Lo siento.",
+     "de": "Entschuldigung."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108505,
+    "cached_tokens": 108472
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.1
+ },
+ {
+  "conv": 0,
+  "cell": "E",
+  "round": 8,
+  "learner": {
+   "en": "Thank you. Goodbye.",
+   "talema": "dahi te tada pe ma . goseda ."
+  },
+  "sent": "Thank you. Goodbye.",
+  "data": {
+   "en": "Thanks. Bye.",
+   "es": "Gracias. Adiós.",
+   "de": "Danke. Tschüss.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . badisa .",
+   "suggestions": [
+    {
+     "talema": "goseda .",
+     "en": "Goodbye.",
+     "es": "Adiós.",
+     "de": "Auf Wiedersehen."
+    },
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108554,
+    "cached_tokens": 108527
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.6
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Welcome. I am happy. I ask you about a topic.",
+   "es": "Te doy la bienvenida. Estoy feliz. Te pregunto por un tema.",
+   "de": "Willkommen. Ich bin glücklich. Ich frage dich nach einem Thema.",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "veloma . bi lapa pe ma . raki te topika pe tada .",
+   "suggestions": [
+    {
+     "talema": "foda .",
+     "en": "Food.",
+     "es": "Comida.",
+     "de": "Essen."
+    },
+    {
+     "talema": "gogika .",
+     "en": "Logic.",
+     "es": "Lógica.",
+     "de": "Logik."
+    },
+    {
+     "talema": "mamaka .",
+     "en": "Mathematics.",
+     "es": "Matemáticas.",
+     "de": "Mathematik."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101084,
+    "cached_tokens": 100751
+   }
+  },
+  "api_calls": 2,
+  "seconds": 30.6
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "error": "Tutor response failed validation twice; nothing was spoken. Last issue: The en caption has 3 sentences but the Talema has 2. A caption may not contain a sentence the speech did not speak; drop it, or say it in Talema.. Press Stop, then send again or start a new lesson.",
+  "api_calls": 2,
+  "seconds": 41.2
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Oh! I am happy. What topic can I ask you about?",
+   "es": "¡Oh! Estoy feliz. ¿Sobre qué tema puedo preguntarte?",
+   "de": "Oh! Ich bin glücklich. Zu welchem Thema kann ich dich befragen?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "poha . bi ma pe lapa . rake te tada .",
+   "suggestions": [
+    {
+     "talema": "bi ma pe lapa .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "rake te topa .",
+     "en": "Ask about a topic.",
+     "es": "Pregunta sobre un tema.",
+     "de": "Frag nach einem Thema."
+    },
+    {
+     "talema": "rake te naga .",
+     "en": "Ask about a language.",
+     "es": "Pregunta por un idioma.",
+     "de": "Frag nach einer Sprache."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100886,
+    "cached_tokens": 100883
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.5
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello! Ask me which topic you would like: language, food, or mathematics.",
+   "es": "¡Hola! Pregúntame qué tema te gustaría: lengua, comida o matemáticas.",
+   "de": "Hallo! Frag mich, welches Thema du gern möchtest: Sprache, Essen oder Mathematik.",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . raki te tada pi naga dori foda dore mama .",
+   "suggestions": [
+    {
+     "talema": "bi nama pe ma .",
+     "en": "My name is me.",
+     "es": "Mi nombre soy yo.",
+     "de": "Mein Name bin ich."
+    },
+    {
+     "talema": "raki te tada pe foda .",
+     "en": "Ask me about food.",
+     "es": "Pregúntame sobre comida.",
+     "de": "Frag mich über Essen."
+    },
+    {
+     "talema": "raki te tada pe mama .",
+     "en": "Ask me about mathematics.",
+     "es": "Pregúntame sobre matemáticas.",
+     "de": "Frag mich über Mathematik."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108360,
+    "cached_tokens": 108357
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.9
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello. Say hello. Which topic would you like to explore?",
+   "es": "Hola. Di hola. ¿Qué tema te gustaría explorar?",
+   "de": "Hallo. Sag Hallo. Welches Thema möchtest du erkunden?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . dese pe habela . vike topika .",
+   "suggestions": [
+    {
+     "talema": "foda .",
+     "en": "Food.",
+     "es": "Comida.",
+     "de": "Essen."
+    },
+    {
+     "talema": "mamaka .",
+     "en": "Mathematics.",
+     "es": "Matemáticas.",
+     "de": "Mathematik."
+    },
+    {
+     "talema": "gogika .",
+     "en": "Logic.",
+     "es": "Lógica.",
+     "de": "Logik."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108758,
+    "cached_tokens": 108401
+   }
+  },
+  "api_calls": 2,
+  "seconds": 16.2
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 1,
+  "learner": {
+   "en": "I enjoy this book.",
+   "talema": "gidi te buke tisa pe ma ."
+  },
+  "sent": "I enjoy this book.",
+  "data": {
+   "en": "I’m glad. Four is two and two. Is that clear?",
+   "es": "Me alegra. Cuatro es dos y dos. ¿Está claro?",
+   "de": "Das freut mich. Vier ist zwei und zwei. Ist das klar?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi golada pe ma . bi fura pe si tova tova . bi leka pe pesa .",
+   "suggestions": [
+    {
+     "talema": "bi leka pe pesa .",
+     "en": "That is clear.",
+     "es": "Eso está claro.",
+     "de": "Das ist klar."
+    },
+    {
+     "talema": "bi fura pe si tova tova .",
+     "en": "Four is two and two.",
+     "es": "Cuatro es dos y dos.",
+     "de": "Vier ist zwei und zwei."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100716,
+    "cached_tokens": 100672
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 1,
+  "learner": {
+   "en": "I enjoy this book.",
+   "talema": "gidi te buke tisa pe ma ."
+  },
+  "sent": "I enjoy this book.",
+  "data": {
+   "en": "I’m glad you enjoy it. The book names five vowels: vanam, venam, vinam, vonam, and vunam. Which vowel would you like to explore?",
+   "es": "Me alegra que lo disfrutes. El libro nombra cinco vocales: vanam, venam, vinam, vonam y vunam. ¿Qué vocal te gustaría explorar?",
+   "de": "Es freut mich, dass es dir gefällt. Das Buch nennt fünf Vokale: vanam, venam, vinam, vonam und vunam. Welchen Vokal möchtest du näher erkunden?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "be lape pe tada . bee vanama venama vinama vonama vunama pe vokela . raki te vase vokela pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi vanama pe vokela .",
+     "en": "The first vowel is interesting.",
+     "es": "La primera vocal es interesante.",
+     "de": "Der erste Vokal ist interessant."
+    },
+    {
+     "talema": "bi vonama pe vokela .",
+     "en": "The fourth vowel is interesting.",
+     "es": "La cuarta vocal es interesante.",
+     "de": "Der vierte Vokal ist interessant."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108158,
+    "cached_tokens": 108146
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.3
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 1,
+  "learner": {
+   "en": "I enjoy this book.",
+   "talema": "gidi te buke tisa pe ma ."
+  },
+  "sent": "I enjoy this book.",
+  "data": {
+   "en": "Oh, I’m glad you enjoy the book. Which part of the book do you enjoy?",
+   "es": "Oh, me alegra que disfrutes del libro. ¿Qué parte del libro disfrutas?",
+   "de": "Oh, es freut mich, dass dir das Buch gefällt. Welchen Teil des Buches magst du?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . bi ma pe lapa . rake te tada .",
+   "suggestions": [
+    {
+     "talema": "bi ma pe buke ta .",
+     "en": "I have this book.",
+     "es": "Tengo este libro.",
+     "de": "Ich habe dieses Buch."
+    },
+    {
+     "talema": "bi tada pe buke ta .",
+     "en": "You have this book.",
+     "es": "Tienes este libro.",
+     "de": "Du hast dieses Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100844,
+    "cached_tokens": 100804
+   }
+  },
+  "api_calls": 1,
+  "seconds": 2.9
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 1,
+  "learner": {
+   "en": "I enjoy this book.",
+   "talema": "gidi te buke tisa pe ma ."
+  },
+  "sent": "I enjoy this book.",
+  "data": {
+   "en": "Oh, this book is a good thing.",
+   "es": "Oh, este libro es algo bueno.",
+   "de": "Oh, dieses Buch ist etwas Gutes.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . bi buka pe kige guta .",
+   "suggestions": [
+    {
+     "talema": "bi buke de lore fira pe kige guta .",
+     "en": "The language book is good.",
+     "es": "El libro de lengua es bueno.",
+     "de": "Das Sprachbuch ist gut."
+    },
+    {
+     "talema": "bi buka pe kige tafa .",
+     "en": "This book is interesting.",
+     "es": "Este libro es interesante.",
+     "de": "Dieses Buch ist interessant."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108321,
+    "cached_tokens": 108278
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.3
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 1,
+  "learner": {
+   "en": "I enjoy this book.",
+   "talema": "gidi te buke tisa pe ma ."
+  },
+  "sent": "I enjoy this book.",
+  "data": {
+   "en": "Oh, you’re glad.",
+   "es": "Ah, te alegra.",
+   "de": "Oh, du freust dich.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . lape pe tada .",
+   "suggestions": [
+    {
+     "talema": "gidi te toda pe ma .",
+     "en": "I enjoy the story.",
+     "es": "Disfruto la historia.",
+     "de": "Ich genieße die Geschichte."
+    },
+    {
+     "talema": "gidi te be tisa pe ma .",
+     "en": "I enjoy this book.",
+     "es": "Disfruto este libro.",
+     "de": "Ich genieße dieses Buch."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108362,
+    "cached_tokens": 108322
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.1
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 2,
+  "learner": {
+   "en": "It is difficult.",
+   "talema": "bi difika pe pesa ."
+  },
+  "sent": "It is difficult.",
+  "data": {
+   "en": "I understand. What is difficult?",
+   "es": "Entiendo. ¿Qué es difícil?",
+   "de": "Ich verstehe. Was ist schwierig?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "na . difike pe vasa .",
+   "suggestions": [
+    {
+     "talema": "bi difika pe ma .",
+     "en": "It is difficult for me.",
+     "es": "Es difícil para mí.",
+     "de": "Es ist schwierig für mich."
+    },
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100751,
+    "cached_tokens": 100713
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.9
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 2,
+  "learner": {
+   "en": "It is difficult.",
+   "talema": "bi difika pe pesa ."
+  },
+  "sent": "It is difficult.",
+  "data": {
+   "en": "Yes, it is hard for you.",
+   "es": "Sí, es difícil para ti.",
+   "de": "Ja, es ist schwierig für dich.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "si sira pe tada . re pe talema .",
+   "suggestions": [
+    {
+     "talema": "bi mela pe tada .",
+     "en": "I am small.",
+     "es": "Soy pequeño.",
+     "de": "Ich bin klein."
+    },
+    {
+     "talema": "bi mela pe talema .",
+     "en": "Talema is simple.",
+     "es": "Talema es sencillo.",
+     "de": "Talema ist einfach."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108202,
+    "cached_tokens": 108155
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.8
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 2,
+  "learner": {
+   "en": "It is difficult.",
+   "talema": "bi difika pe pesa ."
+  },
+  "sent": "It is difficult.",
+  "data": {
+   "en": "Oh. Talema is hard. What feels difficult to you?",
+   "es": "Oh. Talema es difícil. ¿Qué te resulta difícil?",
+   "de": "Oh. Talema ist schwierig. Was fällt dir schwer?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "poha . bi sira pe nage de talema . raki te vasa pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi sira pe nage de talema .",
+     "en": "Talema is hard.",
+     "es": "Talema es difícil.",
+     "de": "Talema ist schwierig."
+    },
+    {
+     "talema": "bi guta pe nage de talema .",
+     "en": "Talema is good.",
+     "es": "Talema es bueno.",
+     "de": "Talema ist gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100871,
+    "cached_tokens": 100841
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.5
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 2,
+  "learner": {
+   "en": "It is difficult.",
+   "talema": "bi difika pe pesa ."
+  },
+  "sent": "It is difficult.",
+  "data": {
+   "en": "Oh. It is difficult.",
+   "es": "Oh. Es difícil.",
+   "de": "Oh. Es ist schwierig.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "poha . bi sira pe pesa .",
+   "suggestions": [
+    {
+     "talema": "kene pe ma .",
+     "en": "I can.",
+     "es": "Puedo.",
+     "de": "Ich kann."
+    },
+    {
+     "talema": "bi guta pe tada .",
+     "en": "You are good.",
+     "es": "Eres bueno.",
+     "de": "Du bist gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108630,
+    "cached_tokens": 108343
+   }
+  },
+  "api_calls": 2,
+  "seconds": 11.2
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 2,
+  "learner": {
+   "en": "It is difficult.",
+   "talema": "bi difika pe pesa ."
+  },
+  "sent": "It is difficult.",
+  "data": {
+   "en": "Oh. Sorry.",
+   "es": "Oh. Lo siento.",
+   "de": "Oh. Entschuldigung.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . risora .",
+   "suggestions": [
+    {
+     "talema": "de gi tova tova .",
+     "en": "Two and two.",
+     "es": "Dos y dos.",
+     "de": "Zwei und zwei."
+    },
+    {
+     "talema": "habela .",
+     "en": "Hello.",
+     "es": "Hola.",
+     "de": "Hallo."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108384,
+    "cached_tokens": 108359
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.3
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 3,
+  "learner": {
+   "en": "I do not understand this sentence.",
+   "talema": "neno te ferase tisa fa pe ma ."
+  },
+  "sent": "I do not understand this sentence.",
+  "data": {
+   "en": "I can help. Which word is unclear?",
+   "es": "Puedo ayudar. ¿Qué palabra no está clara?",
+   "de": "Ich kann helfen. Welches Wort ist unklar?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "be hele pe ma . raki te vase lora pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi nene pe ma pe tada .",
+     "en": "I understand this.",
+     "es": "Entiendo esto.",
+     "de": "Ich verstehe das."
+    },
+    {
+     "talema": "raki te vase lora pe tada .",
+     "en": "Ask me about a word.",
+     "es": "Pregúntame por una palabra.",
+     "de": "Frag mich nach einem Wort."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100776,
+    "cached_tokens": 100748
+   }
+  },
+  "api_calls": 1,
+  "seconds": 13.4
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 3,
+  "learner": {
+   "en": "I do not understand this sentence.",
+   "talema": "neno te ferase tisa fa pe ma ."
+  },
+  "sent": "I do not understand this sentence.",
+  "data": {
+   "en": "Sorry. I do not understand. Which part is difficult for you?",
+   "es": "Lo siento. No entiendo. ¿Qué parte te resulta difícil?",
+   "de": "Entschuldigung. Ich verstehe nicht. Welcher Teil ist für dich schwierig?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "risora . bo nena fa pe ma . raki vika pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "bo nena fa pe ma .",
+     "en": "I do not understand.",
+     "es": "No entiendo.",
+     "de": "Ich verstehe nicht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108230,
+    "cached_tokens": 108199
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.9
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 3,
+  "learner": {
+   "en": "I do not understand this sentence.",
+   "talema": "neno te ferase tisa fa pe ma ."
+  },
+  "sent": "I do not understand this sentence.",
+  "data": {
+   "en": "Sorry. The first vowel. Do you understand Talema?",
+   "es": "Lo siento. La primera vocal. ¿Entiendes Talema?",
+   "de": "Tut mir leid. Der erste Vokal. Verstehst du Talema?",
+   "emotion": "thoughtful",
+   "turn_move": "ask_followup",
+   "talema": "rasora . vanama . rake nene talema .",
+   "suggestions": [
+    {
+     "talema": "rake nene vanama .",
+     "en": "Do I understand the first vowel?",
+     "es": "¿Entiendo la primera vocal?",
+     "de": "Verstehe ich den ersten Vokal?"
+    },
+    {
+     "talema": "rake nene talema .",
+     "en": "Do I understand Talema?",
+     "es": "¿Entiendo Talema?",
+     "de": "Verstehe ich Talema?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100908,
+    "cached_tokens": 100868
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.5
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 3,
+  "learner": {
+   "en": "I do not understand this sentence.",
+   "talema": "neno te ferase tisa fa pe ma ."
+  },
+  "sent": "I do not understand this sentence.",
+  "data": {
+   "en": "Oh. This sentence is difficult. What is the word?",
+   "es": "Oh. Esta oración es difícil. ¿Cuál es la palabra?",
+   "de": "Oh. Dieser Satz ist schwierig. Was ist das Wort?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "poha . bi sira pe ferase tisa . rake vase lora .",
+   "suggestions": [
+    {
+     "talema": "bi seva pe lora .",
+     "en": "I know the word.",
+     "es": "Conozco la palabra.",
+     "de": "Ich kenne das Wort."
+    },
+    {
+     "talema": "bo nena fa pe lora .",
+     "en": "I do not understand the word.",
+     "es": "No entiendo la palabra.",
+     "de": "Ich verstehe das Wort nicht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108759,
+    "cached_tokens": 108369
+   }
+  },
+  "api_calls": 2,
+  "seconds": 13.9
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 3,
+  "learner": {
+   "en": "I do not understand this sentence.",
+   "talema": "neno te ferase tisa fa pe ma ."
+  },
+  "sent": "I do not understand this sentence.",
+  "data": {
+   "en": "Sorry. Which word?",
+   "es": "Lo siento. ¿Qué palabra?",
+   "de": "Entschuldigung. Welches Wort?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "risora . vike lora .",
+   "suggestions": [
+    {
+     "talema": "bi faga pe lora .",
+     "en": "I don't know the word.",
+     "es": "No sé la palabra.",
+     "de": "Ich kenne das Wort nicht."
+    },
+    {
+     "talema": "be vone pe lora .",
+     "en": "I want the word.",
+     "es": "Quiero la palabra.",
+     "de": "Ich möchte das Wort."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108407,
+    "cached_tokens": 108381
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.3
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 4,
+  "learner": {
+   "en": "Please say it again.",
+   "talema": "lese desi te pesa vida ."
+  },
+  "sent": "Please say it again.",
+  "data": {
+   "en": "See this. What word in the sentence is unclear to you?",
+   "es": "Mira esto. ¿Qué palabra de la frase no te queda clara?",
+   "de": "Sieh dir das an. Welches Wort im Satz ist dir unklar?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "sere te tisa . rake te vase pe lora .",
+   "suggestions": [
+    {
+     "talema": "bi seve te tisa pe ma .",
+     "en": "I know this.",
+     "es": "Sé esto.",
+     "de": "Ich weiß das."
+    },
+    {
+     "talema": "be te tisa .",
+     "en": "This.",
+     "es": "Esto.",
+     "de": "Das."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100805,
+    "cached_tokens": 100773
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.7
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 4,
+  "learner": {
+   "en": "Please say it again.",
+   "talema": "lese desi te pesa vida ."
+  },
+  "sent": "Please say it again.",
+  "data": {
+   "en": "I say it again. Ask me about the sentence.",
+   "es": "Lo vuelvo a decir. Pregúntame sobre la frase.",
+   "de": "Ich sage es noch einmal. Frag mich nach dem Satz.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "vide re ma . ri tada se le se tada .",
+   "suggestions": [
+    {
+     "talema": "be tove kida .",
+     "en": "It is two children.",
+     "es": "Son dos niños.",
+     "de": "Es sind zwei Kinder."
+    },
+    {
+     "talema": "be le sa .",
+     "en": "It is the sun.",
+     "es": "Es el sol.",
+     "de": "Es ist die Sonne."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108262,
+    "cached_tokens": 108227
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.3
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 4,
+  "learner": {
+   "en": "Please say it again.",
+   "talema": "lese desi te pesa vida ."
+  },
+  "sent": "Please say it again.",
+  "data": {
+   "en": "Again, please say it.",
+   "es": "Otra vez, por favor, dilo.",
+   "de": "Bitte sag es noch einmal.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "vide dese tada . be si rasora dese tada .",
+   "suggestions": [
+    {
+     "talema": "be ne tada .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "be fe ne tada .",
+     "en": "I do not understand.",
+     "es": "No entiendo.",
+     "de": "Ich verstehe nicht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100935,
+    "cached_tokens": 100905
+   }
+  },
+  "api_calls": 1,
+  "seconds": 2.7
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 4,
+  "learner": {
+   "en": "Please say it again.",
+   "talema": "lese desi te pesa vida ."
+  },
+  "sent": "Please say it again.",
+  "data": {
+   "en": "Oh, I will say it again to you.",
+   "es": "Oh, te lo diré otra vez.",
+   "de": "Oh, ich sage es dir noch einmal.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "vide si pe le fe ba pe te tada .",
+   "suggestions": [
+    {
+     "talema": "rake pe vasa .",
+     "en": "Ask what it means.",
+     "es": "Pregunta qué significa.",
+     "de": "Frag, was es bedeutet."
+    },
+    {
+     "talema": "be pe fere se te tada .",
+     "en": "It is difficult for you.",
+     "es": "Te resulta difícil.",
+     "de": "Es ist schwierig für dich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108404,
+    "cached_tokens": 108369
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.7
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 4,
+  "learner": {
+   "en": "Please say it again.",
+   "talema": "lese desi te pesa vida ."
+  },
+  "sent": "Please say it again.",
+  "data": {
+   "en": "Say this sentence again.",
+   "es": "Di esta frase otra vez.",
+   "de": "Sag diesen Satz noch einmal.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "desi vida te ferase tisa .",
+   "suggestions": [
+    {
+     "talema": "nene te lora .",
+     "en": "I understand the sentence.",
+     "es": "Entiendo la frase.",
+     "de": "Ich verstehe den Satz."
+    },
+    {
+     "talema": "desi vida te lora .",
+     "en": "Say the word again.",
+     "es": "Di la palabra otra vez.",
+     "de": "Sag das Wort noch einmal."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108430,
+    "cached_tokens": 108404
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.1
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 5,
+  "learner": {
+   "en": "Now I understand.",
+   "talema": "neno te pesa nova pe ma ."
+  },
+  "sent": "Now I understand.",
+  "data": {
+   "en": "I understand now. Can you understand?",
+   "es": "Ahora entiendo. ¿Puedes entender?",
+   "de": "Jetzt verstehe ich. Kannst du verstehen?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "neni pe ma nova . kene te nene pe tada .",
+   "suggestions": [
+    {
+     "talema": "nene pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "fe nene pe ma .",
+     "en": "I do not understand.",
+     "es": "No entiendo.",
+     "de": "Ich verstehe nicht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100832,
+    "cached_tokens": 100802
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.4
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 5,
+  "learner": {
+   "en": "Now I understand.",
+   "talema": "neno te pesa nova pe ma ."
+  },
+  "sent": "Now I understand.",
+  "data": {
+   "en": "You understand. What do you understand?",
+   "es": "Entiendes. ¿Qué entiendes?",
+   "de": "Du verstehst. Was verstehst du?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "nene pe tada . raki vasa pe tada .",
+   "suggestions": [
+    {
+     "talema": "nene pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "lire te ferasa .",
+     "en": "Explain the sentence.",
+     "es": "Explica la frase.",
+     "de": "Erkläre den Satz."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108287,
+    "cached_tokens": 108259
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.4
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 5,
+  "learner": {
+   "en": "Now I understand.",
+   "talema": "neno te pesa nova pe ma ."
+  },
+  "sent": "Now I understand.",
+  "data": {
+   "en": "Oh. You understand.",
+   "es": "Ah. Entiendes.",
+   "de": "Oh. Du verstehst.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "poha . bi nena pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi faka pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "bi sira pe naga .",
+     "en": "The language is difficult.",
+     "es": "El idioma es difícil.",
+     "de": "Die Sprache ist schwierig."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100960,
+    "cached_tokens": 100932
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.6
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 5,
+  "learner": {
+   "en": "Now I understand.",
+   "talema": "neno te pesa nova pe ma ."
+  },
+  "sent": "Now I understand.",
+  "data": {
+   "en": "Oh. You understand now.",
+   "es": "Ah. Ahora entiendes.",
+   "de": "Oh. Jetzt verstehst du.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . bi nene nova pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "bi nena pe te tisa .",
+     "en": "I understand this.",
+     "es": "Entiendo esto.",
+     "de": "Ich verstehe das."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108428,
+    "cached_tokens": 108401
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.3
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 5,
+  "learner": {
+   "en": "Now I understand.",
+   "talema": "neno te pesa nova pe ma ."
+  },
+  "sent": "Now I understand.",
+  "data": {
+   "en": "Oh. This is good.",
+   "es": "Ah. Esto es bueno.",
+   "de": "Oh. Das ist gut.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "poha . gute te tisa .",
+   "suggestions": [
+    {
+     "talema": "dahi tada pe ma .",
+     "en": "I thank you.",
+     "es": "Te doy las gracias.",
+     "de": "Ich danke dir."
+    },
+    {
+     "talema": "desi tisa pe ma .",
+     "en": "I say this.",
+     "es": "Digo esto.",
+     "de": "Ich sage dies."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108453,
+    "cached_tokens": 108427
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.3
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 6,
+  "learner": {
+   "en": "Is this right?",
+   "talema": "tobe bi rita pe tisa ."
+  },
+  "sent": "Is this right?",
+  "data": {
+   "en": "Yes. That is right. Can you understand this sentence?",
+   "es": "Sí. Eso es correcto. ¿Puedes entender esta frase?",
+   "de": "Ja. Das ist richtig. Kannst du diesen Satz verstehen?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "besa . bi rita pe te sa . kene te neni pe tada te ferase ta .",
+   "suggestions": [
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "bo fa nena pe ma .",
+     "en": "I do not understand.",
+     "es": "No entiendo.",
+     "de": "Ich verstehe nicht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101328,
+    "cached_tokens": 100857
+   }
+  },
+  "api_calls": 2,
+  "seconds": 19.6
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 6,
+  "learner": {
+   "en": "Is this right?",
+   "talema": "tobe bi rita pe tisa ."
+  },
+  "sent": "Is this right?",
+  "data": {
+   "en": "Yes. You are right. Do you understand this sentence?",
+   "es": "Sí. Tienes razón. ¿Entiendes esta frase?",
+   "de": "Ja. Du hast recht. Verstehst du diesen Satz?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "besa . bi rita pe tada . neni te lore tisa pe tada .",
+   "suggestions": [
+    {
+     "talema": "nene pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "neni fa pe ma .",
+     "en": "I do not understand.",
+     "es": "No entiendo.",
+     "de": "Ich verstehe nicht."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108313,
+    "cached_tokens": 108284
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.3
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 6,
+  "learner": {
+   "en": "Is this right?",
+   "talema": "tobe bi rita pe tisa ."
+  },
+  "sent": "Is this right?",
+  "data": {
+   "en": "Yes. It is right.",
+   "es": "Sí. Es correcto.",
+   "de": "Ja. Es ist richtig.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "besa . bi rita pe pesa .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100983,
+    "cached_tokens": 100957
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.0
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 6,
+  "learner": {
+   "en": "Is this right?",
+   "talema": "tobe bi rita pe tisa ."
+  },
+  "sent": "Is this right?",
+  "data": {
+   "en": "Yes. The sentence is good.",
+   "es": "Sí. La frase está bien.",
+   "de": "Ja. Der Satz ist gut.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "besa . bi guta pe ferasa .",
+   "suggestions": [
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "rake te vasa .",
+     "en": "What does it mean?",
+     "es": "¿Qué significa?",
+     "de": "Was bedeutet es?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108452,
+    "cached_tokens": 108425
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 6,
+  "learner": {
+   "en": "Is this right?",
+   "talema": "tobe bi rita pe tisa ."
+  },
+  "sent": "Is this right?",
+  "data": {
+   "en": "Sorry. I understand.",
+   "es": "Lo siento. Entiendo.",
+   "de": "Entschuldigung. Ich verstehe.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "risora . bi nena pe ma .",
+   "suggestions": [
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "bi nena pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108475,
+    "cached_tokens": 108450
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.9
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 7,
+  "learner": {
+   "en": "I think I know more now.",
+   "talema": "tini te sevo te masa nova pe ma pe ma ."
+  },
+  "sent": "I think I know more now.",
+  "data": {
+   "en": "I know more now. What word do you know now?",
+   "es": "Ahora sé más. ¿Qué palabra sabes ahora?",
+   "de": "Ich weiß jetzt mehr. Welches Wort kennst du jetzt?",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "bi sevi masa nova pe ma . rake te vaso lora seve pe tada nova .",
+   "suggestions": [
+    {
+     "talema": "bi seve lora pe ma .",
+     "en": "I know a word.",
+     "es": "Conozco una palabra.",
+     "de": "Ich kenne ein Wort."
+    },
+    {
+     "talema": "bi seve lore la pe ma .",
+     "en": "I know the word.",
+     "es": "Conozco la palabra.",
+     "de": "Ich kenne das Wort."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100899,
+    "cached_tokens": 100857
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 7,
+  "learner": {
+   "en": "I think I know more now.",
+   "talema": "tini te sevo te masa nova pe ma pe ma ."
+  },
+  "sent": "I think I know more now.",
+  "data": {
+   "en": "Good, this is right.",
+   "es": "Bien, esto está bien.",
+   "de": "Gut, das ist richtig.",
+   "emotion": "encouraging",
+   "turn_move": "ask_followup",
+   "talema": "bi guta pe te sa . ri te ve sa pe te da .",
+   "suggestions": [
+    {
+     "talema": "be ne na .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "ri te ve sa pe te la .",
+     "en": "What does this mean?",
+     "es": "¿Qué significa esto?",
+     "de": "Was bedeutet das?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108348,
+    "cached_tokens": 108310
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.4
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 7,
+  "learner": {
+   "en": "I think I know more now.",
+   "talema": "tini te sevo te masa nova pe ma pe ma ."
+  },
+  "sent": "I think I know more now.",
+  "data": {
+   "en": "Yes. You know more now.",
+   "es": "Sí. Ahora sabes más.",
+   "de": "Ja. Jetzt weißt du mehr.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "besa . sevo masa nova pe tada .",
+   "suggestions": [
+    {
+     "talema": "seve pe ma .",
+     "en": "I know.",
+     "es": "Lo sé.",
+     "de": "Ich weiß es."
+    },
+    {
+     "talema": "seve pe tada .",
+     "en": "You know.",
+     "es": "Tú sabes.",
+     "de": "Du weißt es."
+    },
+    {
+     "talema": "sevi pe ma te talema .",
+     "en": "I know Talema.",
+     "es": "Sé Talema.",
+     "de": "Ich kenne Talema."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101009,
+    "cached_tokens": 100980
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.2
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 7,
+  "learner": {
+   "en": "I think I know more now.",
+   "talema": "tini te sevo te masa nova pe ma pe ma ."
+  },
+  "sent": "I think I know more now.",
+  "data": {
+   "en": "Oh, you know more now.",
+   "es": "Ah, ahora sabes más.",
+   "de": "Oh, du weißt jetzt mehr.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "poha . be sevo masa nova pe tada .",
+   "suggestions": [
+    {
+     "talema": "be nene pe ma .",
+     "en": "I understand.",
+     "es": "Entiendo.",
+     "de": "Ich verstehe."
+    },
+    {
+     "talema": "be sevi pe ma te lora .",
+     "en": "I know the word.",
+     "es": "Sé la palabra.",
+     "de": "Ich kenne das Wort."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108479,
+    "cached_tokens": 108449
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 7,
+  "learner": {
+   "en": "I think I know more now.",
+   "talema": "tini te sevo te masa nova pe ma pe ma ."
+  },
+  "sent": "I think I know more now.",
+  "data": {
+   "en": "Yes. You know.",
+   "es": "Sí. Sabes.",
+   "de": "Ja. Du weißt es.",
+   "emotion": "encouraging",
+   "turn_move": "react",
+   "talema": "besa . sevi ta pe tada .",
+   "suggestions": [
+    {
+     "talema": "raki ta pe ma .",
+     "en": "I have a question.",
+     "es": "Tengo una pregunta.",
+     "de": "Ich habe eine Frage."
+    },
+    {
+     "talema": "desi ta pe ma .",
+     "en": "I say it.",
+     "es": "Lo digo.",
+     "de": "Ich sage es."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108501,
+    "cached_tokens": 108472
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.1
+ },
+ {
+  "conv": 1,
+  "cell": "A",
+  "round": 8,
+  "learner": {
+   "en": "Thanks for your help. I will see you tomorrow.",
+   "talema": "dake fore hife tora . seru te tada morova vira pe ma ."
+  },
+  "sent": "Thanks for your help. I will see you tomorrow.",
+  "data": {
+   "en": "Goodbye.",
+   "es": "Adiós.",
+   "de": "Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "badisa .",
+   "suggestions": [
+    {
+     "talema": "daki da ma .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "seri pe ma te tada .",
+     "en": "I see you.",
+     "es": "Te veo.",
+     "de": "Ich sehe dich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100939,
+    "cached_tokens": 100896
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.0
+ },
+ {
+  "conv": 1,
+  "cell": "B",
+  "round": 8,
+  "learner": {
+   "en": "Thanks for your help. I will see you tomorrow.",
+   "talema": "dake fore hife tora . seru te tada morova vira pe ma ."
+  },
+  "sent": "Thanks for your help. I will see you tomorrow.",
+  "data": {
+   "en": "Thank you.",
+   "es": "Gracias.",
+   "de": "Danke.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "dahe te tada . sero te tada morova vire pe ma .",
+   "suggestions": [
+    {
+     "talema": "dahe te tada .",
+     "en": "Thank you.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "sero te tada morova vire pe ma .",
+     "en": "I will see you tomorrow.",
+     "es": "Te veré mañana.",
+     "de": "Ich werde dich morgen sehen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108384,
+    "cached_tokens": 108345
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.7
+ },
+ {
+  "conv": 1,
+  "cell": "C",
+  "round": 8,
+  "learner": {
+   "en": "Thanks for your help. I will see you tomorrow.",
+   "talema": "dake fore hife tora . seru te tada morova vira pe ma ."
+  },
+  "sent": "Thanks for your help. I will see you tomorrow.",
+  "data": {
+   "en": "Thanks. Goodbye.",
+   "es": "Gracias. Adiós.",
+   "de": "Danke. Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . goseda .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "goseda .",
+     "en": "Goodbye.",
+     "es": "Adiós.",
+     "de": "Auf Wiedersehen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101040,
+    "cached_tokens": 101006
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.2
+ },
+ {
+  "conv": 1,
+  "cell": "D",
+  "round": 8,
+  "learner": {
+   "en": "Thanks for your help. I will see you tomorrow.",
+   "talema": "dake fore hife tora . seru te tada morova vira pe ma ."
+  },
+  "sent": "Thanks for your help. I will see you tomorrow.",
+  "data": {
+   "en": "Thanks. Goodbye.",
+   "es": "Gracias. Adiós.",
+   "de": "Danke. Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "daka . goseda .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi lapa pe tada .",
+     "en": "You are happy.",
+     "es": "Estás feliz.",
+     "de": "Du bist glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108511,
+    "cached_tokens": 108476
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.8
+ },
+ {
+  "conv": 1,
+  "cell": "E",
+  "round": 8,
+  "learner": {
+   "en": "Thanks for your help. I will see you tomorrow.",
+   "talema": "dake fore hife tora . seru te tada morova vira pe ma ."
+  },
+  "sent": "Thanks for your help. I will see you tomorrow.",
+  "data": {
+   "en": "I thank you. Goodbye. Tomorrow.",
+   "es": "Te doy las gracias. Adiós. Mañana.",
+   "de": "Ich danke dir. Auf Wiedersehen. Morgen.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "dahi te tada pe ma . goseda . morova .",
+   "suggestions": [
+    {
+     "talema": "besa .",
+     "en": "Yes.",
+     "es": "Sí.",
+     "de": "Ja."
+    },
+    {
+     "talema": "goseda .",
+     "en": "Goodbye.",
+     "es": "Adiós.",
+     "de": "Auf Wiedersehen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108531,
+    "cached_tokens": 108498
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.9
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "I am happy. What would you like to explore?",
+   "es": "Estoy feliz. ¿Qué te gustaría explorar?",
+   "de": "Ich bin glücklich. Was möchtest du erkunden?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "bi lapa pe ma . raki te vasa pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi guta pe ma .",
+     "en": "I am good.",
+     "es": "Estoy bien.",
+     "de": "Mir geht es gut."
+    },
+    {
+     "talema": "raki te vasa pe tada .",
+     "en": "I ask you: what?",
+     "es": "Te pregunto: ¿qué?",
+     "de": "Ich frage dich: was?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100754,
+    "cached_tokens": 100751
+   }
+  },
+  "api_calls": 1,
+  "seconds": 18.8
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello. Say “habel” to greet me. Which topic do you want?",
+   "es": "Hola. Di «habel» para saludarme. ¿Qué tema quieres?",
+   "de": "Hallo. Sag „habel“, um mich zu begrüßen. Welches Thema möchtest du?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . dese habela . tade vone vike topika .",
+   "suggestions": [
+    {
+     "talema": "bi vone talema pe ma .",
+     "en": "I want Talema.",
+     "es": "Quiero Talema.",
+     "de": "Ich möchte Talema."
+    },
+    {
+     "talema": "bi vone foda pe ma .",
+     "en": "I want food.",
+     "es": "Quiero comida.",
+     "de": "Ich möchte Essen."
+    },
+    {
+     "talema": "bi vone gogika pe ma .",
+     "en": "I want logic.",
+     "es": "Quiero lógica.",
+     "de": "Ich möchte Logik."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108228,
+    "cached_tokens": 108225
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.6
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello! Say, “I am a student.” Would you like food, logic, or mathematics?",
+   "es": "¡Hola! Di: «Soy estudiante». ¿Te gustaría comida, lógica o matemáticas?",
+   "de": "Hallo! Sag: „Ich bin Student.“ Möchtest du Essen, Logik oder Mathematik?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . bi suna pe ma . raki te vono buke de foda dore buke de gogika dore buke de mamaka pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi suna pe ma .",
+     "en": "I am a student.",
+     "es": "Soy estudiante.",
+     "de": "Ich bin Student."
+    },
+    {
+     "talema": "bi buke de foda pe ma .",
+     "en": "I want food.",
+     "es": "Quiero comida.",
+     "de": "Ich möchte Essen."
+    },
+    {
+     "talema": "bi buke de mamaka pe ma .",
+     "en": "I want mathematics.",
+     "es": "Quiero matemáticas.",
+     "de": "Ich möchte Mathematik."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101435,
+    "cached_tokens": 100883
+   }
+  },
+  "api_calls": 2,
+  "seconds": 17.6
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello! Well, I am Luma. What would you like to explore?",
+   "es": "¡Hola! Bueno, soy Luma. ¿Qué te gustaría explorar?",
+   "de": "Hallo! Nun, ich bin Luma. Was möchtest du erkunden?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . vele pe ma . rake te bi vasa pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi buke de foda pe ma .",
+     "en": "I want food.",
+     "es": "Quiero comida.",
+     "de": "Ich möchte Essen."
+    },
+    {
+     "talema": "bi buke de gogika pe ma .",
+     "en": "I want logic.",
+     "es": "Quiero lógica.",
+     "de": "Ich möchte Logik."
+    },
+    {
+     "talema": "bi buke de nerina pe ma .",
+     "en": "I want conversation.",
+     "es": "Quiero conversación.",
+     "de": "Ich quiero conversación."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108360,
+    "cached_tokens": 108357
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.4
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 0,
+  "learner": null,
+  "sent": "Begin a beginner lesson.",
+  "data": {
+   "en": "Hello. Which would you like to explore: food, logic, or mathematics?",
+   "es": "Hola. ¿Qué te gustaría explorar: comida, lógica o matemáticas?",
+   "de": "Hallo. Was möchtest du erkunden: Essen, Logik oder Mathematik?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . rake vike loro foda gogika mamaka .",
+   "suggestions": [
+    {
+     "talema": "bi vone lore foda pe ma .",
+     "en": "I want to explore food.",
+     "es": "Quiero explorar la comida.",
+     "de": "Ich möchte Essen erkunden."
+    },
+    {
+     "talema": "bi vone lore gogika pe ma .",
+     "en": "I want to explore logic.",
+     "es": "Quiero explorar la lógica.",
+     "de": "Ich möchte Logik erkunden."
+    },
+    {
+     "talema": "bi vone lore mamaka pe ma .",
+     "en": "I want to explore mathematics.",
+     "es": "Quiero explorar las matemáticas.",
+     "de": "Ich möchte Mathematik erkunden."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108404,
+    "cached_tokens": 108401
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.0
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 1,
+  "learner": {
+   "en": "Hello.",
+   "talema": "habela ."
+  },
+  "sent": "Hello.",
+  "data": {
+   "en": "Hello. What is the first vowel?",
+   "es": "Hola. ¿Cuál es la primera vocal?",
+   "de": "Hallo. Was ist der erste Vokal?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "habola . vase vanama .",
+   "suggestions": [
+    {
+     "talema": "bi vanama pe vokela .",
+     "en": "The first vowel is a vowel.",
+     "es": "La primera vocal es una vocal.",
+     "de": "Der erste Vokal ist ein Vokal."
+    },
+    {
+     "talema": "vase venama .",
+     "en": "What is the second vowel?",
+     "es": "¿Cuál es la segunda vocal?",
+     "de": "Was ist der zweite Vokal?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100710,
+    "cached_tokens": 100672
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.9
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 1,
+  "learner": {
+   "en": "Hello.",
+   "talema": "habela ."
+  },
+  "sent": "Hello.",
+  "data": {
+   "en": "Hello. What language shall we begin with?",
+   "es": "Hola. ¿Con qué idioma empezamos?",
+   "de": "Hallo. Mit welcher Sprache beginnen wir?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habela . rake te topike naga .",
+   "suggestions": [
+    {
+     "talema": "dese pe ma .",
+     "en": "I say.",
+     "es": "Yo digo.",
+     "de": "Ich sage."
+    },
+    {
+     "talema": "habela .",
+     "en": "Hello.",
+     "es": "Hola.",
+     "de": "Hallo."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108185,
+    "cached_tokens": 108146
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.1
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 1,
+  "learner": {
+   "en": "Hello.",
+   "talema": "habela ."
+  },
+  "sent": "Hello.",
+  "data": {
+   "en": "Hello. Oh, what would you like to learn: food, logic, or mathematics?",
+   "es": "Hola. Ah, ¿qué te gustaría aprender: comida, lógica o matemáticas?",
+   "de": "Hallo. Oh, was möchtest du lernen: Essen, Logik oder Mathematik?",
+   "emotion": "warm",
+   "turn_move": "ask_topic",
+   "talema": "habala . poha . raki voni buke foda dori buke goga dore buke mama pe tada .",
+   "suggestions": [
+    {
+     "talema": "be tade pe ma .",
+     "en": "I am you.",
+     "es": "Yo soy tú.",
+     "de": "Ich bin du."
+    },
+    {
+     "talema": "be me pe tada .",
+     "en": "You are me.",
+     "es": "Tú eres yo.",
+     "de": "Du bist ich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100861,
+    "cached_tokens": 100804
+   }
+  },
+  "api_calls": 1,
+  "seconds": 3.4
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 1,
+  "learner": {
+   "en": "Hello.",
+   "talema": "habela ."
+  },
+  "sent": "Hello.",
+  "error": "Tutor response failed validation twice; nothing was spoken. Last issue: Unknown dictionary root: 'Ana'. Press Stop, then send again or start a new lesson.",
+  "api_calls": 2,
+  "seconds": 15.5
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 1,
+  "learner": {
+   "en": "Hello.",
+   "talema": "habela ."
+  },
+  "sent": "Hello.",
+  "data": {
+   "en": "Hello. Ha.",
+   "es": "Hola. Ja.",
+   "de": "Hallo. Ha.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "habela . habama .",
+   "suggestions": [
+    {
+     "talema": "besa .",
+     "en": "Yes.",
+     "es": "Sí.",
+     "de": "Ja."
+    },
+    {
+     "talema": "vasi la lora .",
+     "en": "What is a word?",
+     "es": "¿Qué es una palabra?",
+     "de": "Was ist ein Wort?"
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108360,
+    "cached_tokens": 108322
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.6
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 2,
+  "learner": {
+   "en": "I have a sister.",
+   "talema": "vi te fefe ka pe ma ."
+  },
+  "sent": "I have a sister.",
+  "data": {
+   "en": "Sister is fefa, and brother is rora. Do you have a brother?",
+   "es": "Hermana es fefa, y hermano es rora. ¿Tienes un hermano?",
+   "de": "Schwester heißt fefa, und Bruder heißt rora. Hast du einen Bruder?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "fefa . rora . rake ti ve pe tada te rora .",
+   "suggestions": [
+    {
+     "talema": "bi fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    },
+    {
+     "talema": "bi rora pe ma .",
+     "en": "I have a brother.",
+     "es": "Tengo un hermano.",
+     "de": "Ich habe einen Bruder."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100732,
+    "cached_tokens": 100707
+   }
+  },
+  "api_calls": 1,
+  "seconds": 15.0
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 2,
+  "learner": {
+   "en": "I have a sister.",
+   "talema": "vi te fefe ka pe ma ."
+  },
+  "sent": "I have a sister.",
+  "data": {
+   "en": "You have a sister. What is your sister’s name?",
+   "es": "Tienes una hermana. ¿Cómo se llama tu hermana?",
+   "de": "Du hast eine Schwester. Wie heißt deine Schwester?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi fefa pe tada . vase pe name de fefe de tada .",
+   "suggestions": [
+    {
+     "talema": "bi nama pe sela .",
+     "en": "Her name is Ana.",
+     "es": "Su nombre es Ana.",
+     "de": "Ihr Name ist Ana."
+    },
+    {
+     "talema": "bi fefa pe tada .",
+     "en": "You have a sister.",
+     "es": "Tienes una hermana.",
+     "de": "Du hast eine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108209,
+    "cached_tokens": 108182
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.8
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 2,
+  "learner": {
+   "en": "I have a sister.",
+   "talema": "vi te fefe ka pe ma ."
+  },
+  "sent": "I have a sister.",
+  "data": {
+   "en": "Oh. I have a sister.",
+   "es": "Ah. Tengo una hermana.",
+   "de": "Oh. Ich habe eine Schwester.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . bo va pe ma te fefa .",
+   "suggestions": [
+    {
+     "talema": "lovi pe ma te fefa .",
+     "en": "I love my sister.",
+     "es": "Quiero a mi hermana.",
+     "de": "Ich liebe meine Schwester."
+    },
+    {
+     "talema": "vi pe ma te rora .",
+     "en": "I have a brother.",
+     "es": "Tengo un hermano.",
+     "de": "Ich habe einen Bruder."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100903,
+    "cached_tokens": 100858
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.2
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 2,
+  "learner": {
+   "en": "I have a sister.",
+   "talema": "vi te fefe ka pe ma ."
+  },
+  "sent": "I have a sister.",
+  "data": {
+   "en": "I have a sister. Do you have a brother?",
+   "es": "Tengo una hermana. ¿Tienes un hermano?",
+   "de": "Ich habe eine Schwester. Hast du einen Bruder?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi ve te fefa pe ma . re pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi ve te rora pe ma .",
+     "en": "I have a brother.",
+     "es": "Tengo un hermano.",
+     "de": "Ich habe einen Bruder."
+    },
+    {
+     "talema": "bi ve te fefa pe tada .",
+     "en": "You have a sister.",
+     "es": "Tienes una hermana.",
+     "de": "Du hast eine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108320,
+    "cached_tokens": 108278
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.6
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 2,
+  "learner": {
+   "en": "I have a sister.",
+   "talema": "vi te fefe ka pe ma ."
+  },
+  "sent": "I have a sister.",
+  "data": {
+   "en": "Oh, you have a sister.",
+   "es": "Ah, tienes una hermana.",
+   "de": "Oh, du hast eine Schwester.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "bi ve te ke fefa pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi ve te rora pe ma .",
+     "en": "I have a brother.",
+     "es": "Tengo un hermano.",
+     "de": "Ich habe einen Bruder."
+    },
+    {
+     "talema": "bi ve te fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108381,
+    "cached_tokens": 108357
+   }
+  },
+  "api_calls": 1,
+  "seconds": 12.5
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 3,
+  "learner": {
+   "en": "She lives far away.",
+   "talema": "livi fama pe sela ."
+  },
+  "sent": "She lives far away.",
+  "data": {
+   "en": "Do you see her often?",
+   "es": "¿La ves a menudo?",
+   "de": "Siehst du sie oft?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "sero pe tada te sela feta .",
+   "suggestions": [
+    {
+     "talema": "seri pe tada te sela .",
+     "en": "I see her.",
+     "es": "La veo.",
+     "de": "Ich sehe sie."
+    },
+    {
+     "talema": "sero pe tada te sela feta .",
+     "en": "I often see her.",
+     "es": "La veo a menudo.",
+     "de": "Ich sehe sie oft."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100762,
+    "cached_tokens": 100729
+   }
+  },
+  "api_calls": 1,
+  "seconds": 14.2
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 3,
+  "learner": {
+   "en": "She lives far away.",
+   "talema": "livi fama pe sela ."
+  },
+  "sent": "She lives far away.",
+  "data": {
+   "en": "She lives far away. Where does she live?",
+   "es": "Ella vive lejos. ¿Dónde vive ella?",
+   "de": "Sie lebt weit weg. Wo lebt sie?",
+   "emotion": "curious",
+   "turn_move": "ask_followup",
+   "talema": "bi livi vita hava pe sela . raki te voda pe sela .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi live hera pe ma .",
+     "en": "I live here.",
+     "es": "Vivo aquí.",
+     "de": "Ich lebe hier."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108239,
+    "cached_tokens": 108206
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.0
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 3,
+  "learner": {
+   "en": "She lives far away.",
+   "talema": "livi fama pe sela ."
+  },
+  "sent": "She lives far away.",
+  "data": {
+   "en": "Oh. She lives far away.",
+   "es": "Oh. Ella vive lejos.",
+   "de": "Oh. Sie lebt weit weg.",
+   "emotion": "thoughtful",
+   "turn_move": "react",
+   "talema": "poha . bi liva pe sela .",
+   "suggestions": [
+    {
+     "talema": "bi misa pe ma .",
+     "en": "I miss her.",
+     "es": "La echo de menos.",
+     "de": "Ich vermisse sie."
+    },
+    {
+     "talema": "bi sera pe ma .",
+     "en": "I see her.",
+     "es": "La veo.",
+     "de": "Ich sehe sie."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100929,
+    "cached_tokens": 100900
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.0
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 3,
+  "learner": {
+   "en": "She lives far away.",
+   "talema": "livi fama pe sela ."
+  },
+  "sent": "She lives far away.",
+  "data": {
+   "en": "Oh. She lives far away.",
+   "es": "Oh. Ella vive lejos.",
+   "de": "Oh. Sie wohnt weit weg.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . bu liva pe sela vita hava .",
+   "suggestions": [
+    {
+     "talema": "rake ti liva pe sela .",
+     "en": "Where does she live?",
+     "es": "¿Dónde vive ella?",
+     "de": "Wo wohnt sie?"
+    },
+    {
+     "talema": "bi lapa pe sela .",
+     "en": "She is happy.",
+     "es": "Ella está feliz.",
+     "de": "Sie ist glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108347,
+    "cached_tokens": 108317
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.7
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 3,
+  "learner": {
+   "en": "She lives far away.",
+   "talema": "livi fama pe sela ."
+  },
+  "sent": "She lives far away.",
+  "data": {
+   "en": "Oh. She lives far away.",
+   "es": "Ah. Ella vive lejos.",
+   "de": "Oh. Sie wohnt weit weg.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "poha . livi vita pe sela .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe sela .",
+     "en": "She is happy.",
+     "es": "Ella está feliz.",
+     "de": "Sie ist glücklich."
+    },
+    {
+     "talema": "raki voda pe sela .",
+     "en": "Ask her where she lives.",
+     "es": "Pregúntale dónde vive.",
+     "de": "Frag sie, wo sie wohnt."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108405,
+    "cached_tokens": 108378
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.8
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 4,
+  "learner": {
+   "en": "Do you have a sister?",
+   "talema": "tobe vi te fefe ka pe tada ."
+  },
+  "sent": "Do you have a sister?",
+  "error": "Tutor response failed validation twice; nothing was spoken. Last issue: Unknown dictionary root: 'a'. Press Stop, then send again or start a new lesson.",
+  "api_calls": 2,
+  "seconds": 18.3
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 4,
+  "learner": {
+   "en": "Do you have a sister?",
+   "talema": "tobe vi te fefe ka pe tada ."
+  },
+  "sent": "Do you have a sister?",
+  "data": {
+   "en": "I am a teacher. What is her name?",
+   "es": "Soy profesora. ¿Cómo se llama ella?",
+   "de": "Ich bin Lehrerin. Wie heißt sie?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi keha pe ma . rake te vase pe name de sela .",
+   "suggestions": [
+    {
+     "talema": "bi fefa pe tada .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    },
+    {
+     "talema": "bi fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108270,
+    "cached_tokens": 108236
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.6
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 4,
+  "learner": {
+   "en": "Do you have a sister?",
+   "talema": "tobe vi te fefe ka pe tada ."
+  },
+  "sent": "Do you have a sister?",
+  "data": {
+   "en": "I don't have a sister.",
+   "es": "No tengo una hermana.",
+   "de": "Ich habe keine Schwester.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "be fi ve pe ma te fefa .",
+   "suggestions": [
+    {
+     "talema": "rake ti ve pe ma te fefa .",
+     "en": "Do I have a sister?",
+     "es": "¿Tengo una hermana?",
+     "de": "Habe ich eine Schwester?"
+    },
+    {
+     "talema": "bi ve pe ma te fefa .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100954,
+    "cached_tokens": 100926
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.6
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 4,
+  "learner": {
+   "en": "Do you have a sister?",
+   "talema": "tobe vi te fefe ka pe tada ."
+  },
+  "sent": "Do you have a sister?",
+  "data": {
+   "en": "Do you have a sister?",
+   "es": "¿Tienes una hermana?",
+   "de": "Hast du eine Schwester?",
+   "emotion": "curious",
+   "turn_move": "ask_followup",
+   "talema": "be vi te fefa pe tada .",
+   "suggestions": [
+    {
+     "talema": "be vi te fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    },
+    {
+     "talema": "be vi te fefa pe ma .",
+     "en": "I have a brother.",
+     "es": "Tengo un hermano.",
+     "de": "Ich tengo un hermano."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108374,
+    "cached_tokens": 108344
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.4
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 4,
+  "learner": {
+   "en": "Do you have a sister?",
+   "talema": "tobe vi te fefe ka pe tada ."
+  },
+  "sent": "Do you have a sister?",
+  "data": {
+   "en": "I don't have a sister.",
+   "es": "No tengo una hermana.",
+   "de": "Ich habe keine Schwester.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "bi vi fa fefa pe ma .",
+   "suggestions": [
+    {
+     "talema": "bi ve fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    },
+    {
+     "talema": "bi vi fa fefa pe tada .",
+     "en": "You don't have a sister.",
+     "es": "No tienes una hermana.",
+     "de": "Du hast keine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108430,
+    "cached_tokens": 108402
+   }
+  },
+  "api_calls": 1,
+  "seconds": 11.6
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 5,
+  "learner": {
+   "en": "I think sisters are good.",
+   "talema": "tini te bi guta pe fefe keda pe ma ."
+  },
+  "sent": "I think sisters are good.",
+  "error": "Tutor response failed validation twice; nothing was spoken. Last issue: Unknown dictionary root: 'a'. Press Stop, then send again or start a new lesson.",
+  "api_calls": 2,
+  "seconds": 24.4
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 5,
+  "learner": {
+   "en": "I think sisters are good.",
+   "talema": "tini te bi guta pe fefe keda pe ma ."
+  },
+  "sent": "I think sisters are good.",
+  "data": {
+   "en": "Sisters are good. Your sister is kind.",
+   "es": "Las hermanas son buenas. Tu hermana es amable.",
+   "de": "Schwestern sind gut. Deine Schwester ist freundlich.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bi guta pe fefa . bi kinada pe fefe tora .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe sela .",
+     "en": "She is happy.",
+     "es": "Ella está feliz.",
+     "de": "Sie ist glücklich."
+    },
+    {
+     "talema": "bi kinada pe fefa .",
+     "en": "My sister is kind.",
+     "es": "Mi hermana es amable.",
+     "de": "Meine Schwester ist freundlich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108299,
+    "cached_tokens": 108267
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.8
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 5,
+  "learner": {
+   "en": "I think sisters are good.",
+   "talema": "tini te bi guta pe fefe keda pe ma ."
+  },
+  "sent": "I think sisters are good.",
+  "data": {
+   "en": "Yes. Sisters are good.",
+   "es": "Sí. Las hermanas son buenas.",
+   "de": "Ja. Schwestern sind gut.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "besa . bi guta pe fefa .",
+   "suggestions": [
+    {
+     "talema": "bi fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    },
+    {
+     "talema": "bi guta pe fefa .",
+     "en": "Sisters are good.",
+     "es": "Las hermanas son buenas.",
+     "de": "Schwestern sind gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100979,
+    "cached_tokens": 100951
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.0
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 5,
+  "learner": {
+   "en": "I think sisters are good.",
+   "talema": "tini te bi guta pe fefe keda pe ma ."
+  },
+  "sent": "I think sisters are good.",
+  "data": {
+   "en": "Oh, sisters are good. Do you have a brother?",
+   "es": "Oh, las hermanas son buenas. ¿Tienes un hermano?",
+   "de": "Oh, Schwestern sind gut. Hast du einen Bruder?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . bi guta pe fefa . be vi rora pe tada .",
+   "suggestions": [
+    {
+     "talema": "be vi rora pe ma .",
+     "en": "I have a brother.",
+     "es": "Tengo un hermano.",
+     "de": "Ich habe einen Bruder."
+    },
+    {
+     "talema": "be vi fefa pe ma .",
+     "en": "I have a sister.",
+     "es": "Tengo una hermana.",
+     "de": "Ich habe eine Schwester."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108398,
+    "cached_tokens": 108371
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.6
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 5,
+  "learner": {
+   "en": "I think sisters are good.",
+   "talema": "tini te bi guta pe fefe keda pe ma ."
+  },
+  "sent": "I think sisters are good.",
+  "data": {
+   "en": "Yes. Sisters are good.",
+   "es": "Sí. Las hermanas son buenas.",
+   "de": "Ja. Schwestern sind gut.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "besa . be gute pe fefa .",
+   "suggestions": [
+    {
+     "talema": "be lobe pe fefa .",
+     "en": "I love my sister.",
+     "es": "Quiero a mi hermana.",
+     "de": "Ich liebe meine Schwester."
+    },
+    {
+     "talema": "be lape pe fefa .",
+     "en": "My sister is happy.",
+     "es": "Mi hermana está feliz.",
+     "de": "Meine Schwester ist glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108454,
+    "cached_tokens": 108427
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.9
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 6,
+  "learner": {
+   "en": "But she is angry with me.",
+   "talema": "bere bo nanora mite ma pe sela ."
+  },
+  "sent": "But she is angry with me.",
+  "data": {
+   "en": "She is angry with me. Do you know the reason for her anger?",
+   "es": "Ella está enfadada conmigo. ¿Sabes la razón de su enfado?",
+   "de": "Sie ist wütend auf mich. Kennst du den Grund für ihren Ärger?",
+   "emotion": "thoughtful",
+   "turn_move": "ask_followup",
+   "talema": "be nanori sela mite ma . raki te tada seve rane de nanora .",
+   "suggestions": [
+    {
+     "talema": "be vube ma .",
+     "en": "I am unsure.",
+     "es": "No estoy seguro.",
+     "de": "Ich bin unsicher."
+    },
+    {
+     "talema": "be patese ma .",
+     "en": "I am patient.",
+     "es": "Tengo paciencia.",
+     "de": "Ich bin geduldig."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100786,
+    "cached_tokens": 100759
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.7
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 6,
+  "learner": {
+   "en": "But she is angry with me.",
+   "talema": "bere bo nanora mite ma pe sela ."
+  },
+  "sent": "But she is angry with me.",
+  "data": {
+   "en": "She is angry. Why is she angry?",
+   "es": "Ella está enfadada. ¿Por qué está enfadada?",
+   "de": "Sie ist wütend. Warum ist sie wütend?",
+   "emotion": "thoughtful",
+   "turn_move": "ask_followup",
+   "talema": "bi nanora pe sela . raki te vaha pe sela .",
+   "suggestions": [
+    {
+     "talema": "bi sarisa pe ma .",
+     "en": "I am sad.",
+     "es": "Estoy triste.",
+     "de": "Ich bin traurig."
+    },
+    {
+     "talema": "bi lapa pe sela .",
+     "en": "She is happy.",
+     "es": "Ella está feliz.",
+     "de": "Sie ist glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108331,
+    "cached_tokens": 108296
+   }
+  },
+  "api_calls": 1,
+  "seconds": 9.7
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 6,
+  "learner": {
+   "en": "But she is angry with me.",
+   "talema": "bere bo nanora mite ma pe sela ."
+  },
+  "sent": "But she is angry with me.",
+  "data": {
+   "en": "Oh. What happened to you?",
+   "es": "Oh. ¿Qué te pasó?",
+   "de": "Oh. Was ist dir passiert?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . rake hape pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi nanora pe sela .",
+     "en": "She is angry.",
+     "es": "Ella está enfadada.",
+     "de": "Sie ist wütend."
+    },
+    {
+     "talema": "bi sira pe ma .",
+     "en": "I am having a hard time.",
+     "es": "Lo estoy pasando mal.",
+     "de": "Ich habe es gerade schwer."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101006,
+    "cached_tokens": 100976
+   }
+  },
+  "api_calls": 1,
+  "seconds": 6.6
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 6,
+  "learner": {
+   "en": "But she is angry with me.",
+   "talema": "bere bo nanora mite ma pe sela ."
+  },
+  "sent": "But she is angry with me.",
+  "data": {
+   "en": "Oh. Is she angry with you now?",
+   "es": "Oh. ¿Está enfadada contigo ahora?",
+   "de": "Oh. Ist sie jetzt wütend auf dich?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "poha . tobi bi nanore mite tada pe sela nova .",
+   "suggestions": [
+    {
+     "talema": "bi nanora pe sela .",
+     "en": "She is angry.",
+     "es": "Ella está enfadada.",
+     "de": "Sie ist wütend."
+    },
+    {
+     "talema": "bi golada pe sela .",
+     "en": "She is glad.",
+     "es": "Ella está contenta.",
+     "de": "Sie ist froh."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108432,
+    "cached_tokens": 108395
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.3
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 6,
+  "learner": {
+   "en": "But she is angry with me.",
+   "talema": "bere bo nanora mite ma pe sela ."
+  },
+  "sent": "But she is angry with me.",
+  "data": {
+   "en": "Sorry.",
+   "es": "Lo siento.",
+   "de": "Es tut mir leid.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "risora .",
+   "suggestions": [
+    {
+     "talema": "bi sarisa pe ma .",
+     "en": "I am sad.",
+     "es": "Estoy triste.",
+     "de": "Ich bin traurig."
+    },
+    {
+     "talema": "bi nanora pe sa .",
+     "en": "She is angry.",
+     "es": "Ella está enfadada.",
+     "de": "Sie ist wütend."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108480,
+    "cached_tokens": 108451
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.2
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 7,
+  "learner": {
+   "en": "Ha! It is a joke.",
+   "talema": "habama . bi ditoke ka pe pesa ."
+  },
+  "sent": "Ha! It is a joke.",
+  "data": {
+   "en": "I laugh too. Was the joke about your sister?",
+   "es": "Yo también me río. ¿El chiste era sobre tu hermana?",
+   "de": "Ich lache auch. Ging der Witz um deine Schwester?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "bo labiha tuka pe ma . raki te bi ditoka de fefa pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi ditoka pe ma .",
+     "en": "It is a joke.",
+     "es": "Es un chiste.",
+     "de": "Es ein Witz."
+    },
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100822,
+    "cached_tokens": 100783
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 7,
+  "learner": {
+   "en": "Ha! It is a joke.",
+   "talema": "habama . bi ditoke ka pe pesa ."
+  },
+  "sent": "Ha! It is a joke.",
+  "data": {
+   "en": "Ha! The joke is funny. Was it funny to you?",
+   "es": "¡Ja! El chiste es gracioso. ¿Te pareció gracioso?",
+   "de": "Ha! Der Witz ist lustig. War er für dich lustig?",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "habamu ha ha ha ha . be futine pe ditoke la . raki te be futine pe ditoke la pe tada .",
+   "suggestions": [
+    {
+     "talema": "bi ditoke la pe sela .",
+     "en": "That is a joke about her.",
+     "es": "Eso es una broma sobre ella.",
+     "de": "Das ist ein Witz über sie."
+    },
+    {
+     "talema": "be futine pe ditoka .",
+     "en": "The joke is funny.",
+     "es": "El chiste es gracioso.",
+     "de": "Der Witz ist lustig."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108362,
+    "cached_tokens": 108328
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.5
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 7,
+  "learner": {
+   "en": "Ha! It is a joke.",
+   "talema": "habama . bi ditoke ka pe pesa ."
+  },
+  "sent": "Ha! It is a joke.",
+  "data": {
+   "en": "Haha!",
+   "es": "¡Ja, ja!",
+   "de": "Haha!",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "habuha .",
+   "suggestions": [
+    {
+     "talema": "bi guta pe ditoka .",
+     "en": "The joke is good.",
+     "es": "El chiste es bueno.",
+     "de": "Der Witz ist gut."
+    },
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101031,
+    "cached_tokens": 101003
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.6
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 7,
+  "learner": {
+   "en": "Ha! It is a joke.",
+   "talema": "habama . bi ditoke ka pe pesa ."
+  },
+  "sent": "Ha! It is a joke.",
+  "data": {
+   "en": "Haha! It’s a joke.",
+   "es": "¡Ja, ja! Es una broma.",
+   "de": "Haha! Das ist ein Witz.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "haba . bi ditoka pe tisa .",
+   "suggestions": [
+    {
+     "talema": "bi lapa pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    },
+    {
+     "talema": "bi futa pe tada .",
+     "en": "You are funny.",
+     "es": "Eres divertido.",
+     "de": "Du bist lustig."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108463,
+    "cached_tokens": 108429
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.4
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 7,
+  "learner": {
+   "en": "Ha! It is a joke.",
+   "talema": "habama . bi ditoke ka pe pesa ."
+  },
+  "sent": "Ha! It is a joke.",
+  "data": {
+   "en": "Haha!",
+   "es": "¡Ja, ja!",
+   "de": "Ha ha!",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "habuhe poha .",
+   "suggestions": [
+    {
+     "talema": "be ditoke pe tada .",
+     "en": "It is a joke.",
+     "es": "Es una broma.",
+     "de": "Es ein Witz."
+    },
+    {
+     "talema": "be gute pe fefa .",
+     "en": "Sisters are good.",
+     "es": "Las hermanas son buenas.",
+     "de": "Schwestern sind gut."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108500,
+    "cached_tokens": 108477
+   }
+  },
+  "api_calls": 1,
+  "seconds": 10.5
+ },
+ {
+  "conv": 2,
+  "cell": "A",
+  "round": 8,
+  "learner": {
+   "en": "I go now. Goodbye.",
+   "talema": "geni nova pe ma . goseda ."
+  },
+  "sent": "I go now. Goodbye.",
+  "data": {
+   "en": "Goodbye.",
+   "es": "Adiós.",
+   "de": "Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "badisa .",
+   "suggestions": [
+    {
+     "talema": "gene nova .",
+     "en": "I go now.",
+     "es": "Me voy ahora.",
+     "de": "Ich gehe jetzt."
+    },
+    {
+     "talema": "lape pe ma .",
+     "en": "I am happy.",
+     "es": "Estoy feliz.",
+     "de": "Ich bin glücklich."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 100858,
+    "cached_tokens": 100819
+   }
+  },
+  "api_calls": 1,
+  "seconds": 7.5
+ },
+ {
+  "conv": 2,
+  "cell": "B",
+  "round": 8,
+  "learner": {
+   "en": "I go now. Goodbye.",
+   "talema": "geni nova pe ma . goseda ."
+  },
+  "sent": "I go now. Goodbye.",
+  "data": {
+   "en": "Bye. Goodbye.",
+   "es": "Adiós. Despedida.",
+   "de": "Tschüss. Abschied.",
+   "emotion": "warm",
+   "turn_move": "ask_followup",
+   "talema": "badisa . goseda .",
+   "suggestions": [
+    {
+     "talema": "desi ma pe ma .",
+     "en": "I say goodbye.",
+     "es": "Digo adiós.",
+     "de": "Ich verabschiede mich."
+    },
+    {
+     "talema": "voni gena pe ma .",
+     "en": "I want to go.",
+     "es": "Quiero irme.",
+     "de": "Ich möchte gehen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108406,
+    "cached_tokens": 108359
+   }
+  },
+  "api_calls": 1,
+  "seconds": 2.8
+ },
+ {
+  "conv": 2,
+  "cell": "C",
+  "round": 8,
+  "learner": {
+   "en": "I go now. Goodbye.",
+   "talema": "geni nova pe ma . goseda ."
+  },
+  "sent": "I go now. Goodbye.",
+  "data": {
+   "en": "Goodbye.",
+   "es": "Adiós.",
+   "de": "Auf Wiedersehen.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "badisa .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "besa .",
+     "en": "Yes.",
+     "es": "Sí.",
+     "de": "Ja."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 101050,
+    "cached_tokens": 101028
+   }
+  },
+  "api_calls": 1,
+  "seconds": 8.2
+ },
+ {
+  "conv": 2,
+  "cell": "D",
+  "round": 8,
+  "learner": {
+   "en": "I go now. Goodbye.",
+   "talema": "geni nova pe ma . goseda ."
+  },
+  "sent": "I go now. Goodbye.",
+  "data": {
+   "en": "Bye.",
+   "es": "Adiós.",
+   "de": "Tschüss.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "badisa .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "goseda .",
+     "en": "Goodbye.",
+     "es": "Adiós.",
+     "de": "Auf Wiedersehen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108488,
+    "cached_tokens": 108460
+   }
+  },
+  "api_calls": 1,
+  "seconds": 5.0
+ },
+ {
+  "conv": 2,
+  "cell": "E",
+  "round": 8,
+  "learner": {
+   "en": "I go now. Goodbye.",
+   "talema": "geni nova pe ma . goseda ."
+  },
+  "sent": "I go now. Goodbye.",
+  "data": {
+   "en": "Bye.",
+   "es": "Adiós.",
+   "de": "Tschüss.",
+   "emotion": "warm",
+   "turn_move": "react",
+   "talema": "badisa .",
+   "suggestions": [
+    {
+     "talema": "daka .",
+     "en": "Thanks.",
+     "es": "Gracias.",
+     "de": "Danke."
+    },
+    {
+     "talema": "morova .",
+     "en": "Tomorrow.",
+     "es": "Mañana.",
+     "de": "Morgen."
+    }
+   ],
+   "source": "gpt-6-luna",
+   "usage": {
+    "input_tokens": 108521,
+    "cached_tokens": 108497
+   }
+  },
+  "api_calls": 1,
+  "seconds": 4.5
+ }
+]

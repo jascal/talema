@@ -42,16 +42,19 @@
     <section id="conversation" class="conversation" aria-live="polite">
       <div class="empty-hint">
         <p class="empty-title">Nothing said yet</p>
-        <p>Press <b>Start a lesson</b> for a greeting, or try one of these. Type any Talema sentence to send it.</p>
+        <p>Press <b>Start a lesson</b> for a greeting, or try one of these. <span id="hintWrite">Type any Talema sentence to send it.</span></p>
         <div id="starterChips" class="chips">
-          <button type="button" data-suggestion="lafe pe doge la .">lafe pe doge la .<span>The dog sleeps.</span></button>
-          <button type="button" data-suggestion="lese lafa .">lese lafa .<span>Please sleep.</span></button>
-          <button type="button" data-suggestion="bi fura pe si tova tova .">bi fura pe si tova tova .<span>Two plus two is four.</span></button>
+          <button type="button" data-suggestion="lafe pe doge la ." data-en="The dog sleeps.">lafe pe doge la .<span>The dog sleeps.</span></button>
+          <button type="button" data-suggestion="lese lafa ." data-en="Please sleep.">lese lafa .<span>Please sleep.</span></button>
+          <button type="button" data-suggestion="bi fura pe si tova tova ." data-en="Two plus two is four.">bi fura pe si tova tova .<span>Two plus two is four.</span></button>
         </div>
       </div>
     </section>
 
     <form id="composer" class="composer">
+      <label>I write in
+        <select id="inputLanguage" title="Talema tests whether Luma can read you; English lets you test her answers on their own"><option value="talema">Talema</option><option value="english">English</option></select>
+      </label>
       <input id="message" autocomplete="off" placeholder="Say a Talema sentence, for example: bi fura pe si tova tova ." required>
       <button type="submit">Send</button>
     </form>
