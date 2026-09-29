@@ -62,7 +62,7 @@ and X-bar levels add nothing (see `docs/UNIVERSAL_GRAMMAR.md` in the source repo
 |---|---|
 | `books/BUKE_DE_LORE_FIRA.md` | the core book, about 89k tokens: grammar, first words, conventions, tales, agent speech, how the language grows, songs, sayings, the book of roots |
 | `books/volumes/*.md` | field volumes, 2–4k tokens each: `digital`, `mathematics`, `logic`, `physics`, `philosophy`, `morality`, `food`, and `talk`, a play in which eight people talk |
-| `data/sentences.jsonl` | every sentence of every book (2,043), with its tree and translations |
+| `data/sentences.jsonl` | every sentence of every book (2,176), with its tree and translations |
 | `data/lexicon.jsonl` | every root (6,113): class, English / German / Spanish source words, tier, weight, origin |
 | `source/` | the books' sources: each sentence written as a tree of concepts (`.tl`), plus the lexicon TSVs |
 | `speech/` | a kit for speaking Talema: W3C pronunciation lexicons (IPA; Spanish, Italian, English respellings), voice guidance, a listening test |
@@ -82,7 +82,7 @@ and X-bar levels add nothing (see `docs/UNIVERSAL_GRAMMAR.md` in the source repo
 | `de_mt`, `es_mt` | German and Spanish **machine translations** of `en` ([opus-mt-en-de], [opus-mt-en-es]) |
 | `source_line` | line in the source file |
 
-`en` is empty for 221 lines that need none: speaker labels (`Lut-a`, `Sol-a`), number tables, and dictionary-style mentions.
+`en` is empty for 275 lines that need none: speaker labels (`Lut-a`, `Sol-a`), number tables, and dictionary-style mentions.
 When the author's English line covers a longer thought ("…, and …"), it stays with the tree it was written beside.
 
 The book of roots and the field glossaries are dictionaries, not sentences, and are in `lexicon`.
