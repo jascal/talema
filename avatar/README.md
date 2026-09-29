@@ -107,7 +107,10 @@ The commonest cause is a learner asking about a letter ("say the letter a"). The
 intent and wrong about the form: a written letter is not a root, so it can never be spoken. The retry
 looks up the word the book gives that vowel and hands it over — *use `vanam` in that node, and put the
 letter in the caption* — resolved from the lexicon rather than hardcoded, so it stays right if a root is
-ever renamed. The persona says the same thing up front, so the retry is usually not needed. If a reply
+ever renamed. Asking about a letter also makes the server append the five names after the books
+(`dialogue.letter_note`, for that turn and the two after it), so the retry is usually not needed. The names are
+not in the persona: listed there they surfaced unprompted, about 3% of replies ("Hello." answered with "The
+first vowel is called vanam."), and appending after the books leaves the cached prefix the same every turn. If a reply
 still fails twice, nothing is spoken and the status line says so: the server will not substitute a
 sentence it could not validate, because wrong Talema is worse than no Talema. Press **Stop** and send
 again, or start a new lesson.
