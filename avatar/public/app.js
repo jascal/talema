@@ -19,6 +19,10 @@
   const stopBtn = document.querySelector('#stop');
   const playReplyBtn = document.querySelector('#playReply');
   const micBtn = document.querySelector('#mic');
+  const starterChipsEl = document.querySelector('#starterChips');
+  const playbackEl = document.querySelector('#playback');
+  const playbackFillEl = document.querySelector('#playbackFill');
+  const playbackTimeEl = document.querySelector('#playbackTime');
 
   const CAPTION_FALLBACK = { en: 'Welcome.', es: 'Bienvenido.', de: 'Willkommen.' };
   const TEST_PHRASE = 'veloma .';
@@ -138,10 +142,24 @@
   }
 
   // Drive the active-word highlighter from the audio clock. Cheap linear scan per
-  // tick; with at most a few dozen words per turn this is negligible.
+  // tick; with at most a few dozen words per turn this is negligible. The playback
+  // readout rides the same tick rather than starting a second animation loop.
+  function clock(seconds) {
+    const total = Math.max(0, Math.floor(seconds || 0));
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+  }
+
   function tickWordHighlight() {
     if (!playerEl.paused && !playerEl.ended && wordCues.length) {
       setActiveWord(findActiveWordIndex(playerEl.currentTime));
+    }
+    const duration = playerEl.duration;
+    if (Number.isFinite(duration) && duration > 0) {
+      playbackEl.hidden = false;
+      playbackFillEl.style.width = `${Math.min(100, (playerEl.currentTime / duration) * 100)}%`;
+      playbackTimeEl.textContent = `${clock(playerEl.currentTime)} / ${clock(duration)}`;
+    } else {
+      playbackEl.hidden = true;
     }
     requestAnimationFrame(tickWordHighlight);
   }
@@ -303,6 +321,13 @@
   });
 
   suggestionButtonsEl.addEventListener('click', event => {
+    const button = event.target.closest('[data-suggestion]');
+    if (button) send(button.dataset.suggestion);
+  });
+
+  // The empty state carries the same affordance as the running conversation, so the
+  // two share one shape and one handler rather than teaching the page two patterns.
+  starterChipsEl.addEventListener('click', event => {
     const button = event.target.closest('[data-suggestion]');
     if (button) send(button.dataset.suggestion);
   });
