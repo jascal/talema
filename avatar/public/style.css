@@ -37,9 +37,9 @@ h1 {
   margin-bottom:14px; background:#0d1119;
   box-shadow:0 30px 70px -34px #000, 0 0 0 1px #ffffff08 inset, 0 1px 0 #ffffff0f inset;
 }
-/* The canvas is 4:3 and paints its own backdrop to the edges, so it is sized by width
-   alone. `object-fit` is deliberately unused: cropping letterboxes the painted backdrop
-   against the stage colour, and capping the height crops the character's hair. */
+/* The canvas is 4:3 and the photo fills it to the edges, so it is sized by width alone.
+   `object-fit` is deliberately unused: cropping would cut the portrait, and capping the height
+   crops her hair. */
 #character { display:block; width:100%; height:auto; }
 .stage-label {
   position:absolute; left:20px; top:18px; display:flex; align-items:center; gap:10px;
@@ -60,8 +60,16 @@ h1 {
 @keyframes breathe { 0%,100%{opacity:.3} 50%{opacity:1} }
 .subtitles {
   position:absolute; bottom:0; left:0; right:0; padding:44px 24px 18px; text-align:center;
-  background:linear-gradient(transparent,#0d1119d9 42%,#0d1119f2);
 }
+/* The scrim that keeps captions legible over the jersey. It is a layer of its own so it can fade
+   out: with no caption to read it would only be a dark band across the photo. */
+.subtitles::before {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(transparent,#0d1119d1 42%,#0d1119eb);
+  transition:opacity .3s;
+}
+.subtitles:has(#liveTalema:empty):has(#liveCaption:empty)::before { opacity:0; }
+.subtitles > * { position:relative; }
 #liveTalema { color:var(--accent); font-size:20px; font-weight:550; letter-spacing:.01em; }
 #liveTalema .word { transition:color .14s, background-color .14s, box-shadow .14s; padding:1px 3px; border-radius:5px; }
 #liveTalema .word.active {

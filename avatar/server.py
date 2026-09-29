@@ -10,6 +10,12 @@ from tts import available, synthesize, utterance
 from dialogue import reply, configuration
 
 PUBLIC = Path(__file__).resolve().parent / "public"
+CONTENT_TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json",
+    ".webp": "image/webp",
+}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -29,8 +35,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         asset = (PUBLIC / ("index.html" if path == "/" else path.lstrip("/"))).resolve()
         if asset.is_file() and PUBLIC in asset.parents:
-            content_type = "text/html; charset=utf-8" if asset.suffix == ".html" else "text/css; charset=utf-8" if asset.suffix == ".css" else "text/javascript; charset=utf-8"
-            self._send(200, asset.read_bytes(), content_type)
+            self._send(200, asset.read_bytes(), CONTENT_TYPES.get(asset.suffix, "text/javascript; charset=utf-8"))
             return
         self._send(404, b"not found", "text/plain; charset=utf-8")
 

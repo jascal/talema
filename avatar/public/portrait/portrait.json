@@ -1,0 +1,94 @@
+{
+ "width": 1536,
+ "height": 1152,
+ "base": "base.webp",
+ "patches": {
+  "closed": {
+   "file": "closed.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "round": {
+   "file": "round.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "wide": {
+   "file": "wide.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "open": {
+   "file": "open.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "teeth": {
+   "file": "teeth.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "small": {
+   "file": "small.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "smile": {
+   "file": "smile.webp",
+   "region": "mouth",
+   "x": 628,
+   "y": 584,
+   "w": 310,
+   "h": 231
+  },
+  "blink": {
+   "file": "blink.webp",
+   "region": "eyes",
+   "x": 625,
+   "y": 396,
+   "w": 350,
+   "h": 84
+  },
+  "lids": {
+   "file": "lids.webp",
+   "region": "eyes",
+   "x": 625,
+   "y": 396,
+   "w": 350,
+   "h": 84
+  },
+  "gaze_up": {
+   "file": "gaze_up.webp",
+   "region": "eyes",
+   "x": 625,
+   "y": 396,
+   "w": 350,
+   "h": 84
+  }
+ },
+ "browMap": {
+  "file": "brows.webp",
+  "x": 600,
+  "y": 320,
+  "w": 400,
+  "h": 110
+ }
+}

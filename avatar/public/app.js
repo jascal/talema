@@ -1,4 +1,4 @@
-// Talema avatar client. The avatar is a local canvas character; the tutor is the
+// Talema avatar client. The avatar is a photograph composited on a canvas; the tutor is the
 // OpenAI Responses API; the voice is local Kokoro. State lives in the browser tab
 // only. Refreshing the page clears history.
 (() => {

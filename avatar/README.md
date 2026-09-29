@@ -1,10 +1,11 @@
 # Talema avatar
 
-Luma is a local rendered 2D character with an LLM tutor and local Kokoro speech.
-Spoken and written dialogue stays in Talema; English, Spanish and German captions
-are separate. The character uses mouth shapes timed from Kokoro's predicted
-phoneme durations, plus blinking, gaze and breathing. This is a real-time canvas
-character, not photorealistic generated video or a video export pipeline.
+Luma is a photograph of a (fictional) person that moves in real time, with an LLM tutor and
+local Kokoro speech. Spoken and written dialogue stays in Talema; English, Spanish and German
+captions are separate. Her mouth follows the phoneme durations Kokoro predicts, and she blinks,
+looks up while she thinks, breathes, and shows the tutor's mood in her brows. It is one still
+photograph plus a few small edited patches of it, composited in the browser: not generated video,
+not a 3D model, and nothing is generated while you talk. See [Luma's face](#lumas-face).
 
 ## Run
 
@@ -156,8 +157,8 @@ Word spans are walked over the same vocabulary-filtered phoneme stream the model
 receives, so a word the model does not voice (a digit, say) and the periods between
 sentences do not push the highlight out of step.
 The short utterance limit keeps raw phonemes below Kokoro's 510-character limit.
-`character.js` renders the face locally without another avatar service or subscription.
-`/api/respond` accepts `{talema, history, start}`; `/api/utterance` accepts `{talema}`
+`character.js` renders the face locally, in the browser, without another avatar service or
+subscription. `/api/respond` accepts `{talema, history, start}`; `/api/utterance` accepts `{talema}`
 and returns base64 WAV, cues, words and word cues, provider and voice. `/api/audio`
 retains raw WAV output. Agents can use the same JSON routes. `/api/health`
 distinguishes model configuration from TTS package availability; it does not prove
@@ -168,13 +169,80 @@ Talema ASR, persistent student model, or production hosting controls. Full-book 
 and CPU synthesis can add noticeable latency. Live model quality must be evaluated
 with real lessons; the automated tests mock API responses.
 
+## Luma's face
+
+`avatar/public/portrait/` holds one 1536×1152 photograph (`base.webp`), ten small patches of it, and a
+brow map: 390 KiB in all. `character.js` (WebGL2) composites them; `face.js` decides how much of each is
+visible and has no browser dependencies, so it is unit-tested in Node.
+
+| part | how it moves |
+|---|---|
+| mouth | six patches (`closed round wide open teeth small`) for what `tts.py` emits, plus `smile` for the *encouraging* mood. The cue under the playhead picks one. |
+| eyes | patches for `blink`, half-shut `lids` and a look up (`gaze_up`, used while she thinks) |
+| brows | **not patches**: the shader moves the brow and the skin above it a few pixels, from a map measured off the photo (`brows.webp`). Mood sets how far: *curious* lifts one, *thoughtful* lowers and draws them in, *encouraging* lifts both. |
+| head | small tilt, sway and breath on a shared warp, so every patch moves with it and the shoulders stay planted |
+
+Every patch is a masked edit of the *same* photograph, so the person, lighting and skin texture stay the
+same and only the masked region changes; the patch fades to nothing at its rim, so it has no edge. The
+mouth region is a polygon that follows the face (a rectangle wide enough to reach the smile lines also
+touches the hair at the jaw), and the model is told to relax or deepen the smile lines with each shape.
+
+Each choice below answers something that looked wrong, so it is worth knowing before changing it:
+
+- **Patches are conversational, not full-strength.** The model's first "ah" was a wide-jawed yawn and its
+  "ee" a grin; blended at partial weight they only ghost two lip outlines, so the shapes are regenerated at
+  the amplitude of relaxed speech and shown at full weight.
+- **Mouth shapes move at a constant speed** (`MOUTH_MOVE`, 60 ms), not an exponential ease. Easing has a
+  long tail, so at a cue every 75 ms the two or three mouths before this one were all still faintly visible:
+  lips from words ago over the current shape. A shape that has been left is now gone exactly.
+- **Eyes and brows never dissolve slowly.** Fading one eye photo into another shows two irises until it
+  finishes, and an exponential ease made that half a second. Gaze is a 120 ms smoothstep, about a saccade.
+- **Brows are a warp, not patches.** A patch can only dissolve one brow into another, which shows two
+  brows while it lasts, and a patch that misses part of the original leaves it showing. The pull is
+  measured from the photo because the right brow's arch droops down to the lashes; it stops at the brow's
+  own lower edge, tapers at the outer tail, and fades over as much of the gap to the lashes as there is,
+  so the eyelid skin is not stretched.
+- **Nothing moves with speech energy.** Brows that lift on every syllable read as flashing. There is no
+  idle side-glance either: it read as a tic.
+- The composite is `Σ wᵢ·imageᵢ` (each patch drawn at `wₖ / (w_photo + w₁ + … + wₖ)`), which the tests
+  check equals the weighted sum whatever the drawing order.
+
+**Provenance.** The person is synthetic: generated with `gpt-image-2.5-sunburst` from the prompt in
+`tools/portrait.py`, then edited with the same model. She is not a real person and not a likeness of one.
+Regenerating means spending on the Images API with your `OPENAI_API_KEY`: the base portrait plus ten
+edits was a few dozen calls in all, counting retries. The browser never calls it.
+
+**Rebuilding.** The committed assets are what ship. `tools/portrait.py` documents and reproduces them, but
+its inputs (the full-frame generations, about 28 MB) are not committed; they are kept, git-ignored, in
+`avatar/tools/raw/`. **`base.png` there is the only source of "the same person": editing from anything
+else, including the lossy `base.webp`, would not match the photo.** To change a mouth shape, regenerate
+just that one against the same base; to change a region or the feathering, no API is needed:
+
+```sh
+# needs Pillow and numpy only; no API key
+uv run --no-project --with pillow --with numpy python avatar/tools/portrait.py build --raw avatar/tools/raw
+# regenerate one variant (uses OPENAI_API_KEY from .env); the tool flags an implausible result
+uv run --no-project --with pillow --with numpy python avatar/tools/portrait.py edit --raw avatar/tools/raw open
+```
+
+**Limits.** One fixed pose: the head tilts a couple of degrees but does not turn, and the hair only moves
+with the head. Eyes look forward, blink, or look up-right; nothing else. Between two mouth shapes there is a
+brief cross-dissolve (about 60 ms), so fast speech blends neighbouring lips. Without WebGL2 she is shown as
+the still photo. `prefers-reduced-motion` calms the head, not the lips. Realism ends where a still
+photograph does: she will not read as video of a real person for long.
+
 ## Checks
 
 ```sh
 uv run --extra tts python -m unittest discover -s avatar/tests -v
+node --test avatar/tests/face.test.js
 node --check avatar/public/app.js
+node --check avatar/public/face.js
 node --check avatar/public/character.js
 ```
+
+The image-decoding tests in `test_portrait.py` (patch sizes, rims, the brow map) skip without Pillow and
+numpy; run them with `uv run --no-project --with pillow --with numpy python -m unittest discover -s avatar/tests`.
 
 The Responses JSON schema interface was checked against the
 [official Structured Outputs documentation](https://developers.openai.com/api/docs/guides/structured-outputs).
