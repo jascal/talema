@@ -27,7 +27,7 @@ speaks a short greeting from the book; follow-up conversation needs the credenti
 above. If browser autoplay is blocked after generation, press **Play reply**. The
 example uses GPT-5.4 Mini, which supports the Responses API and structured outputs
 with a 400,000 token context. Credentials stay on the server. API usage is billed
-separately from a ChatGPT subscription; conversation turns and all seven books are
+separately from a ChatGPT subscription; conversation turns and every book are
 sent to OpenAI on each turn (with `store: false`), and prompt caching makes repeat turns cheap (see below). If configuration is missing,
 the local book greeting works, and follow-up model replies show a setup error.
 If the API reports `insufficient_quota`, add API billing/credits or adjust the
@@ -66,7 +66,7 @@ its model/voice. Keep the existing eSpeak installation required by Kokoro's pipe
 
 ## Implementation and limits
 
-`dialogue.py` sends every book (the core and the six field volumes, about 98k tokens) and the last 24 history
+`dialogue.py` sends every book (the core and every field volume; about 98k tokens when this was measured, before the food and conversation volumes, which add roughly 6k) and the last 24 history
 messages with a tutor persona to the Responses API.
 
 **Prompt caching.** The persona and books form the `instructions`, which never change, so they are a stable prompt
