@@ -54,6 +54,12 @@ Each states its prediction and what would falsify it. "Match" always means non-i
   not reused), or do not appear.
 - **H6 — the endings need not be learned (`open`).** A student that emits concept trees (server derives the endings)
   matches one that emits raw Talema text, at less data. Run only at 1k and 4k sentences.
+- **H7 — a Datalog dialogue runtime can hold a conversation (`open`; added by Amendment 1).** A runtime with no neural
+  model at serve time (exact parser → dialogue-act rules → reply-frame planner → exact compiler, packaged the way
+  sgiandubh serves a rosetta package) clears the C gate (§7) **and** keeps W validity at 100% on the intents its act
+  inventory covers, **and** abstains on at most 30% of the C learner turns (a runtime that abstains more often is not a
+  chat; 30% is a margin chosen now, not derived). *Falsified* if any of the three fails. Its cost per turn is reported
+  (no model tokens; latency).
 
 ## 5. Benchmark — built and frozen first
 
@@ -93,6 +99,17 @@ sentences, three seeds. Benchmark trees and texts are excluded by exact match.
 | T2 | LoRA on a pretrained en/es/de model, no book | data size, base model |
 | T3 | T2 plus a Talema retrieval store and exact-grammar-constrained decoding | data size |
 | T2-raw | T2 emitting raw Talema text instead of trees | 1k, 4k only (H6) |
+| T4 | Datalog dialogue runtime, no neural model at serve time (H7) | act inventory size |
+
+**T4 in one paragraph.** Reading is the exact parser; the rules infer a dialogue act from the parsed tree and the
+conversation state; a planner picks a reply frame (react, ask a follow-up, offer a topic, correct, and the like) and
+fills its slots from the learner's concepts; the exact compiler writes Talema. The act inventory and frames come from
+three sources, each recorded per item: the books and the play (documents), tutor replies that passed validation and the
+round trip (teacher), and, later, learner sessions (feedback). It abstains when the parse fails or no act matches. Where
+concept-to-frame analogies across English, Spanish and German are used, they are the shared-feature signatures of P6.
+T4 is **scored on C and on W restricted to the intents inside its act inventory**, with the share of W intents that fall
+inside the inventory reported. R1 and R2 are the parser's own scores for T4 by construction and are excluded from every
+comparison that involves T4.
 
 ## 7. Decision rules
 
@@ -144,12 +161,20 @@ on copy and succession only, and that limit is stated in the result.
 - **P3** tokens per Talema word for each tokenizer.
 - **P4** fieldrun parity on each candidate's base (gates c, d).
 - **P5** freeze the benchmark: author, compile, filter, read, hash, commit.
+- **P6** shared-feature signatures (added by Amendment 1). For each lexicon concept with en, es and de source words,
+  run gemma-2-2b on a fixed carrier sentence per word, read the residual at a Gemma Scope layer (layers available on
+  disk are checked first), and take each word's top-k SAE features. The concept's signature is the features active for
+  at least two of the three words. **Test:** overlap between the true en/es/de words of a concept versus words shuffled
+  across concepts (permutation null, fixed seed). **Decision rule, stated now:** report the fraction of concepts whose
+  true overlap exceeds the null's 95th percentile. Chance gives 5%; if the fraction is **≤ 10%** at every layer tried,
+  the signatures are not usable as a concept basis for this model, T4 does not use them, and T1 falls back to plain
+  gloss embeddings. If it is above 10% the signatures may feed T1 and T4, and the fraction is reported as `empirical`.
 
 ## 11. Order of work
 
 A. P1–P5, then rungs 0 and 1 on the benchmark (no training, modest API spend).
 B. Data pipeline: teacher generation, validation, round-trip filter, nested splits.
-C. Bake-off, then T0–T3 and T2-raw.
+C. Bake-off, then T0–T3 and T2-raw. T4 is built alongside, from the same validated data as B, and scored once.
 D. H5 analysis.
 
 A result from A alone (H1) is already worth reporting.
@@ -162,6 +187,10 @@ A result from A alone (H1) is already worth reporting.
 - Base models differ in more than language coverage (size, data, tokenizer); the bake-off cannot separate those causes.
 - One language, one lexicon, one machine. Nothing here says the result generalises to natural low-resource languages.
 - Serving form (does a student replace the tutor, or sit behind the sgiandubh path?) is **not** decided here.
+- T4's naturalness ceiling is set by the acts and frames its authors give it. rosetta has so far extracted retrieval
+  (n-gram, induction), not dialogue policy, from the small local models (Llama-3.2-1B: no idioms beyond n-gram; the
+  riscv reasoning tier came up empty; J-Lens null), so T4's policy is expected to come from documents, teacher traces
+  and feedback, not from model extraction. That expectation is `open`.
 
 ## 13. Handoff notes for whoever runs this
 
@@ -174,6 +203,12 @@ A result from A alone (H1) is already worth reporting.
   The corpus is squash-merged (talema #12–#14, lm-sae #232).
 - Read `rosetta/AGENTS.md`, `rosetta/CROSS_ARCH.md` and `fieldrun/AGENTS.md` before H5.
 
-## Deviations
+## Amendments and deviations
 
-*(none yet)*
+Each entry is dated, states what it changes, and states whether any result could have informed it.
+
+- **Amendment 1 — 2026-09-29, before the benchmark exists and before any scoring.** Adds rung T4, hypothesis H7,
+  preflight P6, the T4 paragraph in §6, and a limit in §12. Motivation: a proposal to use a Datalog chat runtime (the
+  sgiandubh form) with shared en/es/de features. No benchmark result of any kind existed when it was made, so no result
+  informed it; the only data seen are the tutor experiments listed in §2. H1–H6, the benchmark, the decision rules
+  and the gates are unchanged.
