@@ -7,6 +7,7 @@
   - every R1 text parses with the exact node parser, no unknown roots, and its tree equals the stored native tree
   - every R2 input's exact-parser verdict equals its gold verdict; locations are within range
   - the input files carry no answer fields
+  - every novel item is in the unmarked order (scoring.violations)
 """
 import json
 import sys
@@ -74,6 +75,11 @@ def main():
                 accepted = False
             if accepted != (e["category"] in ("valid", "meaning-change")):
                 failures.append(f"{name}: {e['id']} ({e['category']}) validate_speech verdict {accepted} disagrees with its category")
+        # the unmarked order (Amendment 4)
+        import scoring
+        for a in r1w:
+            if a["stratum"] == "novel" and scoring.violations(a["native_tree"]):
+                failures.append(f"{name}: {a['id']} departs from the unmarked order: {scoring.violations(a['native_tree'])[0]}")
         # novelty against the corpus
         for a in r1w:
             if a["stratum"] == "novel" and (a["talema"] in corpus["texts"]):

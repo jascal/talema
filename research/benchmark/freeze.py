@@ -68,6 +68,7 @@ def main():
     args = ap.parse_args()
     reviews = {r["id"]: r for r in load(HERE / "review" / "reviews.jsonl")}
     reviews.update({r["id"]: r for r in load(HERE / "review" / "reviews_whether_v2.jsonl")})   # corrected rubric for `whether` items
+    reviews.update({r["id"]: r for r in load(HERE / "review" / "reviews_reorder.jsonl")})       # items reordered into the unmarked order
     drops = set((HERE / "owner_drops.txt").read_text().split()) if (HERE / "owner_drops.txt").exists() else set()
 
     def survivors(items):
@@ -138,8 +139,11 @@ def main():
     tools = ["bench.py", "make_specs.py", "check_pairs.py", "review.py", "r2.py", "freeze.py", "power_sim.py", "c_test.py", "make_exposed.py", "parse_batch.mjs"]
     report["sha256"] = {str(p.relative_to(HERE)): sha(p) for p in files}
     report["tools_sha256"] = {t: sha(HERE / t) for t in tools}
-    report["review_sha256"] = {f: sha(HERE / "review" / f) for f in ("reviews.jsonl", "reviews_whether_v2.jsonl")}
+    report["review_sha256"] = {f: sha(HERE / "review" / f) for f in ("reviews.jsonl", "reviews_whether_v2.jsonl", "reviews_reorder.jsonl")}
     report["owner_drops"] = sorted(drops)
+    pend = HERE / "review" / "reorder_pending_ids.txt"
+    report["reorder_review_pending"] = sorted(i for i in (pend.read_text().split() if pend.exists() else [])
+                                              if i in {it["id"] for d in out.values() for it in d["items"]})
     (HERE / "frozen" / "MANIFEST.json").write_text(json.dumps(report, indent=1, sort_keys=True) + "\n")
     print(json.dumps({k: report[k] for k in ("review", "counts", "power_at_final_n")}, indent=1))
 

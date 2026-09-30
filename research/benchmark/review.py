@@ -25,6 +25,7 @@ import dialogue  # noqa: E402  (reads .env)
 HERE = Path(__file__).parent
 OUT = HERE / "review" / "reviews.jsonl"
 OUT_V2 = HERE / "review" / "reviews_whether_v2.jsonl"       # rerun of the whether-rooted items with the corrected rubric
+OUT_REORDER = HERE / "review" / "reviews_reorder.jsonl"     # rerun of the items whose dependents were reordered (Amendment 4)
 MODEL = "gpt-5.4-mini"        # a different family from the author; the same cheap model the conversation judge uses
 SHOTS = ["Please give me the bread.", "What do you see?", "I think it is not good.", "I will see you tomorrow."]
 SHOTS_V2 = SHOTS + ["Do you want a story?"]
@@ -88,14 +89,20 @@ def main():
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--whether-v2", action="store_true",
                     help="rerun only the items whose tree is rooted at 'whether' with the corrected rubric (writes reviews_whether_v2.jsonl)")
+    ap.add_argument("--ids-file", type=Path, help="review only these ids, with the corrected rubric (writes reviews_reorder.jsonl)")
     args = ap.parse_args()
     out_path, rubric, wanted = (OUT_V2, READ_RUBRIC_V2, SHOTS_V2) if args.whether_v2 else (OUT, READ_RUBRIC, SHOTS)
+    if args.ids_file:
+        out_path, rubric, wanted = OUT_REORDER, READ_RUBRIC_V2, SHOTS_V2
     files = ["dev", "test", "exposed_dev", "exposed_test"]
     items = [json.loads(l) for name in files if (HERE / "pool" / f"{name}.jsonl").exists()
              for l in (HERE / "pool" / f"{name}.jsonl").read_text().splitlines()]
     OUT.parent.mkdir(exist_ok=True)
     if args.whether_v2:
         items = [it for it in items if it["native_tree"][0] == bench.LEX.resolve("whether", "review")[0]]
+    if args.ids_file:
+        keep = set(args.ids_file.read_text().split())
+        items = [it for it in items if it["id"] in keep]
     done = {json.loads(l)["id"] for l in out_path.read_text().splitlines()} if out_path.exists() else set()
     todo = [it for it in items if it["id"] not in done]
     if args.limit:

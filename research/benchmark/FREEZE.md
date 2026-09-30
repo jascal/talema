@@ -73,6 +73,18 @@ that are correct, so the benchmark is somewhat easier for reading than the full 
 (the shortfall was filled from other frames). Every system is scored on the same items, so comparisons are unaffected, but absolute
 reading accuracy should not be read as a claim about all Talema.
 
+## Word order (Amendment 4, 2026-09-30)
+
+Talema's dependents are free in order (rule R2); the unmarked order is complements (object, indirect object), then modifiers, then
+the subject last, and other orders mark emphasis. The language's owner decided that in a noun phrase the `of` phrase comes before the
+determiner. On the corpus, 97.8% of single-tree sentences follow this (`scoring.py`). My items were first written with `will` before the
+object in some sentences and the determiner before the `of` phrase in many, so `normalize_order.py` rewrote the authored trees into
+the unmarked order (meanings and family keys unchanged). `verify_freeze.py` now fails any novel item that departs from it.
+
+Every item whose Talema text changed (312) needs a fresh blind read. The OpenAI account ran out of credit partway, so 195 were re-read and **117 are pending** and carry their pre-reorder verdict for now (108 of them are in the selected sets). Of the re-read items judged same before, 177 of 184 were still judged same, and 7 judged different before were judged same now, so a single reading pass is about 96% stable either way. `review.py --ids-file review/reorder_pending_ids.txt` finishes the job once credit is restored; rerun `freeze.py` after it.
+
+W's primary score is order-insensitive (`scoring.tree_match`), with adherence to the unmarked order (`scoring.is_unmarked`) reported separately.
+
 ## Power at the final counts
 
 Non-inferiority margin 5 points, true difference 0, items as independent (frames are fixed strata, families are unique),
@@ -113,16 +125,16 @@ short at 30% disagreement. The preregistration's rule (widen the margin before s
 | file | sha256 |
 |---|---|
 | `frozen/c_test.json` | `52c1c81f802ea48f…` |
-| `frozen/dev/answers.jsonl` | `5aed6413907cd784…` |
-| `frozen/dev/r1_inputs.jsonl` | `82b3a88ef7254361…` |
-| `frozen/dev/r2_inputs.jsonl` | `4fd25faac846cc97…` |
+| `frozen/dev/answers.jsonl` | `89c0089ed465c8de…` |
+| `frozen/dev/r1_inputs.jsonl` | `e209ac940d06c3ad…` |
+| `frozen/dev/r2_inputs.jsonl` | `0dc4ee7a95a38934…` |
 | `frozen/dev/w_inputs.jsonl` | `db31d17be4070ff0…` |
 | `frozen/dev_family_hashes.txt` | `6572fddba88829ba…` |
-| `frozen/test/answers.jsonl` | `7eccff2d2e09b5be…` |
-| `frozen/test/r1_inputs.jsonl` | `69d3571a5d0d353f…` |
-| `frozen/test/r2_inputs.jsonl` | `5f39e011ef996220…` |
-| `frozen/test/w_inputs.jsonl` | `f8c8a5bbbace9029…` |
-| `frozen/test_family_hashes.txt` | `5500d1e778be548f…` |
+| `frozen/test/answers.jsonl` | `624a20d8e33d1ec5…` |
+| `frozen/test/r1_inputs.jsonl` | `5171711b26e2aa9b…` |
+| `frozen/test/r2_inputs.jsonl` | `af5a69cbc7d5e098…` |
+| `frozen/test/w_inputs.jsonl` | `86ef328315f3ee0d…` |
+| `frozen/test_family_hashes.txt` | `1f1a139411e76710…` |
 
 Tool hashes, review-file hashes and the owner drops (none yet) are in `frozen/MANIFEST.json`.
 

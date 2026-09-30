@@ -36,13 +36,17 @@ def main():
         picked += v[: max(1, round(len(v) * 0.10))]
     picked.sort(key=lambda a: a["id"])
     lines = [f"# Owner review sample: {len(picked)} of {len(items)} novel items (10%, stratified by frame)", "",
-             "For each row: does the **English** say the same thing as the **tree**? (The tree is the authored form; the Talema",
-             "text is its exact compilation. The blind reader's English is shown for reference.) Put `x` in the last column for",
-             "any item that is wrong or that you dispute; write the ids to `owner_drops.txt`, then rerun `freeze.py`.", "",
-             "| id | frame | English (intended) | tree | blind reader said | wrong? |", "|---|---|---|---|---|---|"]
+             "Two separate questions per row.", "",
+             "1. **wrong?** Does the **English** say the same thing as the **tree**? (The tree is the authored form; the Talema",
+             "   text is its exact compilation; the blind reader's English is shown for reference.) Put `x` for any item that is wrong",
+             "   or that you dispute, write those ids to `owner_drops.txt`, then rerun `freeze.py`.",
+             "2. **odd?** Is the sentence semantic nonsense or too strange to be a fair example (\"The temperature is yellow\")? Put",
+             "   `x` if so. This does not remove the item; it tells us how much of the benchmark is odd, and lets the odd ones be",
+             "   reported as their own stratum.", "",
+             "| id | frame | English (intended) | tree | blind reader said | wrong? | odd? |", "|---|---|---|---|---|---|---|"]
     for a in picked:
         r = reviews.get(a["id"], {})
-        lines.append(f"| {a['id']} | {a['frame']} | {a['english']} | `{concept[a['id']]}` | {r.get('reader', '')} | |")
+        lines.append(f"| {a['id']} | {a['frame']} | {a['english']} | `{concept[a['id']]}` | {r.get('reader', '')} | | |")
     (HERE / "owner_review_sample.md").write_text("\n".join(lines) + "\n")
     print("sample:", len(picked), dict(collections.Counter(a["frame"] for a in picked)))
 

@@ -95,7 +95,7 @@ outside every task here, and an added stratum for them would be labelled and rep
 |---|---|---|
 | **R1** reading, well-formed | 640 novel + 100 *exposed* (corpus sentences) | Talema → concept tree; exact tree match, plus per-node root accuracy |
 | **R2** reading, learner errors | 300: 150 valid controls + 150 perturbed (50 each: structural error, unknown-root warning, grammatical meaning change) | error detected yes/no on all items, and the location on perturbed structural errors |
-| **W** writing | 300 English intents | emit a tree; validity by `validate_speech`; **primary content score = canonical tree match** against the reference and its pre-declared equivalent references; root-set F1 is secondary |
+| **W** writing | 300 English intents | emit a tree; validity by `validate_speech`; **primary content score = canonical tree match** against the reference, where the pre-declared equivalent references are all trees that differ only in the order of a head's dependents (Amendment 4: order-insensitive); root-set F1 and adherence to the unmarked order are secondary |
 | **C** conversation | **new** test conversations (≥3, unrelated to the dev ones) × 9 rounds × learner language {Talema, English} | the `conversation_ab.py` harness: blind judge (fit, natural), ends-on-question, small-word share, validity/repair rate |
 
 - **Scoring rules.** Invalid, empty and missing outputs score **zero** on every task (on C: the lowest judge score on
@@ -152,7 +152,7 @@ construction; there is no English frontend); T4's compiler-derived validity is r
 is never treated as independent. Percentile bootstrap, 10,000 resamples, a seed fixed in the freeze commit, 95% intervals
 (Holm-adjusted as below). Seed-specific results are reported alongside the pooled ones.
 
-**Endpoints.** Primary: R1 tree match on **novel** items, and W canonical tree match. Secondary: R2, W root-set F1,
+**Endpoints.** Primary: R1 tree match on **novel** items (exact, order included, since the text fixes the order), and W canonical tree match (order-insensitive, Amendment 4). Secondary: R2, W root-set F1,
 validity, the exposed stratum. C is descriptive.
 
 **Definitions.** *Non-inferior*: the lower bound of (candidate − comparator) is above −5 points on both primary
@@ -329,3 +329,17 @@ Each entry is dated, states what it changes, and states whether any result could
   (6) "No development script loads the test answers" is read as: training, prompting and selection scripts; the benchmark's own
   build and verification tools do read them. The owner's 10% sample read is still pending, so the final freeze follows it. No
   benchmark result of any kind existed when these choices were made.
+- **Amendment 4 — 2026-09-30, after the P5 candidate freeze and before any system was scored.** Follows a question from the
+  language's owner about word order. Talema's dependents are free in order (R2); the unmarked order is complements (object,
+  indirect object), then modifiers, then the subject last, and the book uses other orders for emphasis. The owner decided on
+  2026-09-30 that in a noun phrase with an `of` phrase the `of` phrase comes before the determiner. Changes: (1) **W's primary
+  metric is order-insensitive**: the pre-declared equivalent references are all trees that differ only in the order of a head's
+  dependents (`research/benchmark/scoring.py`, `tree_match`); a valid reordering is not an error. Adherence to the unmarked order
+  (`scoring.is_unmarked`) is reported as a separate secondary metric, so a system that writes the marked order is visible but not
+  penalised on content. R1 stays exact, because the text fixes the order; R2 is unchanged. (2) **All 1,415 authored trees were
+  normalised to the unmarked order** (`normalize_order.py`): 330 authored lines changed (89 modifier-before-complement
+  rewrites, mostly `will` before the object, which the corpus never does; 246 determiner-before-`of` rewrites). Meanings and family
+  keys are unchanged; the 312 items whose Talema text changed were re-read by the blind reviewer (`review/reviews_reorder.jsonl`).
+  Exposed items are corpus sentences and are left as they are. On the corpus, 97.8% of single-tree sentences are already unmarked
+  under this definition. (3) **Not changed:** the tutor's persona does not state the default order; it infers it from examples.
+  No system had been run on any benchmark item.

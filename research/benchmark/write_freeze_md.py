@@ -95,6 +95,25 @@ def main():
     a("(the shortfall was filled from other frames). Every system is scored on the same items, so comparisons are unaffected, but absolute")
     a("reading accuracy should not be read as a claim about all Talema.")
     a("")
+    rr = load("review/reviews_reorder.jsonl")
+    was = [x for x in rr if v1[x["id"]].get("same")]
+    pending = m.get("reorder_review_pending", [])
+    a("## Word order (Amendment 4, 2026-09-30)")
+    a("")
+    a("Talema's dependents are free in order (rule R2); the unmarked order is complements (object, indirect object), then modifiers, then")
+    a("the subject last, and other orders mark emphasis. The language's owner decided that in a noun phrase the `of` phrase comes before the")
+    a("determiner. On the corpus, 97.8% of single-tree sentences follow this (`scoring.py`). My items were first written with `will` before the")
+    a("object in some sentences and the determiner before the `of` phrase in many, so `normalize_order.py` rewrote the authored trees into")
+    a("the unmarked order (meanings and family keys unchanged). `verify_freeze.py` now fails any novel item that departs from it.")
+    a("")
+    a(f"Every item whose Talema text changed ({len(load('review/changed_ids.txt')) if False else len(Path(HERE / 'review' / 'changed_ids.txt').read_text().split())}) needs a fresh blind read. The OpenAI account ran out of credit partway, so "
+      f"{len(rr)} were re-read and **{len(Path(HERE / 'review' / 'reorder_pending_ids.txt').read_text().split())} are pending** and carry their pre-reorder verdict for now "
+      f"({len(pending)} of them are in the selected sets). Of the re-read items judged same before, {sum(x['same'] is True for x in was)} of {len(was)} were still judged same, "
+      f"and {sum(x['same'] is True and not v1[x['id']].get('same') for x in rr)} judged different before were judged same now, so a single reading pass is about 96% stable either way. "
+      f"`review.py --ids-file review/reorder_pending_ids.txt` finishes the job once credit is restored; rerun `freeze.py` after it.")
+    a("")
+    a("W's primary score is order-insensitive (`scoring.tree_match`), with adherence to the unmarked order (`scoring.is_unmarked`) reported separately.")
+    a("")
     a("## Power at the final counts")
     a("")
     a("Non-inferiority margin 5 points, true difference 0, items as independent (frames are fixed strata, families are unique),")
