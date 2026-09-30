@@ -1,0 +1,8 @@
+.venv/
+preflight/tmp/
+preflight/adapters/
+preflight/merged/
+preflight/wheels/
+preflight/parity-*/
+preflight/__pycache__/
+__pycache__/

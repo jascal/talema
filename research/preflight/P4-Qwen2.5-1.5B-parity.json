@@ -1,0 +1,8 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B",
+  "status": "MEASURED",
+  "agreement": 60,
+  "positions": 60,
+  "mismatches": [],
+  "elapsed_s": 84.72644029499497
+}

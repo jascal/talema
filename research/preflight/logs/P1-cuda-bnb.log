@@ -1,0 +1,41 @@
+/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1174: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Failed to load CPU gemm_4bit_forward from kernels-community: No module named 'kernels'. Please make sure you already `pip install kernels` and the kernels >= 0.11.1
+Traceback (most recent call last):
+  File "/home/allans/code/talema/research/preflight/p1_check.py", line 9, in <module>
+    layer=bnb.nn.Linear4bit(128,64,bias=False,compute_dtype=torch.bfloat16,quant_type='nf4').to('cuda')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1388, in to
+    return self._apply(convert)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 966, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1374, in convert
+    return t.to(
+           ^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/bitsandbytes/nn/modules.py", line 428, in to
+    return self._quantize(device)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/bitsandbytes/nn/modules.py", line 382, in _quantize
+    w = self.data.contiguous().to(device)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py", line 591, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No CUDA GPUs are available
+{
+  "torch": "2.14.0+cu130",
+  "cuda_build": "13.0",
+  "cuda_available": false,
+  "packages": {
+    "torch": "2.14.0+cu130",
+    "transformers": "5.17.0",
+    "peft": "0.21.1",
+    "accelerate": "1.15.0",
+    "datasets": "5.0.1",
+    "bitsandbytes": "0.50.2"
+  },
+  "bnb_import": "PASS",
+  "bnb_4bit_cuda": "BLOCKED",
+  "error": "RuntimeError('No CUDA GPUs are available')"
+}

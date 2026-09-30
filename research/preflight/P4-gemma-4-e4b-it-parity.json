@@ -1,0 +1,8 @@
+{
+  "model": "google/gemma-4-e4b-it",
+  "status": "PENDING",
+  "agreement": null,
+  "positions": null,
+  "reason": "RuntimeError('Only tiny reference exists; no full-checkpoint check in repo')",
+  "elapsed_s": 0.0021213879954302683
+}

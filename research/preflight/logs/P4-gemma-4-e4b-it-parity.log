@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/allans/code/talema/research/preflight/p4_parity.py", line 32, in <module>
+    if a.model not in [MODELS[0],MODELS[1],MODELS[3]]: raise RuntimeError('Only tiny reference exists; no full-checkpoint check in repo')
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Only tiny reference exists; no full-checkpoint check in repo
+{
+  "model": "google/gemma-4-e4b-it",
+  "status": "PENDING",
+  "agreement": null,
+  "positions": null,
+  "reason": "RuntimeError('Only tiny reference exists; no full-checkpoint check in repo')",
+  "elapsed_s": 0.0021213879954302683
+}

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/allans/code/talema/research/preflight/p4_parity.py", line 47, in <module>
+    if used+need+100_000_000 > 15_000_000_000: raise RuntimeError(f'15 GB new-disk cap: current={used}, f32 tensor bytes={need}; conversion not attempted')
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: 15 GB new-disk cap: current=6352936960, f32 tensor bytes=10457367552; conversion not attempted
+{
+  "model": "google/gemma-2-2b",
+  "status": "PENDING",
+  "agreement": null,
+  "positions": null,
+  "f32_tensor_bytes": 10457367552,
+  "current_research_allocated_bytes": 6352936960,
+  "reason": "RuntimeError('15 GB new-disk cap: current=6352936960, f32 tensor bytes=10457367552; conversion not attempted')",
+  "elapsed_s": 0.44783188599103596
+}
