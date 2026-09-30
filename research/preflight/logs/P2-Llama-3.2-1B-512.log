@@ -1,0 +1,27 @@
+/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1174: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Failed to load CPU gemm_4bit_forward from kernels-community: No module named 'kernels'. Please make sure you already `pip install kernels` and the kernels >= 0.11.1
+Traceback (most recent call last):
+  File "/home/allans/code/talema/research/preflight/p2_lora.py", line 16, in <module>
+    torch.cuda.init()
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py", line 560, in init
+    _lazy_init()
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py", line 591, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No CUDA GPUs are available
+{
+  "model": "meta-llama/Llama-3.2-1B",
+  "sequence_length": 512,
+  "batch_size": 1,
+  "r": 16,
+  "alpha": 32,
+  "target_modules": "all-linear (PEFT excludes output head)",
+  "dtype": "bf16",
+  "seed": 20260929,
+  "status": "BLOCKED",
+  "peak_allocated_bytes": null,
+  "peak_reserved_bytes": null,
+  "peak_host_rss_bytes": null,
+  "median_step_s": null,
+  "error": "RuntimeError('No CUDA GPUs are available')"
+}

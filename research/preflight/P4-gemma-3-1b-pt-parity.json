@@ -1,0 +1,8 @@
+{
+  "model": "unsloth/gemma-3-1b-pt",
+  "status": "PENDING",
+  "agreement": null,
+  "positions": null,
+  "reason": "RuntimeError('Only tiny reference exists; no full-checkpoint check in repo')",
+  "elapsed_s": 0.008817025009193458
+}

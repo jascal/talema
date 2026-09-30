@@ -1,0 +1,31 @@
+syntax OK p2_lora.py
+syntax OK p4_parity.py
+syntax OK inventory.py
+syntax OK p3_tokenizers.py
+syntax OK p4_audit.py
+syntax OK common.py
+syntax OK p1_check.py
+syntax OK disk_usage.py
+syntax OK make_report.py
+P3 aggregates reproduce from 2525 rows: meta-llama/Llama-3.2-1B
+P3 aggregates reproduce from 2525 rows: Qwen/Qwen2.5-1.5B
+P3 aggregates reproduce from 2525 rows: google/gemma-4-e4b-it
+P3 aggregates reproduce from 2525 rows: unsloth/gemma-3-1b-pt
+P3 aggregates reproduce from 2525 rows: google/gemma-2-2b
+P2-gemma-2-2b-512-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-gemma-2-2b-1024-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-gemma-3-1b-pt-1024-bf16-verification.json RuntimeError('No CUDA GPUs are available')
+P2-Qwen2.5-1.5B-1024-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-gemma-3-1b-pt-512-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-Llama-3.2-1B-1024-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-gemma-4-e4b-it-1024-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-Llama-3.2-1B-512-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-gemma-3-1b-pt-1024-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-Qwen2.5-1.5B-512-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P2-gemma-4-e4b-it-512-bf16-main.json RuntimeError('No CUDA GPUs are available')
+P4 independent comparison Llama-3.2-1B 60/60
+P4 independent comparison Qwen2.5-1.5B 60/60
+Created weights and downloaded wheels cleaned
+6347583488	research
+
+Disk watch max 11299905536
