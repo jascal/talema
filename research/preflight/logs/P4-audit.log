@@ -1,0 +1,110 @@
+{
+  "meta-llama/Llama-3.2-1B": {
+    "arch": "rope",
+    "bundles": [
+      {
+        "path": "/home/allans/code/fieldrun/bundles/llama-3.2-1b.fieldrun.json",
+        "arch": "rope",
+        "blob_exists": true,
+        "blob_bytes": 2471628800,
+        "dtypes": [
+          "f16"
+        ]
+      }
+    ],
+    "explain": true,
+    "predict_ablated": true,
+    "predict_ablated_blocks": true,
+    "head_sweep": true,
+    "full_checkpoint_documented_arch": true,
+    "candidate_full_checkpoint_check_script_found": false,
+    "tiny_fixture": false
+  },
+  "Qwen/Qwen2.5-1.5B": {
+    "arch": "rope",
+    "bundles": [
+      {
+        "path": "/home/allans/.cache/fieldrun/bundles/Qwen2.5-1.5B/Qwen2.5-1.5B.fieldrun.json",
+        "arch": "rope",
+        "blob_exists": true,
+        "blob_bytes": 6174857216,
+        "dtypes": [
+          "f32"
+        ]
+      }
+    ],
+    "explain": true,
+    "predict_ablated": true,
+    "predict_ablated_blocks": true,
+    "head_sweep": true,
+    "full_checkpoint_documented_arch": true,
+    "candidate_full_checkpoint_check_script_found": false,
+    "tiny_fixture": false
+  },
+  "unsloth/gemma-3-1b-pt": {
+    "arch": "gemma3",
+    "bundles": [],
+    "explain": true,
+    "predict_ablated": false,
+    "predict_ablated_blocks": false,
+    "head_sweep": false,
+    "full_checkpoint_documented_arch": false,
+    "candidate_full_checkpoint_check_script_found": false,
+    "tiny_fixture": true
+  },
+  "google/gemma-2-2b": {
+    "arch": "gemma",
+    "bundles": [
+      {
+        "path": "/home/allans/code/fieldrun/bundles/gemma-2-2b.fieldrun.json",
+        "arch": "gemma",
+        "blob_exists": true,
+        "blob_bytes": 5228683776,
+        "dtypes": [
+          "f16"
+        ]
+      }
+    ],
+    "explain": true,
+    "predict_ablated": false,
+    "predict_ablated_blocks": false,
+    "head_sweep": false,
+    "full_checkpoint_documented_arch": true,
+    "candidate_full_checkpoint_check_script_found": false,
+    "tiny_fixture": false
+  },
+  "google/gemma-4-e4b-it": {
+    "arch": "gemma4",
+    "bundles": [
+      {
+        "path": "/home/allans/code/fieldrun/bundles/gemma-4-e4b.fieldrun.json",
+        "arch": "gemma4",
+        "blob_exists": true,
+        "blob_bytes": 7494792192,
+        "dtypes": [
+          "f16",
+          "i8",
+          "rowi8"
+        ]
+      },
+      {
+        "path": "/home/allans/.cache/fieldrun/bundles/gemma-4-e4b-it-int4/gemma-4-e4b-it-int4.fieldrun.json",
+        "arch": "gemma4",
+        "blob_exists": true,
+        "blob_bytes": 5766092800,
+        "dtypes": [
+          "f16",
+          "i4",
+          "rowi8"
+        ]
+      }
+    ],
+    "explain": true,
+    "predict_ablated": false,
+    "predict_ablated_blocks": true,
+    "head_sweep": false,
+    "full_checkpoint_documented_arch": false,
+    "candidate_full_checkpoint_check_script_found": false,
+    "tiny_fixture": true
+  }
+}

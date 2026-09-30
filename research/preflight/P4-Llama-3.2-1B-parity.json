@@ -1,0 +1,11 @@
+{
+  "model": "meta-llama/Llama-3.2-1B",
+  "status": "MEASURED",
+  "agreement": 60,
+  "positions": 60,
+  "f32_tensor_bytes": 4943257600,
+  "current_research_allocated_bytes": 6353408000,
+  "host_available_bytes": 10082115584,
+  "mismatches": [],
+  "elapsed_s": 94.90434947800532
+}

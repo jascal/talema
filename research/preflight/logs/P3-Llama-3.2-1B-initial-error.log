@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/allans/code/talema/research/preflight/p3_tokenizers.py", line 9, in <module>
+    texts=[x['talema'] for x in r]; trees=[tree_json(x['tree']) for x in r]
+                                           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/preflight/common.py", line 30, in tree_json
+    tree,n=parse(0)
+           ^^^^^^^^
+  File "/home/allans/code/talema/research/preflight/common.py", line 25, in parse
+    if toks[i] != '(': return toks[i], i+1
+       ~~~~^^^
+IndexError: list index out of range

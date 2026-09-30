@@ -1,0 +1,3 @@
+torch 2.14.0+cu130
+CUDA build 13.0
+CUDA available False

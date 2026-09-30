@@ -1,0 +1,112 @@
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights:   0%|          | 1/340 [00:00<00:54,  6.19it/s]Loading weights:  19%|█▉        | 66/340 [00:00<00:00, 307.45it/s]Loading weights:  42%|████▏     | 144/340 [00:00<00:00, 492.41it/s]Loading weights:  59%|█████▉    | 200/340 [00:00<00:00, 497.79it/s]Loading weights:  76%|███████▋  | 260/340 [00:00<00:00, 525.59it/s]Loading weights:  93%|█████████▎| 316/340 [00:00<00:00, 475.27it/s]Loading weights: 100%|██████████| 340/340 [00:00<00:00, 455.62it/s]
+{"step": 0, "warmup": true, "seconds": 1.7612315620062873, "loss": 1.2746164798736572}
+[W929 20:19:10.273763548 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 1073741824 bytes (free: 741867520, total: 8080195584).
+{"step": 1, "warmup": false, "seconds": 0.722845658994629, "loss": 1.081310510635376}
+{"step": 2, "warmup": false, "seconds": 0.7193150920065818, "loss": 0.9028503894805908}
+{"step": 3, "warmup": false, "seconds": 0.7208573910029372, "loss": 0.7936655879020691}
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights:  40%|███▉      | 135/340 [00:00<00:00, 1342.25it/s]Loading weights:  97%|█████████▋| 329/340 [00:00<00:00, 1666.19it/s]Loading weights: 100%|██████████| 340/340 [00:00<00:00, 1659.47it/s]
+[transformers] Both `max_new_tokens` (=64) and `max_length`(=32768) seem to have been set. `max_new_tokens` will take precedence. Please refer to the documentation for more information. (https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights: 100%|██████████| 340/340 [00:00<00:00, 14714.27it/s]
+Writing model shards:   0%|          | 0/3 [00:00<?, ?it/s]Writing model shards:  33%|███▎      | 1/3 [00:02<00:04,  2.40s/it]Writing model shards:  67%|██████▋   | 2/3 [00:05<00:02,  2.55s/it]Writing model shards: 100%|██████████| 3/3 [00:05<00:00,  1.69s/it]
+{
+  "model": "unsloth/gemma-3-1b-pt",
+  "sequence_length": 1024,
+  "batch_size": 1,
+  "r": 16,
+  "alpha": 32,
+  "target_modules": "all-linear (PEFT excludes output head)",
+  "dtype": "bf16",
+  "seed": 20260929,
+  "status": "FIT",
+  "peak_allocated_bytes": 5514973696,
+  "peak_reserved_bytes": 6681526272,
+  "peak_host_rss_bytes": 3186946048,
+  "median_step_s": 0.7208573910029372,
+  "trainable_parameters": 13045760,
+  "step_times_s": [
+    0.722845658994629,
+    0.7193150920065818,
+    0.7208573910029372
+  ],
+  "losses": [
+    1.2746164798736572,
+    1.081310510635376,
+    0.9028503894805908,
+    0.7936655879020691
+  ],
+  "generation_ids": [
+    2,
+    30477,
+    5680,
+    783,
+    107,
+    236777,
+    236789,
+    236757,
+    711,
+    2889,
+    768,
+    672,
+    563,
+    506,
+    1447,
+    1977,
+    531,
+    1868,
+    672,
+    236764,
+    840,
+    564,
+    236789,
+    236757,
+    711,
+    2889,
+    1298,
+    1663,
+    531,
+    1868,
+    625,
+    236761,
+    108,
+    236777,
+    236789,
+    236757,
+    3182,
+    573,
+    496,
+    1535,
+    236764,
+    13451,
+    236764,
+    532,
+    17075,
+    1595,
+    531,
+    974,
+    1041,
+    236743,
+    236770,
+    236819,
+    236819,
+    236819,
+    236743,
+    236800,
+    236771,
+    236771,
+    97688,
+    531,
+    236743,
+    236770,
+    236771,
+    236771,
+    44269,
+    236761,
+    564,
+    236789,
+    560
+  ],
+  "generated_tokens": 64,
+  "adapter_reload": "PASS",
+  "merged_bytes": 2033226567,
+  "merge": "PASS"
+}

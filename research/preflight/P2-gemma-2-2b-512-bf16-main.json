@@ -1,0 +1,16 @@
+{
+  "model": "google/gemma-2-2b",
+  "sequence_length": 512,
+  "batch_size": 1,
+  "r": 16,
+  "alpha": 32,
+  "target_modules": "all-linear (PEFT excludes output head)",
+  "dtype": "bf16",
+  "seed": 20260929,
+  "status": "BLOCKED",
+  "peak_allocated_bytes": null,
+  "peak_reserved_bytes": null,
+  "peak_host_rss_bytes": null,
+  "median_step_s": null,
+  "error": "RuntimeError('No CUDA GPUs are available')"
+}

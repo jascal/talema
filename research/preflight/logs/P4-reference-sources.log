@@ -1,0 +1,1219 @@
+
+FILE /home/allans/code/fieldrun/AGENTS.md
+SHA256 b1f0650f23fbf98d21fde6fab836dee095dc9d60415b112bed2edc5ea4f1312b
+# AGENTS.md — fieldrun
+
+Orientation for agents working in this repo. Read this first.
+
+## What this is
+
+`fieldrun` is the **Rust runtime** for the `pylm` decompiled-LLM track (which lives in the sibling `lm-sae` repo,
+under `pylm/`, thread doc `docs/PYLM_TRACK.md`). `pylm` proves a small LLM decomposes into a flat-file **retrieval**
+half (stdlib-only Python) + a **composition** half (numpy matmuls over flat weights, no torch). `fieldrun` packages
+that same result as **one native binary, no framework at runtime** — the distribution form of "the minimum to run".
+
+The Python kernels in `lm-sae/pylm` are the **reference spec** (deliberately small and readable). `fieldrun` is a
+faithful re-implementation; it does not invent behaviour, it mirrors `lm.py` / `numpy_lm.py` / `numpy_rope.py` /
+`numpy_gemma.py`.
+
+## The one rule: the faithfulness gate
+
+Anything you add must be validated by **top-1 agreement against the Python/torch reference** on the same inputs — the
+same bar the Python kernels hold (GPT-2/Qwen/Gemma-2 all hit 100% vs torch). Tier A already passes exactly (0
+per-position mismatches vs `lm.py` over 500 held-out positions, with and without grammar). Do not merge a tier that
+diverges without explaining why.
+
+## Layout
+
+- `src/retrieval.rs` — Tier A: `Store` ports `lm.py` (induction + n-gram backoff + grammar).
+- `src/bundle.rs` — the fieldrun bundle loader (f32/f16/i8), the matmul `mm` (parallel f32/f16 + int8 W8A8 with
+  outlier-aware activation quant). The int8 dot (`i8dot`) is signed s8×s8: **stable NEON** `vmull_s8` → `vpadalq_s16`
+  on aarch64 (`#[target_feature(enable="neon")]`, neon is baseline so the runtime check always passes) with a scalar
+  fallback everywhere else; no feature flag, no nightly. NB: we deliberately do *not* use the one-instruction
+  `sdot`/`vdotq_s32` — it's gated behind the unstable `stdarch_neon_dotprod` feature and would force nightly (the same
+  trap the dropped x86 AVX-512 VNNI path hit). The f32/f16 GEMM goes through ndarray `.dot()`, which routes to a tuned
+  **cblas (sgemm)** when built with a BLAS backend — `--features accelerate` (macOS) or `openblas` (Linux) — the lever
+  for usable *dense* large-model speed on CPU; the pure-Rust column-block path is the default + faithful reference
+  (int8 always uses `i8dot`). `mm_routed_down` (Tier C), and the row-wise embed helpers.
+- `src/neox.rs` — GPT-NeoX/Pythia: LayerNorm(+bias), parallel residual, partial rotary (`rotary_pct` of each head),
+  exact erf GELU, untied `embed_out` (the fused qkv is de-interleaved at convert). Full probe surface
+  (`final_residual`/`explain`/`predict_ablated`), so the FINDINGS battery runs on the Pythia ladder. Faithfulness
+  gate: top-1 exact vs the pure-numpy `scripts/neox_ref.py` (no torch installs on the dev box) — 160m 60/60,
+  70m/410m 20/20. No int8-KV yet (`--kv-int8` warns and uses the f32 cache).
+- `src/composition.rs` / `src/rope.rs` / `src/gemma.rs` / `src/gemma3.rs` / `src/gemma4.rs` — Tier B forward passes
+  (GPT-2 / Llama-Qwen / Gemma-2 / Gemma-3 / Gemma-4). **Every arch now has a KV-cache `generate`/`generate_stream`
+  (+ int8-KV) and `explain`** — the KV-cache decode is byte-identical to the naive full-recompute path (the f32
+  generation gate, checked per arch by `scripts/validate_all.sh`). `gemma3.rs` adds QK-norm, dual-base RoPE, the 5:1
+  pattern, no soft-capping. `gemma4.rs` adds value-norm, scaling=1, per-layer-type head_dim, partial-rotary global
+  RoPE, and the PLE gated-residual block; norms use the weight directly (no (1+w)); `moe_branch` adds the MoE-FFN
+  (router + experts, dense||expert sum). Its KV cache is per-layer-width (local/global head_dim differ); the PLE block
+  is per-token so it recomputes for new rows only.
+- `src/bundle.rs` — also the **MoE expert-offload**: the blob is mmap'd; dense arrays parse into RAM (the resident set),
+  but expert weights stay on disk and `expert_f32`/`expert_mm` read+dequant them on demand (per token only the active
+  top-k fault in; the OS page cache holds the hot working set). Non-MoE models: no expert arrays, footprint unchanged.
+- `src/qwen3moe.rs` — Qwen3-MoE: the RoPE backbone + QK-norm (per-head RMSNorm on q/k) + per-layer MoE-or-dense
+  (plain-gate router: softmax → top-k → optional renorm; SwiGLU experts read from the mmap) + optional **sliding
+  window** (`use_sliding_window`: ONE window on every layer — no per-layer pattern, unlike Gemma 3). No new attention
+  kernel — reuses the MoE-FFN + expert-offload. KV-cache `generate` (+ int8-KV) and `explain` wired; on a MoE layer the
+  explain feature is the dominant expert's promoted neuron.
+- `src/mla.rs` — DeepSeek-V3/R1 / Kimi-K2: MLA (q/kv low-rank latents + latent RMSNorms, a no-RoPE ‖ shared-RoPE key
+  split, v_head_dim ≠ qk_head_dim) + DeepSeek MoE (group-limited sigmoid routing with bias-corrected *choice* and
+  sigmoid *weight*, an always-on shared expert, first-k-dense layers). **YaRN** rope scaling (every real
+  DeepSeek-V3/R1/Kimi config ships it): the inv_freq ramp, the mscale attention factor on cos/sin, and the mscale²
+  softmax-scale correction. **Interleaved rotary** (`rope_interleave`, the DeepSeek default) is de-interleaved at
+  convert time (the permutation is baked into the q_b/q + kv_a rotary rows), so the kernel keeps split-half rope and
+  matches exactly. Experts paged from the mmap. KV-cache `generate` (+ int8-KV) caches the *assembled* per-head K/V
+  (byte-identical to naive) and `explain` reads heads + the shared-expert/dense FFN features.
+- `src/minimax.rs` — MiniMax-M2: RoPE backbone + FULL-WIDTH q/k-norm (RMSNorm over the whole nh·hd / nkv·hd, not
+  per-head) + all-MoE with a sigmoid router (+bias for the choice, sigmoid renormed for the weight; no group, no shared
+  expert). Mixtral-style expert weights on disk (`block_sparse_moe.experts.{e}.w1/w2/w3`). Experts paged. KV-cache
+  `generate` (+ int8-KV) and `explain` (dominant-expert feature) wired.
+- `src/convert.rs` — `convert` subcommand: HF safetensors (single/sharded, mmap-streamed) → bundle, pure Rust, all
+  archs (`--arch gpt2|rope|gemma|gemma3|gemma4|qwen3moe|mla|minimax`), `--dtype int8|f16|f32` (f32 = bit-exact, for the
+  faithfulness gate). `-o` defaults to `bundles/<name>/<name>` (grouped, not loose in cwd); copies `tokenizer.json` next
+  to the bundle + records `eos` in the manifest (for chat / the text API). MoE experts written one int8 array each
+  (independently pageable). lm_head (non-tied unembed) stored raw (vocab, d) low-precision — read row-wise by
+  rowdot_f32, NOT transposed like the other Linears.
+- `src/model.rs` — the `Model` trait (predict / generate / explain), arch-agnostic.
+- `src/explain.rs` — head-circuit classification + feature naming + render.
+- `src/mdfmt.rs` — dependency-free Markdown→ANSI for the chat REPL (headings/lists/bold/italic/code + LaTeX
+  transliteration: `\theta`→θ, `\frac{a}{b}`→(a)/(b), `x^2`→x², math delimiters stripped). Line-buffered so it
+  streams; TTY-gated (raw when piped or `--raw`/`/format off`).
+- `src/api.rs` — the `tiny_http` server (`--serve PORT`): native token-id routes always (`/predict`,`/generate`,
+  `/explain`,`/health`); under `--features api` (default-off) a `TextGen` (the `tokenizers` crate) adds the
+  **OpenAI** (`/v1/chat/completions`,`/v1/completions`,`/v1/models`) + **Anthropic** (`/v1/messages`) text endpoints and
+  the **`--chat`** REPL (ChatML prompt, greedy, EOS-stop). Tokenizer is loaded from `<stem>.tokenizer.json`. Also
+  **tool/function calling**: `render_chat` renders the OpenAI/Anthropic message list (incl. prior tool_calls/results)
+  into the ChatML prompt; tool requests are answered non-streaming and return structured `tool_calls`/`tool_use`.
+- `src/tools.rs` — tool calling helpers (api): parse `tools` (OpenAI/Anthropic shapes) → a Hermes-style system
+  preamble; parse the model's output back into calls across formats (Hermes/Qwen `<tool_call>`, Mistral `[TOOL_CALLS]`,
+  Llama/generic JSON; `arguments`/`parameters` normalised, JSON-string args decoded). Best-effort, model-agnostic.
+- `src/hub.rs` — `--features hub` (default): pull a model from HF by repo id with a small ureq client (token auth,
+  relative-307-aware); used by `convert --model org/repo`.
+- `src/device.rs` / `src/gpu_mm.rs` / `src/gpu_gpt2.rs` — the opt-in GPU backend (`--features gpu`, wgpu): device
+  selection + budget/fallback, the validated matmul primitive, and the GPU-resident GPT-2 forward (`--gpu-check`).
+  Default build excludes all of this (no GPU dependency).
+- `src/main.rs` — CLI: scoring, `--generate`, `--route-frac`, `--explain`, `--serve`, `--dump`.
+
+Done across the board: Tier A/B (**10 archs**: GPT-2, GPT-NeoX/Pythia (neox), RoPE/Qwen2.5, Gemma-2/3/4 incl. **Gemma-4 MoE**, **Qwen3-MoE** incl. sliding window, **MLA** (DeepSeek-V3/R1/Kimi-K2, incl. YaRN + interleaved rotary; V4 is a different attention class, see below), **MiniMax-M2**), KV-cache +
+**int8 KV cache** (`--kv-int8`, GPT-2/RoPE/Gemma-2/Gemma-3, ~4x smaller, lossy: near-lossless short-run, occasional
+greedy flips long-run), fp16/int8 bundles (int8 for all archs — embeddings stay fp16, linear weights int8 W8A8 +
+outlier-aware quant; signed int8 dot — stable NEON `vmull`/`vpadal` on aarch64, scalar elsewhere), **MoE expert-offload**
+(experts mmap'd, paged per token, never resident), Tier C
+(`--route-frac`), `explain` (GPT-2/RoPE/Gemma-2/Gemma-3), the HTTP API, and a **pure-Rust `convert`** (no torch).
+Gemma-3 / Gemma-4 dense / Gemma-4 MoE are each validated f32 60/60 (f16/int8 ≥59/60) vs a tiny
+`Gemma3ForCausalLM`/`Gemma4ForCausalLM` (`scripts/gemma3_ref.py build {gemma3,gemma4,gemma4moe}`).
+
+Still open, with the honest catch on each (none are quick wins — they need hardware or a deep kernel, not more glue):
+- **ARM NEON int8 validation**: the stable-NEON `vmull`/`vpadal` int8 dot is wired and *compiles* for aarch64
+  (`cargo check --target aarch64-unknown-linux-gnu --no-default-features` on this x86 box), but its numerical output
+  can't be *run-validated* here. The scalar path is proven bit-exact to the prior scheme (int8 dumps diff clean), and
+  the NEON path is a straightforward vectorisation of that same signed s8×s8 sum — but per the faithfulness gate it
+  still needs an on-device run: on an M-series, `scripts/validate_all.sh` (the int8 column) confirms NEON == torch.
+  (The faster one-instruction `sdot`/`vdotq_s32` stays out: unstable `stdarch_neon_dotprod`, i.e. nightly-only.)
+- **Tier-C wall-clock speedup**: confirmed the bottleneck — sparse-scalar gather loses to dense-SIMD on CPU, and the
+  gate/up still run full. A real speedup needs SIMD sparse kernels (gather into dense sub-weights with weights stored
+  transposed for contiguous gather) + a predictor that skips gate/up. That's a deep build, and on CPU the payoff is
+  uncertain (the gather read can cost as much as the dense pass).
+- **KV-cache quant** (TurboQuant-style): a *memory* win (4× smaller cache) that only manifests at long context, which
+  these short-context demos don't exercise — validatable by token-identity but not demonstrable as a real saving here.
+- **Gemma-4 remaining pieces** (dense text + MoE + expert-offload + KV-cache `generate`/`explain` all landed, 60/60).
+  Each its own validated increment: **attention_k_eq_v** (global layers reuse k as v, with `num_global_key_value_heads`);
+  **KV-sharing** (`num_kv_shared_layers` — later layers reuse an earlier layer's K/V); and an **explicit LRU + prefetch**
+  over the page cache (perf, not correctness — the current path leans on the OS page cache, the chosen "no extra
+  bookkeeping" strategy).
+- **Frontier-MoE roadmap.** **Qwen3-MoE (incl. sliding window) and MLA (DeepSeek-V3/R1/Kimi-K2, incl. YaRN +
+  interleaved rotary) are done** (60/60 each, with dedicated discriminating columns in `validate_all.sh`) — both
+  carried by the MoE-FFN + expert-offload; MLA is the last new attention *class* among the *supported* set.
+  **DeepSeek-V4 is rescoped**: transformers ships it as a NEW attention class (hierarchical/compressed-sparse
+  attention — compressors, a lightning indexer, grouped o_proj, sliding-window shared-KV MQA), *not* "V3 plus
+  deltas"; it would be its own kernel, and `convert` now refuses `model_type=deepseek_v4` explicitly instead of
+  mis-routing it to `mla`. Remaining tails: **DeepSeek-V4 (HCA/CSA) as a new arch**; **MiniMax-M2 done** (60/60);
+  **MiniMax-M3** (newer, weights/class not out yet — validate when they land). **KV-cache `generate`/`generate_stream`
+  (+ int8-KV) and `explain` are now wired for every arch** (gemma4, qwen3moe, mla, minimax included) — KV==naive
+  byte-identity gated in `validate_all.sh`. Beyond kernels the binding constraint is **memory** — these are
+  100B–1T-param models; expert-offload is the lever (resident = shared layers + hot experts), but the shared layers +
+  a usable working set still want a bigger box + fast disk. Every kernel is tiny-instance-validatable
+  (`scripts/validate_all.sh`); full weights are the hardware ask.
+
+## Conventions
+
+- **Version stays 0.x** — prototype; the on-disk bundle format is not stable.
+- **License: Apache-2.0** (matches the rest of the workspace).
+- Runtime depends on **no ML framework**. Build-time tooling (weight/store export) lives in `lm-sae`, invoked once;
+  cross-repo dependence is on published artifacts, not local paths (workspace rule).
+- Keep the grand framing out of committed docs — describe what the code does and what was measured.
+- Planned acceleration: CPU SIMD via a pure-Rust GEMM crate (keeps the single-binary story); NPU/ANE only ever as an
+  opt-in, feature-gated backend.
+
+## Build & test
+
+```bash
+cargo build --release
+cargo test           # (add tests alongside each tier)
+./target/release/fieldrun --store ../lm-sae/pylm/store_gpt2.json --ids ../lm-sae/pylm/holdout_gpt2.json
+```
+
+FILE /home/allans/code/fieldrun/README.md
+SHA256 3ef289b1a1df6934a301088adfa2e7700f200e781509efb49c54f9df39dc0f1d
+# fieldrun
+
+A single static **binary** (the runtime/tool) that runs an LLM from a flat-file **bundle** — a raw weight blob
+(`.fieldrun.bin`) plus a small JSON manifest (`.fieldrun.json`), and a copied `tokenizer.json` — in pure Rust, with no
+deep-learning framework at runtime. (The model is *not* baked into the binary; it's a portable bundle you convert once
+and point the binary at.)
+
+`pylm` (in the [`lm-sae`](../lm-sae/pylm) repo) decompiles a small LLM into two halves: a flat-file **retrieval** store
+(n-gram / induction / grammar / knowledge) that reproduces ~half the model with stdlib-only Python, and a
+**composition** kernel (attention + MLP) that runs the rest as plain numpy matmuls over flat weight arrays — no torch.
+`fieldrun` is the distribution form: those tiers ported to Rust as one static binary, plus the model as a portable
+bundle (weights blob + JSON manifest + tokenizer) that `convert` produces once and the binary loads/mmaps at run time.
+
+**New here?** [`QUICKSTART.md`](QUICKSTART.md) is a clean-machine walkthrough — install Rust, build, convert a small
+model, chat — in five copy-paste steps.
+
+## Tiers
+
+| Tier | What it adds | Status |
+|------|--------------|--------|
+| **A · retrieval** | induction + n-gram backoff + grammar skeleton over the flat store | **done** — bit-for-bit faithful to `lm.py` |
+| **B · composition** | the attention + MLP forward pass as Rust matmuls | **done — GPT-2, GPT-NeoX/Pythia, Llama/Qwen2.5 (RoPE), Gemma-2/3/4** (incl. **Gemma-4 MoE**), **Qwen3-MoE**, each exact vs the Python/torch (or pure-numpy) reference |
+| **C · router** | compute only the top fraction of MLP neurons/token | **done** — `--route-frac` (accuracy-vs-budget probe; see note) |
+| `explain` | "explain this prediction": live circuits + named features | **done — all archs**; byte-identical to `explain.py`. In chat: `--explain` / `/explain on`; over the API: native `/explain` or `"explain":true` |
+| `logic` | export the decode as a **semiring-Datalog program** (greedy = max-product, sampling = sum-product) | **done — rope archs** (Qwen2.5/Llama). `export --logic` (one decision) · `--export-logic <prefix>` (per-step trace) · `/export-logic` in chat; run with the built-in `eval` (`--semiring max|log`) or Soufflé. See [`LOGIC_EXPORT.md`](LOGIC_EXPORT.md) |
+| API | HTTP server + **OpenAI- & Anthropic-compatible** endpoints + **interactive chat** | **done** (default build) — `--serve PORT` (native `/predict`·`/generate`·`/explain` + `/v1/chat/completions`·`/v1/completions`·`/v1/messages`, streaming, **tool/function calling**) and `--chat` |
+
+**GPU backend** (opt-in, `--features gpu`, via **wgpu** → Metal/DX12/Vulkan): `--device cpu|gpu|auto` + `--max-vram`
+budget (default 24 GB; exploits Apple unified memory), CPU default + fallback. A **GPU-resident GPT-2 forward** (weights
++ residual on-device, matmul/LayerNorm/GELU/residual as WGSL shaders) is **validated 20/20 top-1 vs CPU** on an RTX 5050
+(Vulkan) — `--gpu-check`. It's correctness-first (not yet faster than the rayon CPU batch on a small model; the speedup
+is the optimization pass: on-GPU attention, persistent buffers, tiled/fp16 matmul, and a bigger model). The default
+build stays pure-CPU with no GPU dependency.
+
+Plus: **KV-cache generation** (all archs, tokens identical to naive, with an optional int8 KV cache in both the one-shot
+and the streaming/serve decode loop, and **prefix-KV reuse** across turns in the chat/serve path — a growing
+conversation re-prefills only the new suffix, byte-identical to a cold prefill), **fp16/int8/int4 bundles for every
+arch** (embeddings stay fp16, linear weights
+int8 or group-wise int4; GPT-2 164 MB, Qwen 631 MB, Gemma-2-2b 3.2 GB / fits 8 GB) with **outlier-aware**
+activation quant (GPT-2 int8 = fp32 accuracy, 99% per-position). The int8 dot is vectorised on aarch64 (Apple Silicon /
+ARM) with **stable NEON** intrinsics (`vmull_s8` → `vpadalq_s16`, 16 lanes/iter) and a portable scalar fallback
+everywhere else — all on stable Rust, no feature flag or nightly. (Activations are quantised to *signed* int8; this is
+bit-exact to the scalar dot, so the faithfulness numbers are unchanged. We avoid the one-instruction `sdot`/`vdotq_s32`
+on purpose — it's still behind an unstable feature and would force nightly.)
+
+Also: a **margin-gated retrieval-pruned output head** on the serve/chat decode loops (`--pruned-head`, needs `--store`;
+rope arch). Per decode step the KB proposes ~540 candidate tokens and the unembed scores only those rows; the pick is
+accepted iff the in-set normalized margin `(L_t − L_v)/‖U_t − U_v‖` (the exact distance to the nearest candidate
+power-diagram facet — see [`FINDINGS.md`](FINDINGS.md) §5b) clears `--pruned-margin` (default 2.0), else the full
+(vocab × d) head runs. Opt-in and deliberately lossy (an accuracy-vs-speed knob like `--route-frac`): measure it with
+`--gate-check N`, which generates N tokens through the gated decode vs the ungated full head and reports the identical
+prefix + accept rate. At threshold +∞ every step falls back and the output is byte-identical to the full head.
+
+The weights + store load from a **fieldrun bundle** ([`FORMAT.md`](FORMAT.md)) — a flat manifest + raw blob (f32/f16/i8)
+that the build side (`lm-sae`'s `pylm/export_bundle.py`, the one-time Hugging Face step) writes and the runtime reads.
+**Runtime is pure Rust, no framework.**
+
+## The faithfulness gate
+
+Every tier is validated by **top-1 agreement against the Python/torch reference** on the same inputs:
+- **Tier A** — 0 per-position mismatches vs `lm.py` over 500 positions (with and without grammar).
+- **Tier B (GPT-2 / RoPE / Gemma-2)** — exact vs the numpy kernels (= torch): GPT-2 0/200, Qwen2.5 0/32,
+  Gemma-2-2b 0/18 (fp16/fp32); int8 matches on the sample once activations are outlier-aware-quantised.
+- **Tier B (newer archs)** — each scored top-1 against a *tiny random-init* torch model (`scripts/gemma3_ref.py`,
+  eager attention), sized to exercise every code path (both sliding+full layers, GQA, QK-norm, dual/partial RoPE,
+  window masking, per-layer-type `head_dim`, PLE, MoE routing + experts, MLA latents). No gated download — the
+  architecture *math* is what's validated, and a tiny instance exercises it identically to the full model. `f32` is
+  the gate (the math); `f16`/`int8` are lossy by design. Reproduce: `scripts/validate_all.sh`.
+
+  | arch | reference | f32 | f16 | int8 |
+  |------|-----------|-----|-----|------|
+  | `gemma3`   | Gemma3ForCausalLM        | 60/60 | 60/60 | 59/60 |
+  | `gemma4`   | Gemma4ForCausalLM (dense) | 60/60 | 60/60 | 58/60 |
+  | `gemma4` (MoE) | Gemma4ForCausalLM `enable_moe_block` | 60/60 | 59/60 | 56/60 |
+  | `qwen3moe` | Qwen3MoeForCausalLM      | 60/60 | 60/60 | 60/60 |
+  | `qwen3moe` (sliding window) | Qwen3MoeForCausalLM `use_sliding_window` | 60/60 | 60/60 | 60/60 |
+  | `mla`      | DeepseekV3ForCausalLM    | 60/60 | 60/60 | 60/60 |
+  | `mla` (YaRN) | DeepseekV3ForCausalLM yarn `rope_parameters` | 60/60 | 59/60 | 54/60 |
+  | `minimax`  | MiniMaxM2ForCausalLM     | 60/60 | 60/60 | 60/60 |
+
+  The YaRN row is built deliberately *sharp* (mean-1 norm weights, large init) so it actually gates the rotary
+  details — a wrong rope de-interleave agrees only ~11/60, a missing YaRN ramp ~32/60; its int8 dip is that same
+  sharpness amplifying near-tie flips, not a kernel gap.
+
+**Quality (precision sweep, `scripts/bench.sh`).** Aggregating 3 seeds × 120 positions per arch — `f32` holds 100%
+(the math is exact); `f16` is 99.7–100%; `int8` is 90.8–100%. The int8 dips are near-tie argmax flips on *tiny random*
+weights (largest on the deliberately-sharp YaRN config) — real checkpoints quantize better (e.g. real GPT-2 int8 ==
+f32 top-1, 50.0%). This is the announce-gate quality signal, not the correctness gate (that's `f32` above).
+
+  | arch | f32 | f16 | int8 |
+  |------|-----|-----|------|
+  | `gemma3`   | 100.0% | 100.0% | 95.6% |
+  | `gemma4`   | 100.0% | 99.7%  | 98.3% |
+  | `gemma4` (MoE) | 100.0% | 99.7% | 96.1% |
+  | `qwen3moe` | 100.0% | 100.0% | 100.0% |
+  | `qwen3moe` (sliding window) | 100.0% | 99.7% | 99.7% |
+  | `mla`      | 100.0% | 100.0% | 100.0% |
+  | `mla` (YaRN) | 100.0% | 99.7% | 90.8% |
+  | `minimax`  | 100.0% | 100.0% | 100.0% |
+
+**Expert offload (MoE).** MoE is what moves the memory–capability curve: per token only the router's top-k experts are
+touched, so resident set ≠ total params. `convert` writes **each expert as its own int8 array**; the loader **mmaps**
+the blob and keeps expert weights **on disk**, paging only the active experts in per token (the OS page cache holds the
+hot working set) — so a model with far more expert params than RAM runs, resident set = shared layers + hot experts.
+Non-MoE models are unaffected (no expert arrays). Validated on **Gemma-4 MoE**, **Qwen3-MoE**, **DeepSeek-V3/Kimi-K2
+(MLA)**, and **MiniMax-M2** (each f32 60/60). Qwen3-MoE needs no new attention — it's the RoPE backbone + QK-norm +
+the MoE block; MLA was the last new attention class. (DeepSeek-**V4** is *not* MLA — it ships a new
+hierarchical/compressed-sparse attention; `convert` refuses it explicitly rather than mis-converting.)
+- **KV-cache** generation produces tokens byte-identical to naive full-recompute on every arch.
+
+## Supported models
+
+`convert` reads a Hugging Face checkpoint (single-file or sharded safetensors) straight to a bundle, in pure Rust.
+Pick `--arch` by family:
+
+| `--arch` | Models | Notes |
+|----------|--------|-------|
+| `gpt2`   | GPT-2 (124M–1.5B) | learned pos, LayerNorm, tied wte |
+| `rope`   | Llama-3.x, Qwen2.5, **Qwen3 (4B/8B dense)**, Mistral, Phi | RMSNorm + RoPE + GQA + SwiGLU; optional q/k/v bias; optional **QK-norm** (Qwen3) |
+| `gemma`  | Gemma-2 | √d embed, 4-norm sandwich, logit soft-cap, sliding window |
+| `gemma3` | Gemma-3 (1B/4B/12B/27B) | + QK-norm, dual-base RoPE, 5:1 local/global, no soft-cap |
+| `gemma4` | Gemma-4 (E2B/E4B dense, **26B-A4B MoE**) | + value-norm, per-layer-type `head_dim`, partial-rotary global RoPE, PLE, MoE |
+| `qwen3moe` | Qwen3-MoE (e.g. 30B-A3B) | RoPE + QK-norm + sparse MoE + optional sliding window; no new attention kernel |
+| `mla`    | DeepSeek-V3/R1, **Kimi-K2** | multi-head latent attention (incl. interleaved rotary + YaRN long-context) + group-limited sigmoid MoE + shared expert |
+| `minimax`| MiniMax-M2 | softmax attn + full-width q/k-norm + sigmoid-router MoE (no MLA, no shared expert) |
+
+All validated to top-1 agreement vs the torch reference (see the gate above). Big MoE models (Gemma-4 26B, Qwen3-MoE,
+DeepSeek/Kimi) use **expert offload** — the experts stay mmap'd on disk and only the active top-k page in per token, so
+the resident set is the shared layers + a working set of hot experts, not the whole model. Predict/score, KV-cache
+`generate`/`generate_stream` (+ optional int8 KV), and `explain` (live circuits + features) are wired for **every**
+arch — the incremental KV-cache decode is byte-identical to the naive full recompute (the f32 generation gate in
+`scripts/validate_all.sh`).
+
+**`--recursion-explain`** (the recursion spectrum — COMPUTED / DEFERRED / BINDING long-range binds + nested-fold
+detection — and the value-stack logit-lens) additionally needs the per-position substrate `recursion_trace`, currently
+implemented for:
+
+| arch | recursion tracing |
+|------|-------------------|
+| `rope` (Llama-3.x · Qwen2.5 · Qwen3 dense · Mistral · Phi) | ✅ |
+| `qwen3moe` (Qwen3-MoE, e.g. 30B-A3B) | ✅ |
+| `gemma4` (Gemma-4 E2B / E4B / 26B-A4B) | ✅ |
+| all other arches (`gpt2`, `gemma`, `gemma3`, `mla`, `minimax`, …) | — (`--recursion-explain` prints `no recursion_trace`) |
+
+For `gemma4` the long-range binding signal is read only from the **global** (full-attention) layers — the
+sliding-window layers mask distant keys, so a distant fold can register only there.
+
+## Running a big model on a Mac (M3 / M4, unified memory)
+
+The build is pure-CPU and cross-platform — **`cargo build --release` compiles on stable Rust everywhere** (Apple
+Silicon, Intel macOS, Linux); on Apple Silicon the int8 dot vectorises with stable NEON automatically (scalar fallback
+elsewhere), no flags needed.
+
+**For dense models, build with Apple Accelerate** — `cargo build --release --features accelerate`. This routes the
+f32/f16 matmuls through Apple's tuned BLAS (a large speedup over the pure-Rust kernel; the pure-Rust path stays the
+default and the faithful reference). Dense models run **f16** (`--dtype f16`); int8 is for memory-bound MoE, not dense
+speed. (Linux: `--features openblas`, needs `libopenblas`.)
+
+> macOS may print `ld: warning: … Accelerate … was built for newer 'macOS' version … than being linked` — it's
+> **harmless** (Rust's default deployment target is older than the system SDK; the binary still builds and runs). Silence
+> it by matching your macOS: `MACOSX_DEPLOYMENT_TARGET=15.0 cargo build --release --features accelerate`.
+
+On a 24 GB M-series the lever for *big MoE* is **int8 weights + expert offload**:
+
+```bash
+cargo build --release                                   # builds on macOS ARM as-is
+# 1. download a checkpoint (e.g. Qwen3-MoE) with the HF CLI or hf_hub; you just need its safetensors + config.json
+# 2. convert to an int8 bundle — streams one tensor at a time, so RAM ≈ one tensor, not the whole model
+./target/release/fieldrun convert --model <hf-model-dir> --arch qwen3moe --dtype int8 -o qwen3moe
+# 3. run: score next-token over a held-out id stream (experts page in from the .bin on demand)
+./target/release/fieldrun --bundle qwen3moe --ids holdout.json --ctx 64 --n-eval 50
+```
+
+Why a model far bigger than RAM still runs: `convert` writes each expert as its own int8 array; at load the blob is
+`mmap`'d and only the small dense/shared layers are resident — each token's router picks its top-k experts, those pages
+fault in (and stay warm in the OS page cache), the rest never touch RAM. Headroom = your free disk + page cache, not
+just VRAM. Optional GPU backend (Metal via wgpu) is `--features gpu` (correctness-validated for GPT-2/RoPE; the newer
+archs run on CPU).
+
+## Performance (16-core box)
+
+- **Generation** (single-stream, KV-cache): GPT-2 ~25 tok/s, Qwen2.5-0.5B ~9 tok/s.
+- **KV-cache** turns O(n²) recompute into O(n): GPT-2 64→128 tokens is 4.8× over naive.
+- **f32/f16 matmul**: pure-Rust (`matrixmultiply`, rayon over column blocks) by default; **`--features accelerate`**
+  (Mac) / `openblas` (Linux) routes it through a tuned BLAS — the lever for usable *dense* large-model speed on CPU.
+- **int8 dot**: stable NEON `vmull_s8`/`vpadalq_s16` (s8×s8) on aarch64, scalar fallback elsewhere; **outlier-aware** activation quant keeps it
+  lossless on the sample (100%). On a Mac, prefer `--dtype f16` for the fastest first-token latency on dense models —
+  f16 goes through the blocked SIMD GEMM, whereas int8 trades a little speed for a smaller resident set (its win is on
+  big / memory-bound MoE models, where the matmul isn't the bottleneck).
+- Scoring fans out over positions with rayon; the per-token matmul + unembed are parallel too.
+
+**Tier C note:** `--route-frac` reduces the MLP FLOP *budget* and measures the accuracy-vs-budget curve (GPT-2 keeps 94%
+at 60% MLP), but is **not** a wall-clock speedup as-is — the gate/up matmuls still run in full (only the down-proj is
+sparsified), and the sparse path is scalar vs the dense SIMD matmul. A true speedup needs a router that predicts the
+active set *before* gate/up (the informed-router / MoE direction) plus SIMD sparse kernels.
+
+## Build & run
+
+**Requirements:** stable **Rust ≥ 1.82** (`rustup update` if older) — the default build, `--features gpu`, and the
+default `hub` (HF pull) feature are all pinned to build on 1.82. The runtime needs no ML framework. `convert` reads a
+local checkpoint dir **or** pulls one from the Hugging Face hub by repo id (the default `hub` feature; build
+`--no-default-features` for a fully offline, network-free binary). The validation/quality harness (`scripts/`) uses
+Python + `transformers`, but the binary itself does not.
+
+```bash
+cargo build --release                    # default build: HF pull + OpenAI/Anthropic API + `--chat` all included
+cargo build --release --features accelerate   # Mac: tuned BLAS matmul (much faster dense models; openblas on Linux)
+cargo install --path .                   # optional: puts `fieldrun` on PATH (~/.cargo/bin) so you can drop ./target/release/
+
+# 1. CONVERT — pull from HF by repo id (or a local dir). Bundles default to a home cache (~/.cache/fieldrun/bundles/),
+#    NOT the cwd; a tokenizer.json is copied alongside (for chat / the text API). Gated models: `huggingface-cli login`.
+fieldrun convert --model Qwen/Qwen2.5-7B-Instruct --arch rope --dtype int8     # -> ~/.cache/fieldrun/bundles/Qwen2.5-7B-Instruct/
+#   --arch  gpt2 | rope (Llama/Qwen2.5/Mistral/Phi) | gemma | gemma3 | gemma4 (incl. MoE) | qwen3moe | mla (DeepSeek/Kimi) | minimax
+#   --dtype int8 (default) | f16 | f32       --hf-token <t> (gated)      -o <stem> (override the default location)
+
+# 2. CHAT — interactive REPL (text in/out). This is the DEFAULT: a bare `--bundle <name>` with no other mode opens chat
+#    (Tab-completes slash commands, ↑/↓ history). Replies render from Markdown to ANSI in a terminal (bold/headers/
+#    lists/code, LaTeX math transliterated to Unicode: \theta→θ, x^2→x²); `--raw` or `/format off` keeps it plain (piped
+#    output is always raw). `/help` lists slash commands (/exit, /reset, /explain [on|off], /format [on|off]).
+#    Instruct models use a ChatML template; base models (e.g. GPT-2) run as a plain text-completion REPL.
+fieldrun --bundle Qwen2.5-7B-Instruct                      # bare name resolves under bundles/; defaults to chat
+fieldrun --bundle Qwen2.5-7B-Instruct --explain            # chat + per-reply circuits/features (--chat is the explicit form)
+
+# 3. SERVE — OpenAI- & Anthropic-compatible HTTP API
+fieldrun --bundle Qwen2.5-7B-Instruct --serve 8731
+#   curl -s localhost:8731/v1/chat/completions -d '{"messages":[{"role":"user","content":"Capital of France?"}]}'
+#   curl -s localhost:8731/v1/messages         -d '{"max_tokens":64,"messages":[{"role":"user","content":"Hi"}]}'
+#   add "stream":true for SSE; add "explain":true to attach the structured explanation (fieldrun_explanation field)
+#   tool calling: pass "tools":[…] (OpenAI {type:"function",function:{…}} or Anthropic {name,input_schema}); the model's
+#     calls come back as OpenAI "tool_calls" / Anthropic "tool_use", and you feed results back as role:"tool"/tool_result
+#   native token-id API too:  /predict {"ids":[…]}  ·  /generate {"prompt":[…],"n":N}  ·  /explain  ·  /health
+
+# 4. SCORE / GENERATE / EXPLAIN against a held-out token-id stream ({"holdout_ids":[…]} from the model's tokenizer)
+fieldrun --bundle Qwen2.5-7B-Instruct --ids holdout.json --n-eval 200      # next-token top-1
+fieldrun --bundle Qwen2.5-7B-Instruct --ids holdout.json --ctx 64 --generate 128
+
+# 5. LOGIC EXPORT — the decode as a runnable semiring-Datalog program (rope archs; see LOGIC_EXPORT.md)
+fieldrun --bundle Qwen2.5-0.5B-Instruct --ids holdout.json export --logic --out decision.dl   # ONE next-token decision
+fieldrun --bundle Qwen2.5-0.5B-Instruct --ids holdout.json --export-logic trace --steps 8      # per-step decode trace → trace.000.dl, trace.001.dl, …
+fieldrun eval decision.dl --semiring max                   # run it without Soufflé: max → greedy decode (T=0)
+fieldrun eval decision.dl --semiring log                   #                         log → the distribution over candidates (T=1)
+#   compile a standalone "expert":  souffle -o expert decision.dl && ./expert   (writes decide.csv)
+#   in chat:  /export-logic decision.dl <prompt>           # emit the .dl for that decision on demand
+```
+
+A bare `fieldrun` (or `--help`) prints the full flag list. The default build includes HF pull (`hub`) and the
+OpenAI/Anthropic API + `--chat` (`api`); build `--no-default-features` for a lean, offline, token-id-only binary.
+
+## Whole-model Datalog export (`export --logic-whole`)
+
+Emit the entire rope-family forward pass (RMSNorm + RoPE attention + SwiGLU MLP + unembed + argmax) as **one Soufflé
+Datalog program** whose only input is `token(pos,id)` — weights are facts, the forward is rules, no FFI. Swap the token
+facts and Soufflé recomputes the next token; it's bit-faithful to the model's argmax. Rope family only
+(Llama/Qwen2.5/Mistral; Qwen3 QK-norm is refused).
+
+```bash
+fieldrun --bundle <stem> export --logic-whole --out whole.dl --maxpos 64
+printf '0\t<id0>\n1\t<id1>\n…' > ctx/token.facts && souffle whole.dl -F ctx -D -   # decide.csv = argmax id
+```
+
+The embed/unembed are `vocab×d` facts — the **dense-Gram wall** (~4M facts). Beyond a tiny model, pick a flag:
+
+| flag | what it does | when | faithful? |
+|------|--------------|------|-----------|
+| `--facts-dir <dir>` | **package export**: each weight matrix → a `<dir>/<rel>.facts` data module (+ `.input` in the rules), not inline. Soufflé bulk-loads; the per-file inline wall lifts. Full vocab. | large/large-vocab models; the default way past the wall | **yes** (exact, full vocab) |
+| `--embed-tokens <corpus.json>` | **corpus-restricted embed**: emit embed rows only for tokens in the corpus; with no `--shortlist` it also restricts the output candidate set to them. Tied models reuse the matrix for both. | self-generated / greedy / closed-domain corpora (huge size cut, e.g. 9.2M→17.5k) | **yes** *iff* every context's argmax is in the corpus vocab (guaranteed for a greedy corpus) |
+| `--shortlist K` | keep top-K unembed rows by ‖U_v‖ + a rank-1 certificate | only where the certificate fires | **partial** — argmaxes are often low-norm; prefer the two above |
+| `--multi` | **multi-instance forward**: input `ctx(inst,pos,id)`, output `decide(inst,v)` — one run does all contexts, loading weights once (amortizes the per-call weight load). Pair with `--facts-dir` (inline-fact multi won't compile). | computing many contexts' argmax (e.g. building a reference set) | yes |
+| `--force` | emit past the wall as inline facts anyway | small experiments only | yes (but unwieldy) |
+
+`--embed-tokens` accepts `{"ids":[…]}`, `{"holdout_ids":[…]}`, or a bare `[int,…]`. The faithful path for a real model
+is `--facts-dir` (+ `--multi` for throughput, + `--embed-tokens` for a compact greedy-corpus gram). The `~4M` threshold
+guards inline-fact emission; `--facts-dir` bypasses it (data is tractable).
+
+## Background / further reading
+
+fieldrun is the distribution form of an ongoing interpretability research program — decompiling an LLM into a flat
+retrieval store plus a small composition kernel, and asking what the irreducible "thinking" part costs. The write-up:
+**[A Field Guide to Attention](https://jascal.github.io/lm-sae/)**. (Not required to use fieldrun — it's here if you
+want the why behind the tiers and the `explain` output.)
+
+## License
+
+Apache-2.0. This is a 0.x prototype — interfaces and the on-disk bundle format are not yet stable.
+
+FILE /home/allans/code/fieldrun/scripts/validate_all.sh
+SHA256 8a1501f4f9890f0a7454df9bc70d8efd0194d45afef92991f62b3cd868b6b6e3
+#!/usr/bin/env bash
+# Faithfulness sweep: for every transformer-validatable arch, build a tiny random-init torch reference, convert it to a
+# fieldrun bundle at each dtype, run the pure-Rust kernel, and report top-1 agreement vs torch. f32 is the gate (the
+# architecture math); f16/int8 are lossy by design. No gated downloads — a tiny instance exercises every code path.
+#
+# Usage: scripts/validate_all.sh                       (run from the repo root; needs the torch venv)
+#        FEATURES=accelerate scripts/validate_all.sh   (validate a BLAS build, e.g. on macOS — f32 column is the gate)
+set -u
+PY="${PY:-../lm-sae/.venv/bin/python}"
+BIN=./target/release/fieldrun
+REF=scripts/gemma3_ref.py
+# FEATURES lets you validate a non-default build (e.g. the Apple Accelerate / OpenBLAS matmul) with the same sweep.
+cargo build --release ${FEATURES:+--features "$FEATURES"} >/dev/null 2>&1 || { echo "build failed"; exit 1; }
+
+printf "\n%-12s %-14s %-8s %-8s %-8s %-8s\n" arch ref f32 f16 int8 int4
+printf '%.0s-' {1..54}; echo
+# arch | bundle --arch flag | torch reference class
+for spec in "gemma3:gemma3:Gemma3" "gemma4:gemma4:Gemma4-dense" "gemma4moe:gemma4:Gemma4-MoE" "gemma4keqv:gemma4:Gemma4-k=v" "gemma4kvshare:gemma4:Gemma4-kvshare" "qwen3:rope:Qwen3-dense" "qwen3moe:qwen3moe:Qwen3-MoE" "qwen3moeswa:qwen3moe:Qwen3-MoE-SWA" "mla:mla:DeepSeek-V3" "mlayarn:mla:DeepSeek-YaRN" "minimax:minimax:MiniMax-M2" "dsv4:dsv4:DeepSeek-V4-sliding"; do
+  tag="${spec%%:*}"; rest="${spec#*:}"; arch="${rest%%:*}"; ref="${rest##*:}"
+  $PY $REF build "$tag" >/dev/null 2>&1 || { printf "%-12s BUILD FAILED\n" "$tag"; continue; }
+  row=""
+  for dt in f32 f16 int8 int4; do
+    # --force: build() reseeds the tiny model every run, so a bundle left over from a previous run would have been
+    # converted from DIFFERENT random weights than this run's torch reference — reusing it compares apples to oranges
+    # (silent 1/60 garbage). CI's /tmp is clean so it never hit this; a repeated local run did.
+    $BIN convert --model /tmp/${tag}tiny --arch "$arch" --dtype "$dt" -o /tmp/${tag}_$dt --force >/dev/null 2>&1
+    $BIN --bundle /tmp/${tag}_$dt --ids /tmp/${tag}_holdout.json --ctx 16 --n-eval 60 --dump /tmp/${tag}_${dt}.txt >/dev/null 2>&1
+    a=$($PY $REF compare /tmp/${tag}_${dt}.txt "$tag" 2>/dev/null | grep -oE '[0-9]+/[0-9]+ top-1' | head -1 | grep -oE '^[0-9]+/[0-9]+')
+    row="$row $(printf '%-8s' "${a:-ERR}")"
+  done
+  printf "%-12s %-14s%s\n" "$tag" "$ref" "$row"
+done
+echo
+
+# Qwen3.5 dense text (MiMo-V2.6-Distill-Qwen-9B): the 3:1 DeltaNet/full hybrid,
+# dense SwiGLU, composite model.language_model.* names, and partial RoPE.
+if $PY scripts/qwen35_dense_ref.py build >/dev/null 2>&1; then
+  $BIN convert --model /tmp/fieldrun_qwen35_dense_tiny --dtype f32 -o /tmp/fieldrun_qwen35_dense_f32 --force >/dev/null 2>&1 || exit 1
+  $BIN --bundle /tmp/fieldrun_qwen35_dense_f32 --ids /tmp/fieldrun_qwen35_dense_ids.json --ctx 16 --n-eval 60 --dump /tmp/fieldrun_qwen35_dense_f32.txt >/dev/null 2>&1 || exit 1
+  $PY scripts/qwen35_dense_ref.py compare /tmp/fieldrun_qwen35_dense_f32.txt || exit 1
+else
+  echo "Qwen3.5 dense reference build failed"
+  exit 1
+fi
+echo
+
+# MiMo-7B: Qwen2 backbone at head_dim 128 / 4:1 GQA / theta 640000, with an
+# extra MTP tensor that standard next-token conversion must omit.
+if $PY scripts/mimo_ref.py build >/dev/null 2>&1; then
+  $BIN convert --model /tmp/fieldrun_mimo_tiny --dtype f32 -o /tmp/fieldrun_mimo_f32 --force >/dev/null 2>&1 || exit 1
+  $BIN --bundle /tmp/fieldrun_mimo_f32 --ids /tmp/fieldrun_mimo_holdout.json --ctx 16 --n-eval 60 --dump /tmp/fieldrun_mimo_f32.txt >/dev/null 2>&1 || exit 1
+  $PY scripts/mimo_ref.py compare /tmp/fieldrun_mimo_f32.txt || exit 1
+else
+  echo "MiMo tiny reference build failed"
+  exit 1
+fi
+echo
+
+# Generate + explain gate: incremental KV-cache decode must be BYTE-IDENTICAL to the naive full-recompute path (the f32
+# correctness gate for generation — naive is itself top-1-validated vs torch above, so KV==naive ⇒ KV==torch), for both
+# the f32 and int8-KV caches. `prefix`/`prefix-q` gate prefix-KV reuse (the chat/serve cross-turn cache) on the f32 and
+# the int8 cache respectively: generating an extended prompt by REUSING the prior turn's cached prefix must be
+# byte-identical to a cold full prefill (and to naive). And `explain` (the runtime circuit/feature readout) must run on
+# every arch. Reuses the f32 bundles + holdouts built above.
+printf "%-12s %-22s %-9s %-9s %-9s %s\n" arch "generate f32(KV==naive)" "int8-KV" "prefix" "prefix-q" explain
+printf '%.0s-' {1..70}; echo
+for spec in qwen3:rope gemma3:gemma3 gemma4:gemma4 gemma4moe:gemma4 gemma4keqv:gemma4 gemma4kvshare:gemma4 qwen3moe:qwen3moe qwen3moeswa:qwen3moe mla:mla mlayarn:mla minimax:minimax; do
+  tag="${spec%%:*}"; b=/tmp/${tag}_f32; ids=/tmp/${tag}_holdout.json
+  [ -f "$b.fieldrun.json" ] || { printf "%-12s (no f32 bundle — built above?)\n" "$tag"; continue; }
+  idn=$($BIN --bundle "$b" --ids "$ids" --ctx 16 --generate 16 2>/dev/null | grep -oE 'identical: (true|false)' | grep -oE '(true|false)')
+  id8=$($BIN --bundle "$b" --ids "$ids" --ctx 16 --generate 16 --kv-int8 2>/dev/null | grep -oE 'identical: (true|false)' | grep -oE '(true|false)')
+  idp=$($BIN --bundle "$b" --ids "$ids" --ctx 16 --gen-prefix 16 2>/dev/null | grep -oE 'identical: (true|false)' | grep -oE '(true|false)')
+  idpq=$($BIN --bundle "$b" --ids "$ids" --ctx 16 --gen-prefix 16 --kv-int8 2>/dev/null | grep -oE 'identical: (true|false)' | grep -oE '(true|false)')
+  ex=$($BIN --bundle "$b" --ids "$ids" --ctx 16 --explain 2>/dev/null | grep -c 'model predicts')
+  exl=$([ "${ex:-0}" -ge 1 ] && echo ok || echo MISSING)
+  printf "%-12s %-22s %-9s %-9s %-9s %s\n" "$tag" "${idn:-ERR}" "${id8:-ERR}" "${idp:-ERR}" "${idpq:-ERR}" "$exl"
+done
+echo
+
+# Encoder arch (bert): per-token hidden-state parity vs transformers BertModel over all snapshots (HF
+# output_hidden_states convention) — the f32 gate is max|diff| < 1e-4 (no next-token head to top-1 compare).
+echo "encoder arch (bert) hidden-state parity:"
+if $PY scripts/bert_ref.py build >/dev/null 2>&1; then
+  $BIN convert --model /tmp/berttiny --arch bert --dtype f32 -o /tmp/bert_f32 --force >/dev/null 2>&1
+  $BIN --bundle /tmp/bert_f32 --ids /tmp/bert_holdout.json --encode-dump /tmp/bert_rust.bin >/dev/null 2>&1
+  r=$($PY scripts/bert_ref.py compare /tmp/bert_rust.bin 2>/dev/null | tail -1)
+  printf "%-12s %-14s %s\n" bert BertModel "${r:-ERR}"
+else
+  printf "%-12s BUILD FAILED\n" bert
+fi
+echo
+
+# Real-model round-trips from the HF cache (the convert + run path on actual weights), where present.
+GPT2=$(find ~/.cache/huggingface/hub/models--gpt2/snapshots -name config.json -exec dirname {} \; 2>/dev/null | head -1)
+if [ -n "${GPT2:-}" ] && [ -f ../lm-sae/pylm/holdout_gpt2.json ]; then
+  echo "real GPT-2 (HF cache) next-token top-1 over 200 positions:"
+  for dt in f32 int8; do
+    $BIN convert --model "$GPT2" --arch gpt2 --dtype $dt -o /tmp/gpt2_$dt --force >/dev/null 2>&1
+    t=$($BIN --bundle /tmp/gpt2_$dt --ids ../lm-sae/pylm/holdout_gpt2.json --ctx 64 --n-eval 200 2>/dev/null | grep -oE 'top-1: [0-9.]+%')
+    printf "  %-5s %s\n" "$dt" "$t"
+  done
+  # gpt2 (composition arch) prefix-KV reuse on real weights: reuse must be byte-identical to a cold prefill + naive.
+  gp=$($BIN --bundle /tmp/gpt2_f32 --ids ../lm-sae/pylm/holdout_gpt2.json --ctx 64 --gen-prefix 24 2>/dev/null | grep -oE 'identical: (true|false)' | grep -oE '(true|false)')
+  printf "  gpt2 prefix-KV reuse == fresh+naive: %s\n" "${gp:-ERR}"
+fi
+
+FILE /home/allans/code/fieldrun/scripts/bert_ref.py
+SHA256 14d2bf00fc1651ace762a6c6d7e02a39871d768e69795fe5855fd33f63b6db45
+#!/usr/bin/env python3
+"""Tiny-random BERT reference for the fieldrun `bert` encoder arch.
+
+build:   make a tiny BertModel with EVERY parameter randomized (incl. LayerNorm
+         weights/biases and token-type embeddings — identity/zero inits would
+         hide unapplied-tensor bugs, the gemma4 layer_scalar lesson), save it as
+         a HF checkpoint for `fieldrun convert`, write a random id holdout, and
+         dump the torch hidden states (output_hidden_states convention).
+compare: read fieldrun's --encode-dump binary and gate max|diff| / MSE per
+         snapshot against the torch reference. f32 gate: max|diff| < 1e-4.
+
+Usage: bert_ref.py build | bert_ref.py compare <rust_hiddens.bin>
+"""
+import json
+import struct
+import sys
+
+import torch
+from transformers import BertConfig, BertModel
+
+TAG = "bert"
+N_IDS = 60
+CFG = dict(vocab_size=64, hidden_size=32, num_hidden_layers=5, num_attention_heads=4,
+           intermediate_size=64, max_position_embeddings=64, type_vocab_size=2,
+           layer_norm_eps=1e-12, hidden_act="gelu")
+
+
+def build():
+    torch.manual_seed(0)
+    model = BertModel(BertConfig(**CFG))
+    with torch.no_grad():
+        for p in model.parameters():  # randomize EVERYTHING, norms and biases included
+            p.uniform_(-0.5, 0.5)
+    model.eval()
+    model.save_pretrained(f"/tmp/{TAG}tiny", safe_serialization=True)
+    ids = torch.randint(0, CFG["vocab_size"], (N_IDS,))
+    json.dump({"holdout_ids": ids.tolist()}, open(f"/tmp/{TAG}_holdout.json", "w"))
+    with torch.no_grad():
+        hs = model(ids.unsqueeze(0), output_hidden_states=True).hidden_states
+    with open(f"/tmp/{TAG}_torch_hiddens.bin", "wb") as f:
+        for h in hs:
+            f.write(h.squeeze(0).float().numpy().tobytes())
+    print(f"built /tmp/{TAG}tiny ({len(hs)} snapshots x {N_IDS} tokens x {CFG['hidden_size']})")
+
+
+def compare(path):
+    d, nl = CFG["hidden_size"], CFG["num_hidden_layers"]
+    n = N_IDS * d
+    ref = open(f"/tmp/{TAG}_torch_hiddens.bin", "rb").read()
+    got = open(path, "rb").read()
+    if len(got) != len(ref):
+        print(f"FAIL size {len(got)} != {len(ref)}")
+        sys.exit(1)
+    worst = 0.0
+    for s in range(nl + 1):
+        r = struct.unpack(f"<{n}f", ref[s * n * 4:(s + 1) * n * 4])
+        g = struct.unpack(f"<{n}f", got[s * n * 4:(s + 1) * n * 4])
+        mad = max(abs(a - b) for a, b in zip(r, g))
+        mse = sum((a - b) ** 2 for a, b in zip(r, g)) / n
+        worst = max(worst, mad)
+        print(f"snapshot {s}: max|diff| {mad:.3e}  mse {mse:.3e}")
+    ok = worst < 1e-4
+    print(f"{'PASS' if ok else 'FAIL'} (worst max|diff| {worst:.3e}, gate 1e-4)")
+    sys.exit(0 if ok else 1)
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "build":
+        build()
+    else:
+        compare(sys.argv[2])
+
+FILE /home/allans/code/fieldrun/scripts/gemma3_ref.py
+SHA256 940d92ff849abdb0fb6eaa069f74251cc1c65960c96682b754ed59c092f81eb6
+#!/usr/bin/env python3
+"""Faithfulness gate for the fieldrun `gemma3` arch.
+
+Builds a *tiny* random-init Gemma3ForCausalLM (transformers), sized to exercise every code path the real models use —
+both sliding-window (local) and full (global) layers, GQA, QK-norm, dual-base RoPE, window masking — saves it as
+safetensors+config (so `fieldrun convert --arch gemma3` reads it like any HF checkpoint), and dumps the torch
+reference's top-1 next-token prediction for each position over a random id stream, using the *same* fixed-window
+context the fieldrun scoring loop uses. A second invocation (`compare`) checks fieldrun's --dump against it.
+
+No gated download needed: the architecture math is what we validate, and a tiny instance exercises it identically to
+the full model. Run with the torch venv:  lm-sae/.venv/bin/python scripts/gemma3_ref.py build|compare ...
+"""
+import json
+import os
+import sys
+
+SEED = int(os.environ.get("SEED", "0"))        # vary for the quality sweep (scripts/bench.sh)
+N_EVAL_ENV = int(os.environ.get("N_EVAL", "0"))  # 0 -> default
+ARCH = sys.argv[2] if len(sys.argv) >= 3 and sys.argv[1] == "build" else (
+    sys.argv[3] if len(sys.argv) >= 4 else "gemma3")
+OUT_DIR = f"/tmp/{ARCH}tiny"
+IDS_PATH = f"/tmp/{ARCH}_holdout.json"
+REF_PATH = f"/tmp/{ARCH}_torch_preds.json"
+CTX = 16
+N_EVAL = N_EVAL_ENV or 60
+SEQ_LEN = CTX + N_EVAL + 4
+
+
+def make_config():
+    """A tiny config that exercises every path the real model uses."""
+    import torch
+
+    if ARCH == "dsv4":
+        from transformers import DeepseekV4Config
+        # DeepSeek-V4 Stage 1: the SLIDING-ONLY backbone (no CSA/HCA compressors, no hash routing) — exercises the new
+        # attention class (q-LoRA shared-KV MQA + sink + undo-RoPE + grouped o_proj + partial interleaved RoPE), the mHC
+        # 4-stream Sinkhorn residual, and the sqrtsoftplus MoE + shared expert.
+        return DeepseekV4Config(
+            vocab_size=64, hidden_size=32, moe_intermediate_size=16, intermediate_size=16,
+            num_hidden_layers=3, num_attention_heads=4, num_key_value_heads=1, head_dim=16,
+            q_lora_rank=24, partial_rotary_factor=8 / 16,   # 8 of 16 head dims rotate
+            num_experts_per_tok=2, n_routed_experts=8, n_shared_experts=1,
+            max_position_embeddings=256, sliding_window=8, o_groups=2, o_lora_rank=12,
+            layer_types=["sliding_attention"] * 3, mlp_layer_types=["moe"] * 3,
+            hc_mult=4, hc_sinkhorn_iters=20, rms_norm_eps=1e-6,
+            # V4 declares _tied_weights_keys(lm_head→embed); save_pretrained drops lm_head and a reload ties it, so the
+            # checkpoint is effectively tied. Make that explicit so the torch reference uses embed as the unembed too.
+            tie_word_embeddings=True,
+            attn_implementation="eager", torch_dtype=torch.float32,
+        )
+    if ARCH == "qwen3":
+        from transformers import Qwen3Config
+        # Qwen3 DENSE (Qwen3-4B/8B): the RoPE family + QK-norm (per-head RMSNorm on q/k) — exercises the optional
+        # q_norm/k_norm path added to the `rope` arch.
+        return Qwen3Config(
+            vocab_size=64, hidden_size=32, intermediate_size=64, num_hidden_layers=4,
+            num_attention_heads=4, num_key_value_heads=2, head_dim=8, rms_norm_eps=1e-6,
+            tie_word_embeddings=False, max_position_embeddings=256,
+            attn_implementation="eager", torch_dtype=torch.float32,
+        )
+    if ARCH == "minimax":
+        from transformers import MiniMaxM2Config
+        return MiniMaxM2Config(
+            vocab_size=64,
+            hidden_size=32,
+            intermediate_size=16,          # expert width
+            num_hidden_layers=3,           # all-MoE
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,
+            num_local_experts=8,
+            num_experts_per_tok=2,
+            rms_norm_eps=1e-6,
+            tie_word_embeddings=False,
+            max_position_embeddings=256,
+            attn_implementation="eager",
+            torch_dtype=torch.float32,
+        )
+    if ARCH.startswith("mla"):
+        from transformers import DeepseekV3Config
+        yarn = ARCH == "mlayarn"
+        extra = {}
+        if yarn:
+            # YaRN + a deliberately LARGE init: with the default 0.02 init the interleave-vs-split-half rotary
+            # difference is ~1e-2 in the logits and rarely flips top-1 — a big init makes this column a
+            # discriminating gate for the rotary details (yarn ramp, mscale factors, de-interleave), not a lucky pass.
+            extra = dict(
+                initializer_range=0.2,
+                max_position_embeddings=128,   # = 4 x original_max -> implicit factor matches the explicit one
+                rope_parameters={"rope_type": "yarn", "rope_theta": 10000.0, "factor": 4.0,
+                                 "beta_fast": 32.0, "beta_slow": 1.0, "mscale": 0.8, "mscale_all_dim": 0.5,
+                                 "original_max_position_embeddings": 32},
+            )
+        return DeepseekV3Config(
+            vocab_size=64,
+            hidden_size=32,
+            intermediate_size=64,          # dense layers
+            moe_intermediate_size=16,      # expert + shared-expert width
+            num_hidden_layers=4,
+            num_attention_heads=4,
+            num_key_value_heads=4,
+            q_lora_rank=16,
+            kv_lora_rank=16,
+            qk_nope_head_dim=8,
+            qk_rope_head_dim=4,            # qk_head_dim = 12
+            v_head_dim=8,
+            n_routed_experts=8,
+            n_shared_experts=1,
+            num_experts_per_tok=2,
+            n_group=4,                     # 2 experts/group
+            topk_group=2,                  # -> 4 eligible, then top-2 (exercises group limiting)
+            norm_topk_prob=True,
+            routed_scaling_factor=2.5,
+            first_k_dense_replace=1,       # layer 0 dense, 1-3 MoE -> both paths
+            rms_norm_eps=1e-6,
+            tie_word_embeddings=False,
+            attn_implementation="eager",
+            torch_dtype=torch.float32,
+            **({"max_position_embeddings": 256} if not yarn else {}),
+            **extra,
+        )
+    if ARCH.startswith("qwen3moe"):
+        from transformers import Qwen3MoeConfig
+        swa = ARCH == "qwen3moeswa"
+        return Qwen3MoeConfig(
+            vocab_size=64,
+            hidden_size=32,
+            intermediate_size=64,          # dense (mlp_only) layers
+            num_hidden_layers=4,
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,
+            rms_norm_eps=1e-6,
+            tie_word_embeddings=False,
+            attention_bias=False,
+            use_sliding_window=swa,
+            sliding_window=4 if swa else None,  # small so seq>window actually masks (all layers in Qwen3)
+            decoder_sparse_step=2,         # MoE on layers 1,3; dense on 0,2 -> both paths
+            num_experts=4,
+            num_experts_per_tok=2,
+            moe_intermediate_size=16,
+            norm_topk_prob=True,           # exercise the top-k renorm
+            max_position_embeddings=256,
+            attn_implementation="eager",
+            torch_dtype=torch.float32,
+        )
+    if ARCH.startswith("gemma4"):
+        from transformers import Gemma4TextConfig
+        is_moe = ARCH == "gemma4moe"
+        is_keqv = ARCH == "gemma4keqv"  # global layers: V = K (no v_proj), num_global_key_value_heads KV heads
+        is_kvshare = ARCH == "gemma4kvshare"  # last 2 layers borrow K/V — one sliding (6←4), one full (7←5)
+        # kvshare uses an 8-layer pattern with full layers placed EARLY so the shared tail of each type has a source.
+        nl = 8 if is_kvshare else 7
+        layer_types = (["sliding_attention", "sliding_attention", "full_attention", "sliding_attention",
+                        "sliding_attention", "full_attention", "sliding_attention", "full_attention"]
+                       if is_kvshare else None)
+        return Gemma4TextConfig(
+            vocab_size=64,
+            vocab_size_per_layer_input=64,
+            hidden_size=32,
+            hidden_size_per_layer_input=8,   # PLE dim
+            intermediate_size=64,
+            num_hidden_layers=nl,            # 0-4 sliding, 5 full, 6 forced full -> both paths + per-layer-type head_dim
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,                      # sliding head_dim
+            global_head_dim=16,              # global layers use a DIFFERENT head_dim
+            sliding_window=4,
+            rms_norm_eps=1e-6,
+            max_position_embeddings=256,
+            tie_word_embeddings=True,
+            layer_types=layer_types,
+            enable_moe_block=is_moe,
+            num_experts=4 if is_moe else None,
+            top_k_experts=2 if is_moe else None,
+            moe_intermediate_size=16 if is_moe else None,
+            attention_k_eq_v=is_keqv,
+            num_global_key_value_heads=1 if is_keqv else None,  # 1 < num_key_value_heads(2) → discriminates nkv_g
+            num_kv_shared_layers=2 if is_kvshare else 0,
+            attn_implementation="eager",
+            torch_dtype=torch.float32,
+        )
+    from transformers import Gemma3TextConfig
+    return Gemma3TextConfig(
+        vocab_size=64,
+        hidden_size=32,
+        intermediate_size=64,
+        num_hidden_layers=7,      # layer 5 -> full ((5+1)%6==0); 0-4,6 sliding -> both paths exercised
+        num_attention_heads=4,
+        num_key_value_heads=2,    # GQA, rep=2
+        head_dim=8,
+        sliding_window=4,         # small so seq>window actually masks in the sliding layers
+        query_pre_attn_scalar=8,
+        rms_norm_eps=1e-6,
+        max_position_embeddings=256,
+        tie_word_embeddings=True,
+        attn_implementation="eager",  # plain matmul+softmax: exactly what the Rust kernel implements
+        torch_dtype=torch.float32,
+    )
+
+
+def build():
+    import torch
+    from transformers import AutoModelForCausalLM
+
+    torch.manual_seed(SEED)
+    cfg = make_config()
+    tf = __import__("transformers")
+    Cls = (tf.Qwen3ForCausalLM if ARCH == "qwen3"
+           else tf.DeepseekV4ForCausalLM if ARCH == "dsv4"
+           else tf.MiniMaxM2ForCausalLM if ARCH == "minimax"
+           else tf.DeepseekV3ForCausalLM if ARCH.startswith("mla")
+           else tf.Qwen3MoeForCausalLM if ARCH.startswith("qwen3moe")
+           else tf.Gemma4ForCausalLM if ARCH.startswith("gemma4")
+           else tf.Gemma3ForCausalLM)
+    model = Cls(cfg).eval()
+    # randomise the norm weights too (they init to 0 -> (1+w)=1, which would hide a QK-norm/4-norm bug).
+    # mlayarn uses mean-1 norms: mean-0 norms shrink q/k so attention is near-uniform and rotary details can't
+    # flip top-1 — mean-1 keeps attention sharp, making the column a discriminating gate for the YaRN ramp,
+    # the mscale factors, and the rope de-interleave (measured: a wrong interleave agrees only ~11/60).
+    with torch.no_grad():
+        for name, p in model.named_parameters():
+            if "norm" in name:
+                p.copy_(torch.randn_like(p) * 0.1 + (1.0 if ARCH in ("mlayarn", "qwen3", "gemma4keqv", "gemma4kvshare", "dsv4") else 0.0))
+            # Identity-init router scales (Gemma-4 MoE): mean-1 so the `*scale`/`*per_expert_scale` terms become
+            # discriminating — at the ones() default a bug in either is invisible.
+            elif name.endswith(("router.scale", "router.per_expert_scale")):
+                p.copy_(torch.randn_like(p) * 0.1 + 1.0)
+            # DeepSeek-V4 identity-init PARAMETERS the kernel must read (else the gate is blind to those code paths):
+            #   self_attn.sinks (per-head attention sink, init 0 — a zero sink is NOT a no-op in the softmax);
+            #   attn_hc/ffn_hc/hc_head base (HC additive gates, init 0) + scale (HC multiplicative, init 1).
+            elif ARCH == "dsv4" and name.endswith("self_attn.sinks"):
+                p.copy_(torch.randn_like(p) * 0.5)
+            elif ARCH == "dsv4" and name.endswith(("attn_hc.base", "ffn_hc.base", "hc_base")):
+                p.copy_(torch.randn_like(p) * 0.3)
+            elif ARCH == "dsv4" and name.endswith(("attn_hc.scale", "ffn_hc.scale", "hc_scale")):
+                p.copy_(torch.randn_like(p) * 0.1 + 1.0)
+        # Identity-init BUFFERS that the kernels read from the checkpoint but that init to a no-op value, so the
+        # 60/60 gate can't otherwise discriminate the code paths that consume them:
+        #   layer_scalar (Gemma-4, per-layer ×scalar, inits 1.0) and e_score_correction_bias (DeepSeek/MiniMax
+        #   sigmoid-router CHOICE bias, inits 0.0). NB: do NOT touch rotary inv_freq buffers — the kernels recompute
+        #   those from theta, so randomising them would (correctly) diverge.
+        for name, buf in model.named_buffers():
+            if name.endswith("layer_scalar"):
+                buf.copy_(torch.randn_like(buf) * 0.1 + 1.0)          # mean-1 ×scalar per layer
+            elif name.endswith("e_score_correction_bias"):
+                buf.copy_(torch.randn_like(buf) * 0.2)               # mean-0 bias — shifts the top-k CHOICE
+    model.save_pretrained(OUT_DIR, safe_serialization=True)
+
+    g = torch.Generator().manual_seed(1000 + SEED)
+    ids = torch.randint(0, cfg.vocab_size, (SEQ_LEN,), generator=g).tolist()
+    json.dump({"holdout_ids": ids}, open(IDS_PATH, "w"))
+
+    end = min(CTX + N_EVAL, len(ids))
+    preds = []
+    with torch.no_grad():
+        for i in range(CTX, end):
+            ctx = ids[max(0, i - CTX):i]              # fieldrun's fixed-window context (positions 0..len)
+            inp = torch.tensor([ctx], dtype=torch.long)
+            logits = model(input_ids=inp).logits[0, -1]
+            preds.append(int(logits.argmax()))
+    json.dump({"preds": preds, "ctx": CTX, "n": len(preds)}, open(REF_PATH, "w"))
+    print(f"[gemma3_ref] saved tiny model to {OUT_DIR}; {len(preds)} torch reference predictions -> {REF_PATH}")
+    print(f"[gemma3_ref] layer_types = {getattr(cfg, 'layer_types', '(n/a)')}")
+
+
+def compare(dump_path):
+    ref = json.load(open(REF_PATH))["preds"]
+    rust = [int(x) for x in open(dump_path).read().split()]
+    n = min(len(ref), len(rust))
+    agree = sum(1 for a, b in zip(ref[:n], rust[:n]) if a == b)
+    cls = ("Qwen3ForCausalLM" if ARCH == "qwen3"
+           else "DeepseekV4ForCausalLM" if ARCH == "dsv4"
+           else "MiniMaxM2ForCausalLM" if ARCH == "minimax"
+           else "DeepseekV3ForCausalLM" if ARCH.startswith("mla")
+           else "Qwen3MoeForCausalLM" if ARCH.startswith("qwen3moe")
+           else "Gemma4ForCausalLM" if ARCH.startswith("gemma4") else "Gemma3ForCausalLM")
+    print(f"[gemma3_ref] fieldrun vs torch {cls}: {agree}/{n} top-1 agree ({100*agree/n:.1f}%)")
+    if agree != n:
+        mism = [(i, ref[i], rust[i]) for i in range(n) if ref[i] != rust[i]][:10]
+        print(f"[gemma3_ref] first mismatches (pos, torch, rust): {mism}")
+    sys.exit(0 if agree == n else 1)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) >= 2 and sys.argv[1] == "compare":
+        compare(sys.argv[2])
+    else:
+        build()
+
+FILE /home/allans/code/fieldrun/scripts/mimo_ref.py
+SHA256 3302ea9ce8c1314a9e9d8dbdb9389846b16eb66a67ec1256b73283c3076f909a
+"""Tiny MiMo-shaped Qwen2 parity fixture: head_dim=128, 4:1 GQA, high theta, q/k/v bias.
+
+Run `build` with a Python environment containing torch, transformers, safetensors. The
+checkpoint carries a dummy MTP tensor so conversion also exercises the strip path.
+"""
+import json
+import sys
+from pathlib import Path
+
+OUT = Path("/tmp/fieldrun_mimo_tiny")
+IDS = Path("/tmp/fieldrun_mimo_holdout.json")
+REF = Path("/tmp/fieldrun_mimo_ref.json")
+
+
+def build():
+    import torch
+    from safetensors.torch import load_file, save_file
+    from transformers import Qwen2Config, Qwen2ForCausalLM
+
+    torch.set_num_threads(1)
+    torch.manual_seed(919)
+    cfg = Qwen2Config(
+        vocab_size=64, hidden_size=512, intermediate_size=320, num_hidden_layers=2,
+        num_attention_heads=4, num_key_value_heads=1, head_dim=128,
+        rope_theta=640000.0, rms_norm_eps=1e-5, attention_bias=True,
+        tie_word_embeddings=False, max_position_embeddings=256,
+        attn_implementation="eager", torch_dtype=torch.float32,
+    )
+    model = Qwen2ForCausalLM(cfg).eval()
+    OUT.mkdir(exist_ok=True)
+    model.save_pretrained(OUT, safe_serialization=True)
+    config_path = OUT / "config.json"
+    config = json.loads(config_path.read_text())
+    config.update(model_type="mimo", architectures=["MiMoForCausalLM"],
+                  use_sliding_window=False, sliding_window=32,
+                  max_window_layers=2, use_mrope=False, num_nextn_predict_layers=1)
+    config_path.write_text(json.dumps(config))
+    weights_path = OUT / "model.safetensors"
+    weights = load_file(weights_path)
+    weights["model.mtp_layers.0.input_proj.weight"] = torch.ones(1, 1)
+    save_file(weights, weights_path)
+    ids = torch.randint(0, cfg.vocab_size, (76,), generator=torch.Generator().manual_seed(991)).tolist()
+    IDS.write_text(json.dumps({"holdout_ids": ids}))
+    preds = []
+    with torch.no_grad():
+        for i in range(16, 76):
+            logits = model(torch.tensor([ids[i-16:i]])).logits[0, -1]
+            preds.append(int(logits.argmax()))
+    REF.write_text(json.dumps(preds))
+    print(f"MiMo-shaped torch reference: {len(preds)} positions")
+
+
+def compare(path):
+    expected = json.loads(REF.read_text())
+    actual = [int(s) for s in Path(path).read_text().split()]
+    matched = sum(a == b for a, b in zip(expected, actual))
+    print(f"MiMo backbone: {matched}/{len(expected)} top-1 agree")
+    if len(actual) != len(expected) or matched != len(expected):
+        print([(i, a, b) for i, (a, b) in enumerate(zip(expected, actual)) if a != b][:10])
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "build":
+        build()
+    else:
+        compare(sys.argv[2])
+
+FILE /home/allans/code/fieldrun/scripts/neox_ref.py
+SHA256 ebca570fbd10561b98605ceb225097c0513ba11317fa1735a86e22cc7c605c73
+#!/usr/bin/env python3
+"""Pure-numpy GPT-NeoX (Pythia) reference forward — the faithfulness gate for fieldrun's `neox` kernel.
+
+No torch (none installs on macOS x86_64 + py3.13): safetensors is parsed with the stdlib (8-byte LE header length +
+JSON header + raw little-endian tensors), the forward is plain numpy in f32 mirroring the architecture spec —
+LayerNorm(+bias), fused qkv split PER HEAD ([q,k,v] stacked per head), partial rotary (first rotary_ndims of each
+head, split-half), causal attention (1/sqrt(head_size)), exact erf GELU (`hidden_act: "gelu"`), parallel residual
+x + attn(ln1(x)) + mlp(ln2(x)), final LayerNorm, untied embed_out.
+
+Usage:
+  python3 scripts/neox_ref.py <model_dir> <holdout.json> [--ctx 64] [--n 60] [--dump preds.txt]
+
+Prints (and optionally dumps) the top-1 prediction per position i in [ctx, ctx+n): argmax over the logits at the
+last token of holdout_ids[i-ctx:i] — the same positions fieldrun's scoring mode evaluates, so:
+  fieldrun --bundle <stem> --ids holdout.json --ctx 64 --n-eval 60 --dump /tmp/fr.txt
+  python3 scripts/neox_ref.py <model_dir> holdout.json --ctx 64 --n 60 --dump /tmp/np.txt
+  diff /tmp/fr.txt /tmp/np.txt    # the gate: must be empty at f32
+"""
+
+import json
+import math
+import struct
+import sys
+
+import numpy as np
+
+
+def load_safetensors(path):
+    with open(path, "rb") as f:
+        (hlen,) = struct.unpack("<Q", f.read(8))
+        header = json.loads(f.read(hlen))
+        base = 8 + hlen
+        data = f.read()
+    dt = {"F32": np.float32, "F16": np.float16, "BF16": None, "I64": np.int64}
+    out = {}
+    for name, info in header.items():
+        if name == "__metadata__" or info["dtype"] not in dt:
+            continue  # skip buffer tensors (e.g. the U8/BOOL causal-mask `attention.bias` in NeoX checkpoints)
+        lo, hi = info["data_offsets"]
+        raw = data[lo:hi]
+        if info["dtype"] == "BF16":
+            u16 = np.frombuffer(raw, dtype=np.uint16)
+            arr = (u16.astype(np.uint32) << 16).view(np.float32)
+        else:
+            arr = np.frombuffer(raw, dtype=dt[info["dtype"]])
+        out[name] = arr.reshape(info["shape"]).astype(np.float32)
+    return out
+
+
+def layernorm(x, g, b, eps):
+    mu = x.mean(axis=-1, keepdims=True)
+    var = ((x - mu) ** 2).mean(axis=-1, keepdims=True)
+    return ((x - mu) / np.sqrt(var + eps) * g + b).astype(np.float32)
+
+
+_erf = np.vectorize(math.erf)
+
+
+def gelu(x):
+    return (0.5 * x * (1.0 + _erf(x / np.float32(math.sqrt(2.0))).astype(np.float32))).astype(np.float32)
+
+
+def softmax(x):
+    m = x.max(axis=-1, keepdims=True)
+    e = np.exp(x - m)
+    return (e / e.sum(axis=-1, keepdims=True)).astype(np.float32)
+
+
+class NeoxRef:
+    def __init__(self, model_dir):
+        self.c = json.load(open(f"{model_dir}/config.json"))
+        idx = f"{model_dir}/model.safetensors.index.json"
+        import os
+        if os.path.exists(idx):
+            wm = json.load(open(idx))["weight_map"]
+            self.w = {}
+            for f in sorted(set(wm.values())):
+                self.w.update(load_safetensors(f"{model_dir}/{f}"))
+        else:
+            self.w = load_safetensors(f"{model_dir}/model.safetensors")
+        c = self.c
+        self.nl = c["num_hidden_layers"]
+        self.nh = c["num_attention_heads"]
+        self.d = c["hidden_size"]
+        self.hd = self.d // self.nh
+        self.rot = max(2, int(round(self.hd * c.get("rotary_pct", 1.0)))) & ~1
+        self.theta = c.get("rotary_emb_base", 10000.0)
+        self.eps = c.get("layer_norm_eps", 1e-5)
+        self.parallel = c.get("use_parallel_residual", True)
+        self.inv = (1.0 / self.theta ** (2.0 * np.arange(self.rot // 2) / self.rot)).astype(np.float32)
+
+    def rope(self, x, pos0):
+        # x: (seq, nh, hd); rotary on dims [0, rot), split-half within the block
+        seq = x.shape[0]
+        half = self.rot // 2
+        pos = (pos0 + np.arange(seq, dtype=np.float32))[:, None]  # (seq, 1)
+        ang = (pos * self.inv[None, :]).astype(np.float32)  # (seq, half)
+        c, s = np.cos(ang).astype(np.float32)[:, None, :], np.sin(ang).astype(np.float32)[:, None, :]
+        a, b = x[..., :half].copy(), x[..., half:self.rot].copy()
+        x[..., :half] = a * c - b * s
+        x[..., half:self.rot] = b * c + a * s
+        return x
+
+    def hidden(self, ids):
+        w = self.w
+        seq = len(ids)
+        x = w["gpt_neox.embed_in.weight"][ids]
+        mask = np.triu(np.full((seq, seq), -1e30, dtype=np.float32), 1)
+        for l in range(self.nl):
+            p = f"gpt_neox.layers.{l}."
+            a = layernorm(x, w[p + "input_layernorm.weight"], w[p + "input_layernorm.bias"], self.eps)
+            qkv = a @ w[p + "attention.query_key_value.weight"].T + w[p + "attention.query_key_value.bias"]
+            qkv = qkv.reshape(seq, self.nh, 3 * self.hd)  # per-head [q,k,v]
+            q, k, v = qkv[..., :self.hd].copy(), qkv[..., self.hd:2 * self.hd].copy(), qkv[..., 2 * self.hd:]
+            q, k = self.rope(q, 0), self.rope(k, 0)
+            attn = np.zeros((seq, self.nh, self.hd), dtype=np.float32)
+            for h in range(self.nh):
+                sc = (q[:, h] @ k[:, h].T / np.float32(math.sqrt(self.hd)) + mask).astype(np.float32)
+                attn[:, h] = softmax(sc) @ v[:, h]
+            attn_res = attn.reshape(seq, self.d) @ w[p + "attention.dense.weight"].T + w[p + "attention.dense.bias"]
+            mlp_in = x if self.parallel else x + attn_res
+            a2 = layernorm(mlp_in, w[p + "post_attention_layernorm.weight"], w[p + "post_attention_layernorm.bias"], self.eps)
+            hm = gelu(a2 @ w[p + "mlp.dense_h_to_4h.weight"].T + w[p + "mlp.dense_h_to_4h.bias"])
+            mlp = hm @ w[p + "mlp.dense_4h_to_h.weight"].T + w[p + "mlp.dense_4h_to_h.bias"]
+            x = (x + attn_res + mlp).astype(np.float32)
+        return layernorm(x, w["gpt_neox.final_layer_norm.weight"], w["gpt_neox.final_layer_norm.bias"], self.eps)
+
+    def predict(self, ids):
+        xf = self.hidden(ids)
+        logits = xf[-1] @ self.w["embed_out.weight"].T
+        return int(np.argmax(logits))
+
+
+def main():
+    args = sys.argv[1:]
+    model_dir, holdout = args[0], args[1]
+    ctx = int(args[args.index("--ctx") + 1]) if "--ctx" in args else 64
+    n = int(args[args.index("--n") + 1]) if "--n" in args else 60
+    dump = args[args.index("--dump") + 1] if "--dump" in args else None
+    j = json.load(open(holdout))
+    ids = j["holdout_ids"] if isinstance(j, dict) else j
+    m = NeoxRef(model_dir)
+    preds = []
+    for i in range(ctx, min(ctx + n, len(ids))):
+        preds.append(m.predict(ids[i - ctx:i]))
+        print(f"\r{len(preds)} positions", end="", file=sys.stderr)
+    print("", file=sys.stderr)
+    out = "".join(f"{p}\n" for p in preds)
+    if dump:
+        open(dump, "w").write(out)
+        print(f"wrote {len(preds)} predictions to {dump}", file=sys.stderr)
+    else:
+        print(out, end="")
+
+
+if __name__ == "__main__":
+    main()
+
+FILE /home/allans/code/fieldrun/scripts/qwen35_dense_ref.py
+SHA256 62b1ec19cd1dfcca8cdc5e658337100c955b530854b65915de4658214e052fbb
+"""Tiny MiMo-V2.6/Qwen3.5 dense text parity fixture (torch/transformers)."""
+
+import json
+import sys
+from pathlib import Path
+
+OUT = Path("/tmp/fieldrun_qwen35_dense_tiny")
+IDS = Path("/tmp/fieldrun_qwen35_dense_ids.json")
+REF = Path("/tmp/fieldrun_qwen35_dense_ref.json")
+
+
+def build():
+    import torch
+    from safetensors.torch import load_file, save_file
+    from transformers import Qwen3_5ForCausalLM, Qwen3_5TextConfig
+
+    torch.set_num_threads(1)
+    torch.manual_seed(2609)
+    cfg = Qwen3_5TextConfig(
+        vocab_size=64, hidden_size=64, intermediate_size=128, num_hidden_layers=4,
+        num_attention_heads=4, num_key_value_heads=2, head_dim=16,
+        layer_types=["linear_attention", "linear_attention", "linear_attention", "full_attention"],
+        linear_num_key_heads=2, linear_num_value_heads=4,
+        linear_key_head_dim=16, linear_value_head_dim=16, linear_conv_kernel_dim=4,
+        rope_parameters={"rope_type": "default", "rope_theta": 10_000_000.0,
+                         "partial_rotary_factor": 0.25, "mrope_interleaved": True,
+                         "mrope_section": [1, 1, 0]},
+        partial_rotary_factor=0.25, attention_bias=False, tie_word_embeddings=False,
+        attn_implementation="eager", dtype="float32",
+    )
+    model = Qwen3_5ForCausalLM(cfg).eval()
+    OUT.mkdir(exist_ok=True)
+    model.save_pretrained(OUT, safe_serialization=True)
+    weight_path = OUT / "model.safetensors"
+    weights = load_file(weight_path)
+    weights = {name.replace("model.", "model.language_model.", 1) if name.startswith("model.") else name: value
+               for name, value in weights.items()}
+    # A composite checkpoint includes vision weights, which text-only conversion must skip.
+    weights["model.visual.dummy.weight"] = torch.ones(1)
+    save_file(weights, weight_path)
+    top = {"model_type": "qwen3_5", "architectures": ["Qwen3_5ForConditionalGeneration"],
+           "text_config": cfg.to_dict(), "vision_config": {"model_type": "qwen3_5_vision"},
+           "tie_word_embeddings": False}
+    (OUT / "config.json").write_text(json.dumps(top))
+    ids = torch.randint(0, cfg.vocab_size, (76,), generator=torch.Generator().manual_seed(2610)).tolist()
+    IDS.write_text(json.dumps({"holdout_ids": ids}))
+    preds = []
+    with torch.no_grad():
+        for i in range(16, 76):
+            logits = model(torch.tensor([ids[i-16:i]]), use_cache=False).logits[0, -1]
+            preds.append(int(logits.argmax()))
+    REF.write_text(json.dumps(preds))
+    print(f"Qwen3.5 dense reference: {len(preds)} positions")
+
+
+def compare(path):
+    expected = json.loads(REF.read_text())
+    actual = [int(s) for s in Path(path).read_text().split()]
+    matched = sum(a == b for a, b in zip(expected, actual))
+    print(f"Qwen3.5 dense: {matched}/{len(expected)} top-1 agree")
+    if len(actual) != len(expected) or matched != len(expected):
+        print([(i, a, b) for i, (a, b) in enumerate(zip(expected, actual)) if a != b][:10])
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "build":
+        build()
+    else:
+        compare(sys.argv[2])
