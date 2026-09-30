@@ -317,3 +317,15 @@ Each entry is dated, states what it changes, and states whether any result could
   the pooled-interaction script is now in the repo.
   *Not adopted:* the review's claim that only a Qwen2.5-Coder bundle exists. `~/.cache/fieldrun/bundles/Qwen2.5-1.5B`
   holds a Qwen2.5-1.5B bundle.
+- **Amendment 3 — 2026-09-29, at the P5 candidate freeze, before any system was scored.** Records the operational choices P5 made
+  where this document left them open; the details, counts and hashes are in `research/benchmark/FREEZE.md`. (1) Final counts, fixed
+  by the power simulation: 930 novel test items and 300 novel dev items, plus 100 and 50 exposed corpus items, and 300 and 101 R2
+  items; W uses the same items as R1 in separate calls (so W has 1,030 test items, not 300). (2) The blind reader was shown each
+  item's indented tree with word glosses, not a linear gloss, because a linear gloss hides attachment. (3) The reader's first pass
+  rendered a top-level `whether` as a clause and so judged 115 of 119 yes-no items different; that was a rubric omission, fixed by
+  one added sentence and one added example, and only those 119 items were re-read (both result files are kept). (4) R2 gold is the
+  exact parser's verdict; locations are token indexes. (5) Survivors of the review are items a small reader reads correctly, which
+  biases the benchmark towards easier reading, and the *number or quantity* frame is under-represented; both are stated as limits.
+  (6) "No development script loads the test answers" is read as: training, prompting and selection scripts; the benchmark's own
+  build and verification tools do read them. The owner's 10% sample read is still pending, so the final freeze follows it. No
+  benchmark result of any kind existed when these choices were made.

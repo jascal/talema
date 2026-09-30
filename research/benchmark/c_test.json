@@ -1,0 +1,248 @@
+[
+ {
+  "name": "planning a trip",
+  "turns": [
+   {
+    "en": "I want to go to the sea.",
+    "talema": "voni te gene ge mupe la pe ma .",
+    "trees": [
+     "(want/VERB (OBJ (go/VERB (to/ADP (sea/NOUN the)))) (SUBJ I))"
+    ]
+   },
+   {
+    "en": "Do you know a good train?",
+    "talema": "tobe sevi te gugi guta ka pe tada .",
+    "trees": [
+     "(whether (know/VERB (OBJ (train/NOUN good/ADJ a)) (SUBJ you)))"
+    ]
+   },
+   {
+    "en": "The train is slow.",
+    "talema": "bi lanama pe guge la .",
+    "trees": [
+     "(be slow/ADJ (SUBJ (train/NOUN the)))"
+    ]
+   },
+   {
+    "en": "How long is the trip?",
+    "talema": "bo laga hova pe vihe la .",
+    "trees": [
+     "(be long/ADJ how (SUBJ (trip/NOUN the)))"
+    ]
+   },
+   {
+    "en": "I will go with my friend.",
+    "talema": "geno vira mite ride mena pe ma .",
+    "trees": [
+     "(go/VERB will/VERB (with (friend/NOUN my)) (SUBJ I))"
+    ]
+   },
+   {
+    "en": "We have two bags.",
+    "talema": "vi te bolase tova pe vora .",
+    "trees": [
+     "(have (OBJ (bag/NOUN two)) (SUBJ we))"
+    ]
+   },
+   {
+    "en": "The sea is beautiful.",
+    "talema": "bi vefa pe mupe la .",
+    "trees": [
+     "(be beautiful/ADJ (SUBJ (sea/NOUN the)))"
+    ]
+   },
+   {
+    "en": "Thank you. I will see you tomorrow.",
+    "talema": "dahi te tada pe ma . seru te tada morova vira pe ma .",
+    "trees": [
+     "(thank/VERB (OBJ you) (SUBJ I))",
+     "(see/VERB (OBJ you) tomorrow/NOUN will/VERB (SUBJ I))"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "cooking dinner",
+  "turns": [
+   {
+    "en": "I cook dinner today.",
+    "talema": "kokoko te dinera toha pe ma .",
+    "trees": [
+     "(cook/VERB (OBJ dinner/NOUN) today/NOUN (SUBJ I))"
+    ]
+   },
+   {
+    "en": "I have fish and bread.",
+    "talema": "vi te si fipesa bapana pe ma .",
+    "trees": [
+     "(have (OBJ (and fish/NOUN bread/NOUN)) (SUBJ I))"
+    ]
+   },
+   {
+    "en": "Do you enjoy fish?",
+    "talema": "tobe gidi te fipesa pe tada .",
+    "trees": [
+     "(whether (enjoy/VERB (OBJ fish/NOUN) (SUBJ you)))"
+    ]
+   },
+   {
+    "en": "I do not have cheese.",
+    "talema": "vo te kebesa fa pe ma .",
+    "trees": [
+     "(have (OBJ cheese/NOUN) not (SUBJ I))"
+    ]
+   },
+   {
+    "en": "What do you eat every day?",
+    "talema": "mato te vasa ne dage keda pe tada .",
+    "trees": [
+     "(eat/VERB (OBJ what) (in (day/NOUN every)) (SUBJ you))"
+    ]
+   },
+   {
+    "en": "The fish is hot.",
+    "talema": "bi hoba pe fipese la .",
+    "trees": [
+     "(be hot/ADJ (SUBJ (fish/NOUN the)))"
+    ]
+   },
+   {
+    "en": "It is good.",
+    "talema": "bi guta pe pesa .",
+    "trees": [
+     "(be good/ADJ (SUBJ it))"
+    ]
+   },
+   {
+    "en": "Come, we eat.",
+    "talema": "koma . mate pe vora .",
+    "trees": [
+     "(come/VERB)",
+     "(eat/VERB (SUBJ we))"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "a friend who disagrees",
+  "turns": [
+   {
+    "en": "My friend says I am wrong.",
+    "talema": "desi te bi faga pe ma pe ride mena .",
+    "trees": [
+     "(say/VERB (OBJ (be wrong/ADJ (SUBJ I))) (SUBJ (friend/NOUN my)))"
+    ]
+   },
+   {
+    "en": "I do not agree.",
+    "talema": "gogi fa pe ma .",
+    "trees": [
+     "(agree/VERB not (SUBJ I))"
+    ]
+   },
+   {
+    "en": "Why does he think so?",
+    "talema": "tino dasa vaha pe ha .",
+    "trees": [
+     "(think/VERB so/ADV why (SUBJ he))"
+    ]
+   },
+   {
+    "en": "He is tired.",
+    "talema": "bi timuda pe ha .",
+    "trees": [
+     "(be tired/ADJ (SUBJ he))"
+    ]
+   },
+   {
+    "en": "Maybe he is right.",
+    "talema": "bo rita mika pe ha .",
+    "trees": [
+     "(be right/ADJ maybe/ADV (SUBJ he))"
+    ]
+   },
+   {
+    "en": "I will ask him.",
+    "talema": "rako vira te ha pe ma .",
+    "trees": [
+     "(ask/VERB will/VERB (OBJ he) (SUBJ I))"
+    ]
+   },
+   {
+    "en": "Is that a good idea?",
+    "talema": "tobe bi pidi guta ka pe tesa .",
+    "trees": [
+     "(whether (be (idea/NOUN good/ADJ a) (SUBJ that/DET)))"
+    ]
+   },
+   {
+    "en": "Thanks for the talk.",
+    "talema": "dake fore talake la .",
+    "trees": [
+     "(thanks/NOUN (for (talk/NOUN the)))"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "the weather and a plan",
+  "turns": [
+   {
+    "en": "The rain falls today.",
+    "talema": "fali toha pe raline la .",
+    "trees": [
+     "(fall/VERB today/NOUN (SUBJ (rain/NOUN the)))"
+    ]
+   },
+   {
+    "en": "I do not enjoy the rain.",
+    "talema": "gido te raline la fa pe ma .",
+    "trees": [
+     "(enjoy/VERB (OBJ (rain/NOUN the)) not (SUBJ I))"
+    ]
+   },
+   {
+    "en": "The day is cold.",
+    "talema": "bi kolada pe dage la .",
+    "trees": [
+     "(be cold/ADJ (SUBJ (day/NOUN the)))"
+    ]
+   },
+   {
+    "en": "I have a hat.",
+    "talema": "vi te harute ka pe ma .",
+    "trees": [
+     "(have (OBJ (hat/NOUN a)) (SUBJ I))"
+    ]
+   },
+   {
+    "en": "Will the rain fall tomorrow?",
+    "talema": "tobe falo morova vira pe raline la .",
+    "trees": [
+     "(whether (fall/VERB tomorrow/NOUN will/VERB (SUBJ (rain/NOUN the))))"
+    ]
+   },
+   {
+    "en": "I want to sleep.",
+    "talema": "voni te lafe pe ma pe ma .",
+    "trees": [
+     "(want/VERB (OBJ (sleep/VERB (SUBJ I))) (SUBJ I))"
+    ]
+   },
+   {
+    "en": "The night is long.",
+    "talema": "bi laga pe noke la .",
+    "trees": [
+     "(be long/ADJ (SUBJ (night/NOUN the)))"
+    ]
+   },
+   {
+    "en": "Good night.",
+    "talema": "noke guta .",
+    "trees": [
+     "(night/NOUN good/ADJ)"
+    ]
+   }
+  ]
+ }
+]

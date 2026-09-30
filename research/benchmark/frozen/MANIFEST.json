@@ -1,0 +1,86 @@
+{
+ "counts": {
+  "dev": {
+   "exposed": 50,
+   "novel": 300,
+   "r1_w_items": 350,
+   "r2": {
+    "meaning-change": 17,
+    "structural": 17,
+    "unknown-root": 17,
+    "valid": 50
+   },
+   "r2_topups": 0
+  },
+  "test": {
+   "exposed": 100,
+   "novel": 930,
+   "r1_w_items": 1030,
+   "r2": {
+    "meaning-change": 50,
+    "structural": 50,
+    "unknown-root": 50,
+    "valid": 150
+   },
+   "r2_topups": 0
+  }
+ },
+ "owner_drops": [],
+ "power_at_final_n": {
+  "disc=0.1": {
+   "z=1.96": 0.997,
+   "z=2.576": 0.989
+  },
+  "disc=0.2": {
+   "z=1.96": 0.923,
+   "z=2.576": 0.794
+  },
+  "disc=0.3": {
+   "z=1.96": 0.799,
+   "z=2.576": 0.586
+  }
+ },
+ "review": {
+  "dev": {
+   "exposed_candidates": 73,
+   "exposed_same": 59,
+   "novel_authored": 345,
+   "novel_same": 332
+  },
+  "test": {
+   "exposed_candidates": 248,
+   "exposed_same": 180,
+   "novel_authored": 1070,
+   "novel_same": 1010
+  }
+ },
+ "review_sha256": {
+  "reviews.jsonl": "35371411ef6e7e95103eb36421023ed5ec44eeda5324d8cd55f276fe12e05fa1",
+  "reviews_whether_v2.jsonl": "92b54a95b7b8ff15a76e37c6ddae653fa09ac48e17f84a144f81ccb47459a725"
+ },
+ "sha256": {
+  "frozen/c_test.json": "52c1c81f802ea48ff1eed8b7428d089abd36254245dff6c32f4c479e0c6681dd",
+  "frozen/dev/answers.jsonl": "5aed6413907cd784843ff1f4653271501d61ef5bcdf33266cfce0a8c009939cb",
+  "frozen/dev/r1_inputs.jsonl": "82b3a88ef72543615df038c23161a236d8ca43254717bedcd9aa2a2af97273aa",
+  "frozen/dev/r2_inputs.jsonl": "4fd25faac846cc97883d189bf2f77c62999f85cb829b6afa47bd4532a239aeea",
+  "frozen/dev/w_inputs.jsonl": "db31d17be4070ff0d9d982659d010edb0cfd72cd964ede6d6c399e5dafc34627",
+  "frozen/dev_family_hashes.txt": "6572fddba88829baca4d2bea5a3b0f56656449d06e5808f5a79357ab9f678e46",
+  "frozen/test/answers.jsonl": "7eccff2d2e09b5bec5ae7b6801b026685652989a4a7b58c987ad27c6df58e23b",
+  "frozen/test/r1_inputs.jsonl": "69d3571a5d0d353f542372f4e0a98d7041d7299f3cb93d13f851463e20c5f1ee",
+  "frozen/test/r2_inputs.jsonl": "5f39e011ef996220a61d62a7dd134f641c924abe57565789f93d2a67b2b786ac",
+  "frozen/test/w_inputs.jsonl": "f8c8a5bbbace9029a2c81103ad692feb12eba06273a48cf40f7f6d153fe9ed9f",
+  "frozen/test_family_hashes.txt": "5500d1e778be548f3ea7eb61011d4f06a4ac635b2df089f0a4513ad341ad86e1"
+ },
+ "tools_sha256": {
+  "bench.py": "2d2345f73b68674ba8874606c2dd15a1b4d583716b60057cdcaf736e3d28a6a7",
+  "c_test.py": "036b02d53f30675188211281e1b110271c2a2e7c665f9ea6913058f9b2860623",
+  "check_pairs.py": "8b282f7672e93cdf85b45ecf6f198d1d8e59b2d3a8de862fca5b05ec6e357135",
+  "freeze.py": "f52f9c133bd5a942aae9c1adc243e8dbe4efbcc89369be39cf2d00ae2f0dcb93",
+  "make_exposed.py": "42c5b541b2795bcd98d8cee70695363992d807d8ec3ba7eeb022da1975400788",
+  "make_specs.py": "b83931a0c623763e45a7be792beb0c1471795771c22e62634a9e5c982664cf99",
+  "parse_batch.mjs": "e128af04ef611c5a485635bc526649be5ef538ab047f3bf05956bdac2507f86e",
+  "power_sim.py": "0950994818aaeaaff40f5893fad542f0d9ec910ce40e7855439f9b1916672252",
+  "r2.py": "193aa80b65868a760167c391236c1426608f82c07085e8ee5ffda3825ecbd5df",
+  "review.py": "fcda5df5d4f2d1847c139ad9d9e214cb256f47bc72ae2e002eecc7f2a61811f9"
+ }
+}

@@ -1,0 +1,346 @@
+id	frame	seeds
+dev-0001	wh question	make/VERB | stone/NOUN | people/NOUN
+dev-0002	subordination	love/VERB | planet/NOUN | deny/VERB*
+dev-0003	coordination	lie/VERB | population/NOUN* | do/VERB
+dev-0004	declarative	hear/VERB | world/NOUN | parent/NOUN
+dev-0005	modal or tense	hate/VERB* | worker/NOUN* | hospital/NOUN*
+dev-0006	subordination	enter/VERB* | use/NOUN | grab/VERB*
+dev-0007	copular	railway/NOUN* | typical/ADJ* | value/NOUN*
+dev-0008	declarative	have/VERB | domain/NOUN | change/NOUN
+dev-0009	modal or tense	wait/VERB | field/NOUN* | lemon/NOUN
+dev-0010	request	understand/VERB | context/NOUN | dumb/ADJ*
+dev-0011	request	test/VERB | passion/NOUN* | exact/ADJ*
+dev-0012	copular	speaker/NOUN | equal/ADJ | number/NOUN
+dev-0013	request	fight/VERB | bet/NOUN | black/ADJ
+dev-0014	possession	book/NOUN | introduction/NOUN* | male/ADJ*
+dev-0015	copular	artist/NOUN* | opposite/ADJ | shadow/NOUN
+dev-0016	request	begin/VERB | life/NOUN | little/ADJ
+dev-0017	place or time	delete/VERB | player/NOUN* | square/NOUN
+dev-0018	copular	property/NOUN | complete/ADJ* | monster/NOUN*
+dev-0019	copular	duty/NOUN | dark/ADJ | interview/NOUN*
+dev-0020	possession	thank/NOUN* | product/NOUN | first/ADJ
+dev-0021	declarative	thank/VERB | theory/NOUN | capital/NOUN*
+dev-0022	yes-no question	be/VERB | silence/NOUN | necessary/ADJ
+dev-0023	negation	beg/VERB* | school/NOUN | presentation/NOUN*
+dev-0024	place or time	catch/VERB* | magic/NOUN* | meat/NOUN
+dev-0025	subordination	sell/VERB | ceremony/NOUN* | choose/VERB
+dev-0026	coordination	correct/VERB | muscle/NOUN* | meet/VERB
+dev-0027	copular	commit/NOUN | physical/ADJ* | fear/NOUN
+dev-0028	place or time	need/VERB | moment/NOUN | mile/NOUN*
+dev-0029	subordination	will/VERB | provider/NOUN* | come/VERB
+dev-0030	wh question	divide/VERB | courtesy/NOUN | food/NOUN
+dev-0031	wh question	tell/VERB | cart/NOUN* | foreigner/NOUN*
+dev-0032	declarative	speak/VERB | word/NOUN | signature/NOUN*
+dev-0033	place or time	mark/VERB* | factor/NOUN | meal/NOUN
+dev-0034	wh question	feel/VERB | governor/NOUN* | assistance/NOUN*
+dev-0035	place or time	arrive/VERB* | light/NOUN | country/NOUN*
+dev-0036	coordination	see/VERB | pace/NOUN* | say/VERB
+dev-0037	possession	street/NOUN | security/NOUN* | easy/ADJ
+dev-0038	declarative	go/VERB | instrument/NOUN* | space/NOUN
+dev-0039	declarative	promise/VERB | cat/NOUN* | lane/NOUN*
+dev-0040	yes-no question	state/VERB* | surgery/NOUN* | green/ADJ*
+dev-0041	possession	congress/NOUN* | battery/NOUN* | european/ADJ*
+dev-0042	place or time	must/VERB | article/NOUN | progress/NOUN*
+dev-0043	modal or tense	rise/VERB | addition/NOUN* | crime/NOUN*
+dev-0044	negation	carry/VERB | union/NOUN | leaf/NOUN
+dev-0045	copular	cave/NOUN | sour/ADJ | water/NOUN
+dev-0046	copular	earth/NOUN | surprising/ADJ* | video/NOUN*
+dev-0047	copular	christian/NOUN* | empty/ADJ | priority/NOUN*
+dev-0048	declarative	push/VERB* | birth/NOUN* | budget/NOUN*
+dev-0049	wh question	measure/VERB | secret/NOUN | top/NOUN
+dev-0050	negation	travel/VERB | subject/NOUN | being/NOUN
+dev-0051	declarative	announce/VERB* | baby/NOUN* | husband/NOUN*
+dev-0052	copular	exhibition/NOUN* | rare/ADJ | wave/NOUN
+dev-0053	negation	let/VERB* | ring/NOUN | ship/NOUN
+dev-0054	declarative	know/VERB | support/NOUN* | thing/NOUN
+dev-0055	copular	wait/NOUN* | relevant/ADJ* | model/NOUN
+dev-0056	negation	send/VERB | case/NOUN | court/NOUN*
+dev-0057	negation	present/VERB* | employer/NOUN* | type/NOUN
+dev-0058	request	believe/VERB | song/NOUN | fine/ADJ
+dev-0059	subordination	suggest/VERB* | argument/NOUN | differ/VERB
+dev-0060	wh question	approach/VERB | scene/NOUN | sun/NOUN
+dev-0061	negation	stand/VERB | sentence/NOUN | poem/NOUN
+dev-0062	declarative	discover/VERB* | process/NOUN | premise/NOUN
+dev-0063	subordination	cause/VERB* | chair/NOUN* | end/VERB
+dev-0064	declarative	read/VERB | side/NOUN | athlete/NOUN*
+dev-0065	yes-no question	become/VERB | story/NOUN | tough/ADJ*
+dev-0066	copular	way/NOUN | professional/ADJ* | question/NOUN
+dev-0067	wh question	hire/VERB* | proof/NOUN | language/NOUN
+dev-0068	declarative	look/VERB | strategy/NOUN* | mark/NOUN
+dev-0069	number or quantity	teacher/NOUN | twenty/NUM* | indian/ADJ*
+dev-0070	declarative	mean/VERB | jury/NOUN* | name/NOUN
+dev-0071	coordination	run/VERB | courage/NOUN | transfer/VERB*
+dev-0072	subordination	serve/VERB* | flag/NOUN | change/VERB
+dev-0073	declarative	live/VERB | demonstration/NOUN* | half/NOUN
+dev-0074	wh question	act/VERB | dog/NOUN | integration/NOUN*
+dev-0075	declarative	help/VERB | pain/NOUN | hydrogen/NOUN
+dev-0076	request	talk/VERB | animal/NOUN | positive/ADJ
+dev-0077	request	give/VERB | key/NOUN | sweet/ADJ
+dev-0078	declarative	tend/VERB* | table/NOUN | command/NOUN
+dev-0079	declarative	request/VERB* | spirit/NOUN* | server/NOUN
+dev-0080	negation	involve/VERB* | creation/NOUN* | part/NOUN
+dev-0081	declarative	lack/VERB* | approach/NOUN* | record/NOUN*
+dev-0082	place or time	write/VERB | selection/NOUN* | pupil/NOUN*
+dev-0083	modal or tense	can/VERB | driver/NOUN* | wisdom/NOUN
+dev-0084	copular	feature/NOUN | possible/ADJ | element/NOUN
+dev-0085	place or time	assert/VERB* | purpose/NOUN | reflection/NOUN*
+dev-0086	yes-no question	ask/VERB | consideration/NOUN* | economic/ADJ*
+dev-0087	declarative	forget/VERB | expectation/NOUN* | sound/NOUN
+dev-0088	number or quantity	set/NOUN | one/NUM | scientific/ADJ*
+dev-0089	modal or tense	possess/VERB* | tool/NOUN | war/NOUN*
+dev-0090	wh question	kill/VERB | seed/NOUN | power/NOUN
+dev-0091	copular	statement/NOUN | agricultural/ADJ* | scientist/NOUN*
+dev-0092	place or time	imagine/VERB* | respect/NOUN* | idea/NOUN
+dev-0093	declarative	prove/VERB | master/NOUN* | future/NOUN
+dev-0094	modal or tense	accompany/VERB* | river/NOUN | sense/NOUN
+dev-0095	yes-no question	sing/VERB | talk/NOUN* | right/ADJ
+dev-0096	wh question	want/VERB | output/NOUN | woman/NOUN
+dev-0097	negation	call/VERB | end/NOUN | price/NOUN
+dev-0098	copular	focus/NOUN* | expensive/ADJ | film/NOUN*
+dev-0099	subordination	imply/VERB* | middle/NOUN | destroy/VERB
+dev-0100	declarative	watch/VERB | law/NOUN | mother/NOUN
+dev-0101	coordination	dream/VERB | letter/NOUN | keep/VERB
+dev-0102	copular	minute/NOUN | new/ADJ | plate/NOUN
+dev-0103	place or time	drive/VERB* | vice/NOUN* | text/NOUN
+dev-0104	negation	fry/VERB | lot/NOUN* | general/NOUN*
+dev-0105	modal or tense	rejoice/VERB* | gold/NOUN | rate/NOUN*
+dev-0106	copular	temperature/NOUN | yellow/ADJ | grave/NOUN*
+dev-0107	coordination	may/VERB* | resolution/NOUN* | fit/VERB*
+dev-0108	declarative	leave/VERB | year/NOUN | pardon/NOUN
+dev-0109	copular	piece/NOUN | cool/ADJ* | wonder/NOUN
+dev-0110	modal or tense	wake/VERB | payment/NOUN* | apple/NOUN
+dev-0111	copular	practice/NOUN | interesting/ADJ* | old/NOUN*
+dev-0112	negation	try/VERB | measurement/NOUN | paper/NOUN*
+dev-0113	place or time	include/VERB* | chapter/NOUN | home/NOUN*
+dev-0114	coordination	answer/VERB | time/NOUN | throw/VERB
+dev-0115	subordination	share/VERB | night/NOUN | order/VERB*
+dev-0116	request	bring/VERB | cause/NOUN | hot/ADJ
+dev-0117	place or time	think/VERB | tea/NOUN | body/NOUN
+dev-0118	modal or tense	suffer/VERB | vision/NOUN* | conclusion/NOUN
+dev-0119	possession	uncertainty/NOUN | reality/NOUN* | whole/ADJ
+dev-0120	coordination	open/VERB | test/NOUN | pass/VERB
+dev-0121	place or time	strengthen/VERB* | money/NOUN | oil/NOUN
+dev-0122	copular	age/NOUN | amazing/ADJ* | page/NOUN
+dev-0123	declarative	deploy/VERB | service/NOUN | person/NOUN
+dev-0124	request	exist/VERB* | place/NOUN | digital/ADJ
+dev-0125	negation	fail/VERB | order/NOUN | color/NOUN
+dev-0126	copular	pause/NOUN | quiet/ADJ | scale/NOUN*
+dev-0127	declarative	fall/VERB | formation/NOUN* | client/NOUN
+dev-0128	subordination	disappear/VERB* | approval/NOUN* | break/VERB
+dev-0129	yes-no question	start/VERB* | step/NOUN | wide/ADJ*
+dev-0130	wh question	find/VERB | high/NOUN* | branch/NOUN
+dev-0131	negation	cover/VERB* | conservation/NOUN | voice/NOUN
+dev-0132	request	stay/VERB | star/NOUN | open/ADJ
+dev-0133	subordination	follow/VERB | unit/NOUN | laugh/VERB
+dev-0134	subordination	finish/VERB | developer/NOUN* | expect/VERB*
+dev-0135	request	highlight/VERB* | coffee/NOUN | strange/ADJ
+dev-0136	wh question	touch/VERB | loss/NOUN | thanks/NOUN
+dev-0137	subordination	prepare/VERB* | door/NOUN | pull/VERB
+dev-0138	coordination	prefer/VERB* | cake/NOUN | record/VERB*
+dev-0139	place or time	post/VERB* | orange/NOUN | beginning/NOUN
+dev-0140	declarative	appear/VERB* | joy/NOUN | chain/NOUN
+dev-0141	negation	trust/VERB | area/NOUN | frame/NOUN*
+dev-0142	place or time	increase/VERB* | agency/NOUN* | gallery/NOUN*
+dev-0143	coordination	walk/VERB | release/NOUN* | swim/VERB
+dev-0144	subordination	report/VERB* | fun/NOUN | refuse/VERB
+dev-0145	coordination	play/VERB | health/NOUN | surround/VERB*
+dev-0146	yes-no question	sound/VERB | lie/NOUN | sure/ADJ
+dev-0147	negation	reach/VERB | heart/NOUN* | couple/NOUN*
+dev-0148	negation	contain/VERB* | cross/NOUN* | truth/NOUN
+dev-0149	place or time	earn/VERB* | love/NOUN* | function/NOUN
+dev-0150	possession	condition/NOUN | destruction/NOUN* | loyal/ADJ*
+dev-0151	wh question	put/VERB | result/NOUN* | province/NOUN*
+dev-0152	yes-no question	hold/VERB | manager/NOUN* | bad/ADJ
+dev-0153	negation	flow/VERB | form/NOUN | senate/NOUN*
+dev-0154	modal or tense	happen/VERB | attention/NOUN | response/NOUN
+dev-0155	declarative	explore/VERB* | park/NOUN* | llc/NOUN*
+dev-0156	wh question	take/VERB | sandwich/NOUN | particle/NOUN
+dev-0157	wh question	sign/VERB | reason/NOUN | drink/NOUN
+dev-0158	yes-no question	save/VERB | noise/NOUN | warm/ADJ
+dev-0159	modal or tense	extend/VERB* | individual/NOUN | evening/NOUN
+dev-0160	request	pose/VERB* | matter/NOUN | last/ADJ
+dev-0161	negation	cut/VERB | wine/NOUN* | rule/NOUN
+dev-0162	request	count/VERB | land/NOUN | emotional/ADJ*
+dev-0163	copular	personality/NOUN* | blue/ADJ | line/NOUN
+dev-0164	place or time	note/VERB* | tear/NOUN* | neutron/NOUN
+dev-0165	subordination	set/VERB | ground/NOUN | return/VERB
+dev-0166	negation	import/VERB* | substance/NOUN* | celebration/NOUN*
+dev-0167	negation	die/VERB | button/NOUN* | work/NOUN
+dev-0168	modal or tense	ignore/VERB* | conflict/NOUN* | son/NOUN*
+dev-0169	subordination	enjoy/VERB | package/NOUN* | execute/VERB*
+dev-0170	coordination	realize/VERB* | weight/NOUN | require/VERB*
+dev-0171	declarative	sleep/VERB | memory/NOUN | deadline/NOUN*
+dev-0172	yes-no question	grow/VERB | conversation/NOUN | continuous/ADJ*
+dev-0173	declarative	remove/VERB | steam/NOUN | happiness/NOUN
+dev-0174	subordination	doubt/VERB | resource/NOUN* | associate/VERB*
+dev-0175	copular	appearance/NOUN | various/ADJ* | group/NOUN
+dev-0176	yes-no question	build/VERB | exception/NOUN | fat/ADJ*
+dev-0177	number or quantity	mouth/NOUN* | three/NUM | hard/ADJ
+dev-0178	request	smoke/VERB* | summary/NOUN* | free/ADJ
+dev-0179	copular	evil/NOUN* | small/ADJ | campaign/NOUN*
+dev-0180	place or time	denote/VERB* | daughter/NOUN* | network/NOUN
+dev-0181	modal or tense	teach/VERB | hat/NOUN | king/NOUN
+dev-0182	modal or tense	close/VERB | murder/NOUN* | promise/NOUN
+dev-0183	declarative	collect/VERB* | symbol/NOUN | day/NOUN
+dev-0184	declarative	use/VERB | hand/NOUN | tree/NOUN
+dev-0185	negation	win/VERB | knowledge/NOUN | message/NOUN
+dev-0186	place or time	lose/VERB | principle/NOUN* | snow/NOUN
+dev-0187	modal or tense	check/VERB | electricity/NOUN | road/NOUN
+dev-0188	negation	manage/VERB* | tongue/NOUN | administration/NOUN*
+dev-0189	declarative	assume/VERB | mail/NOUN* | wood/NOUN
+dev-0190	yes-no question	learn/VERB | character/NOUN* | proud/ADJ
+dev-0191	request	discuss/VERB* | staff/NOUN* | set/ADJ*
+dev-0192	declarative	turn/VERB | oven/NOUN | minister/NOUN*
+dev-0193	wh question	promote/VERB* | man/NOUN | soup/NOUN
+dev-0194	subordination	burn/VERB* | identity/NOUN | depend/VERB
+dev-0195	modal or tense	adopt/VERB* | basket/NOUN | issue/NOUN*
+dev-0196	declarative	name/VERB | child/NOUN | deal/NOUN*
+dev-0197	yes-no question	explain/VERB* | lawyer/NOUN* | thin/ADJ*
+dev-0198	modal or tense	guess/VERB* | origin/NOUN* | luxury/NOUN*
+dev-0199	request	solve/VERB | kind/NOUN | annual/ADJ*
+dev-0200	yes-no question	surrender/VERB* | mass/NOUN | old/ADJ
+dev-0201	copular	sea/NOUN | high/ADJ | report/NOUN*
+dev-0202	declarative	adjust/VERB* | justification/NOUN | effort/NOUN*
+dev-0203	declarative	limit/VERB | request/NOUN | difference/NOUN
+dev-0204	declarative	wish/VERB | culture/NOUN | game/NOUN
+dev-0205	request	sink/VERB* | decade/NOUN* | long/ADJ
+dev-0206	negation	seem/VERB | grace/NOUN* | zero/NOUN
+dev-0207	declarative	work/VERB | student/NOUN* | hour/NOUN
+dev-0208	yes-no question	drink/VERB | dream/NOUN | middle/ADJ
+dev-0209	wh question	publish/VERB | system/NOUN | fact/NOUN
+dev-0210	place or time	add/VERB | fruit/NOUN | reference/NOUN
+dev-0211	copular	honesty/NOUN | additional/ADJ* | liar/NOUN
+dev-0212	number or quantity	usage/NOUN* | six/NUM | maximum/ADJ*
+dev-0213	subordination	survive/VERB* | cheese/NOUN | search/VERB
+dev-0214	number or quantity	girl/NOUN | two/NUM | valid/ADJ
+dev-0215	negation	spend/VERB* | baker/NOUN | custom/NOUN
+dev-0216	modal or tense	pay/VERB | house/NOUN | stadium/NOUN*
+dev-0217	declarative	inform/VERB* | length/NOUN | universe/NOUN
+dev-0218	copular	dead/NOUN* | next/ADJ | phrase/NOUN
+dev-0219	declarative	agree/VERB | existence/NOUN* | cup/NOUN
+dev-0220	coordination	hide/VERB | citizen/NOUN* | hurt/VERB
+dev-0221	declarative	steal/VERB* | bird/NOUN | edition/NOUN*
+dev-0222	subordination	point/VERB | arm/NOUN | forgive/VERB
+dev-0223	copular	restaurant/NOUN | young/ADJ | sector/NOUN*
+dev-0224	modal or tense	cook/VERB | content/NOUN | wind/NOUN
+dev-0225	modal or tense	show/VERB | investment/NOUN* | class/NOUN*
+dev-0226	wh question	treat/VERB | learning/NOUN* | trust/NOUN
+dev-0227	copular	point/NOUN | delicious/ADJ* | event/NOUN*
+dev-0228	wh question	continue/VERB* | forgiveness/NOUN | van/NOUN*
+dev-0229	yes-no question	hang/VERB | tech/NOUN* | happy/ADJ
+dev-0230	subordination	review/VERB | data/NOUN | predict/VERB
+dev-0231	number or quantity	validity/NOUN | one/NUM | good/ADJ
+dev-0232	modal or tense	cry/VERB | mission/NOUN* | election/NOUN*
+dev-0233	yes-no question	contact/VERB* | charge/NOUN | japanese/ADJ*
+dev-0234	subordination	form/VERB* | list/NOUN | wonder/VERB*
+dev-0235	wh question	deserve/VERB | neighbor/NOUN* | fantasy/NOUN*
+dev-0236	request	listen/VERB | program/NOUN | variable/ADJ*
+dev-0237	place or time	celebrate/VERB* | egg/NOUN | speed/NOUN
+dev-0238	place or time	train/VERB | hill/NOUN | fish/NOUN
+dev-0239	copular	agent/NOUN | specific/ADJ* | pile/NOUN*
+dev-0240	modal or tense	link/VERB | sky/NOUN | center/NOUN*
+dev-0241	coordination	smile/VERB | knife/NOUN | stop/VERB
+dev-0242	negation	buy/VERB | equality/NOUN* | mercy/NOUN
+dev-0243	place or time	move/VERB | editor/NOUN* | angle/NOUN
+dev-0244	copular	best/NOUN* | democratic/ADJ* | violation/NOUN*
+dev-0245	copular	mind/NOUN | olympic/ADJ* | slave/NOUN*
+dev-0246	copular	date/NOUN* | third/ADJ | estate/NOUN*
+dev-0247	declarative	eat/VERB | movie/NOUN* | autumn/NOUN
+dev-0248	wh question	fly/VERB | follower/NOUN* | nation/NOUN*
+dev-0249	declarative	sit/VERB | train/NOUN | degree/NOUN
+dev-0250	place or time	boil/VERB | thought/NOUN | chicken/NOUN
+dev-0251	yes-no question	produce/VERB* | last/NOUN* | soft/ADJ
+dev-0252	declarative	aim/VERB* | comeback/NOUN* | example/NOUN*
+dev-0253	request	decide/VERB | belief/NOUN | short/ADJ
+dev-0254	possession	gift/NOUN* | machine/NOUN* | fair/ADJ
+dev-0255	modal or tense	bake/VERB | out/NOUN* | reader/NOUN
+dev-0256	coordination	step/VERB | butterfly/NOUN | receive/VERB*
+dev-0257	wh question	rewrite/VERB* | candidate/NOUN* | incident/NOUN
+dev-0258	wh question	monitor/VERB | user/NOUN | root/NOUN
+dev-0259	declarative	could/VERB* | view/NOUN* | start/NOUN*
+dev-0260	place or time	be/VERB | remainder/NOUN | cooperation/NOUN*
+dev-0261	declarative	lean/VERB | dialogue/NOUN | bill/NOUN
+dev-0262	coordination	crash/VERB | friendship/NOUN* | provoke/VERB*
+dev-0263	modal or tense	look/VERB | mathematics/NOUN | circle/NOUN
+dev-0264	request	fill/VERB* | force/NOUN | fifth/ADJ
+dev-0265	yes-no question	roast/VERB | pot/NOUN | main/ADJ*
+dev-0266	copular	lunch/NOUN | wise/ADJ | face/NOUN*
+dev-0267	yes-no question	die/VERB | moon/NOUN | full/ADJ
+dev-0268	coordination	will/VERB | tom/NOUN* | merge/VERB
+dev-0269	declarative	update/VERB* | act/NOUN | bit/NOUN
+dev-0270	yes-no question	belong/VERB* | curve/NOUN | internal/ADJ*
+dev-0271	yes-no question	restart/VERB | classic/NOUN* | social/ADJ*
+dev-0272	subordination	choose/VERB | friend/NOUN | deceive/VERB
+dev-0273	place or time	see/VERB | justice/NOUN | rain/NOUN
+dev-0274	wh question	prove/VERB | mill/NOUN | meaning/NOUN
+dev-0275	yes-no question	happen/VERB | object/NOUN | crazy/ADJ*
+dev-0276	possession	contract/NOUN* | adjective/NOUN | different/ADJ
+dev-0277	modal or tense	have/VERB | launch/NOUN* | rail/NOUN
+dev-0278	yes-no question	sell/VERB | city/NOUN* | multiple/ADJ*
+dev-0279	wh question	flow/VERB | onion/NOUN | consonant/NOUN
+dev-0280	copular	head/NOUN | urban/ADJ* | market/NOUN
+dev-0281	declarative	be/VERB | answer/NOUN | gas/NOUN
+dev-0282	copular	horse/NOUN* | hungry/ADJ | retirement/NOUN*
+dev-0283	wh question	be/VERB | epistle/NOUN* | variable/NOUN
+dev-0284	coordination	support/VERB* | file/NOUN | break/VERB
+dev-0285	wh question	reach/VERB | kilogram/NOUN | weapon/NOUN*
+dev-0286	copular	morning/NOUN | wet/ADJ | goodbye/NOUN
+dev-0287	wh question	join/VERB* | enemy/NOUN | sign/NOUN*
+dev-0288	place or time	count/VERB | freedom/NOUN | heel/NOUN*
+dev-0289	declarative	begin/VERB | card/NOUN | load/NOUN
+dev-0290	number or quantity	bomb/NOUN* | four/NUM | low/ADJ
+dev-0291	yes-no question	respond/VERB* | vehicle/NOUN* | upcoming/ADJ*
+dev-0292	subordination	provide/VERB* | authority/NOUN | try/VERB
+dev-0293	place or time	believe/VERB | timing/NOUN* | wall/NOUN
+dev-0294	possession	left/NOUN* | gram/NOUN* | same/ADJ
+dev-0295	request	be/VERB | quote/NOUN* | spanish/ADJ*
+dev-0296	declarative	know/VERB | computer/NOUN | path/NOUN
+dev-0297	copular	death/NOUN* | violent/ADJ* | third/NOUN*
+dev-0298	copular	second/NOUN | true/ADJ | epoch/NOUN
+dev-0299	number or quantity	history/NOUN* | seven/NUM | light/ADJ
+dev-0300	place or time	refuse/VERB | painting/NOUN* | courtroom/NOUN*
+dev-0301	modal or tense	perform/VERB* | limit/NOUN | bowl/NOUN
+dev-0302	coordination	pack/VERB* | spot/NOUN* | suffer/VERB
+dev-0303	subordination	can/VERB | theatre/NOUN* | cut/VERB
+dev-0304	yes-no question	do/VERB | effect/NOUN | honest/ADJ
+dev-0305	copular	schedule/NOUN* | tired/ADJ | alert/NOUN
+dev-0306	possession	opinion/NOUN* | token/NOUN | glad/ADJ
+dev-0307	negation	finish/VERB | note/NOUN* | young/NOUN*
+dev-0308	declarative	meet/VERB | fire/NOUN | code/NOUN
+dev-0309	coordination	shout/VERB* | pan/NOUN | win/VERB
+dev-0310	place or time	end/VERB | achievement/NOUN* | air/NOUN
+dev-0311	modal or tense	draw/VERB* | input/NOUN | choice/NOUN
+dev-0312	yes-no question	feel/VERB | gentleman/NOUN* | poor/ADJ
+dev-0313	place or time	tell/VERB | pipe/NOUN | giant/NOUN
+dev-0314	declarative	have/VERB | politics/NOUN* | drop/NOUN*
+dev-0315	negation	win/VERB | counterexample/NOUN | assertion/NOUN
+dev-0316	declarative	stay/VERB | ice/NOUN | relation/NOUN
+dev-0317	request	launch/VERB* | fee/NOUN* | few/ADJ
+dev-0318	declarative	avoid/VERB* | pear/NOUN | taste/NOUN
+dev-0319	wh question	haunt/VERB* | ratio/NOUN* | tale/NOUN
+dev-0320	request	find/VERB | play/NOUN | excited/ADJ*
+dev-0321	declarative	name/VERB | layer/NOUN | equation/NOUN
+dev-0322	wh question	load/VERB* | knee/NOUN | first/NOUN*
+dev-0323	place or time	travel/VERB | vacuum/NOUN | tomorrow/NOUN
+dev-0324	subordination	print/VERB* | paradox/NOUN | sound/VERB
+dev-0325	copular	category/NOUN* | far/ADJ | salt/NOUN
+dev-0326	declarative	predict/VERB | average/NOUN | girlfriend/NOUN*
+dev-0327	place or time	multiply/VERB | floor/NOUN* | entanglement/NOUN
+dev-0328	declarative	be/VERB | salad/NOUN | depression/NOUN*
+dev-0329	declarative	begin/VERB | storm/NOUN | conference/NOUN*
+dev-0330	modal or tense	can/VERB | physics/NOUN | shore/NOUN
+dev-0331	subordination	afford/VERB* | corruption/NOUN* | visit/VERB*
+dev-0332	modal or tense	publish/VERB | bar/NOUN* | bread/NOUN
+dev-0333	yes-no question	clear/VERB* | folder/NOUN | stable/ADJ*
+dev-0334	coordination	sign/VERB | frequency/NOUN | learn/VERB
+dev-0335	declarative	choose/VERB | heat/NOUN | trailer/NOUN*
+dev-0336	declarative	recognize/VERB* | judge/NOUN* | guest/NOUN
+dev-0337	modal or tense	facilitate/VERB* | department/NOUN* | triangle/NOUN
+dev-0338	number or quantity	rest/NOUN* | zero/NUM | thirsty/ADJ
+dev-0339	place or time	make/VERB | fool/NOUN | secretary/NOUN*
+dev-0340	number or quantity	island/NOUN* | ten/NUM | beautiful/ADJ
+dev-0341	wh question	give/VERB | phone/NOUN* | flower/NOUN
+dev-0342	negation	cut/VERB | once/NOUN* | virtue/NOUN
+dev-0343	subordination	release/VERB* | sequence/NOUN | call/VERB
+dev-0344	request	reflect/VERB* | mistake/NOUN | fast/ADJ
+dev-0345	modal or tense	climb/VERB* | invitation/NOUN* | poster/NOUN*

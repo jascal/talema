@@ -1,0 +1,119 @@
+{"id": "dev-0022", "set": "dev", "intended": "Is silence necessary?", "reader": "Is silence necessary?", "same": true, "difference": ""}
+{"id": "dev-0024", "set": "dev", "intended": "Do you catch the meat?", "reader": "Do you catch the meat?", "same": true, "difference": ""}
+{"id": "dev-0040", "set": "dev", "intended": "Does the surgery state the green?", "reader": "Is the surgery green?", "same": false, "difference": "missing content word 'state'"}
+{"id": "dev-0065", "set": "dev", "intended": "Is the story tough?", "reader": "Is the story tough?", "same": true, "difference": ""}
+{"id": "dev-0086", "set": "dev", "intended": "Do you ask about the economic consideration?", "reader": "Do you ask about the economic consideration?", "same": true, "difference": ""}
+{"id": "dev-0095", "set": "dev", "intended": "Is the talk right?", "reader": "Is the talk right?", "same": true, "difference": ""}
+{"id": "dev-0129", "set": "dev", "intended": "Does the step start?", "reader": "Does the step start?", "same": true, "difference": ""}
+{"id": "dev-0146", "set": "dev", "intended": "Is the lie sure?", "reader": "Is the lie sure?", "same": true, "difference": ""}
+{"id": "dev-0152", "set": "dev", "intended": "Does the manager hold the bad result?", "reader": "Does the manager hold the bad result?", "same": true, "difference": ""}
+{"id": "dev-0158", "set": "dev", "intended": "Do you save the warm noise?", "reader": "Do you save the warm noise?", "same": true, "difference": ""}
+{"id": "dev-0172", "set": "dev", "intended": "Does the conversation grow?", "reader": "Does the conversation grow?", "same": true, "difference": ""}
+{"id": "dev-0176", "set": "dev", "intended": "Do you build the fat exception?", "reader": "Do you build the fat exception?", "same": true, "difference": ""}
+{"id": "dev-0190", "set": "dev", "intended": "Are you proud?", "reader": "Are you proud?", "same": true, "difference": ""}
+{"id": "dev-0197", "set": "dev", "intended": "Does the lawyer explain the thin issue?", "reader": "Does the lawyer explain the thin issue?", "same": true, "difference": ""}
+{"id": "dev-0200", "set": "dev", "intended": "Do you surrender the old mass?", "reader": "Do you surrender the old mass?", "same": true, "difference": ""}
+{"id": "dev-0208", "set": "dev", "intended": "Do you drink the middle dream?", "reader": "Do you drink the middle dream?", "same": true, "difference": ""}
+{"id": "dev-0229", "set": "dev", "intended": "Does the tech hang happy?", "reader": "Is the tech happy?", "same": false, "difference": "missing \"hang\""}
+{"id": "dev-0233", "set": "dev", "intended": "Do you contact the Japanese charge?", "reader": "Do you contact the Japanese charge?", "same": true, "difference": ""}
+{"id": "dev-0251", "set": "dev", "intended": "Does the soft example produce a comeback?", "reader": "Does the soft example produce a comeback?", "same": true, "difference": ""}
+{"id": "dev-0265", "set": "dev", "intended": "Do you roast the main pot?", "reader": "Do you roast the main pot?", "same": true, "difference": ""}
+{"id": "dev-0267", "set": "dev", "intended": "Does the full moon die?", "reader": "Does the full moon die?", "same": true, "difference": ""}
+{"id": "dev-0270", "set": "dev", "intended": "Does the internal curve belong to you?", "reader": "Does the internal curve belong to you?", "same": true, "difference": ""}
+{"id": "dev-0271", "set": "dev", "intended": "Do you restart the social classic?", "reader": "Do you restart the social classic?", "same": true, "difference": ""}
+{"id": "dev-0275", "set": "dev", "intended": "Does the crazy object happen?", "reader": "Does the crazy object happen?", "same": true, "difference": ""}
+{"id": "dev-0278", "set": "dev", "intended": "Do you sell in the multiple city?", "reader": "Do you sell in the multiple city?", "same": true, "difference": ""}
+{"id": "dev-0291", "set": "dev", "intended": "Does the vehicle respond?", "reader": "Does the vehicle respond?", "same": true, "difference": ""}
+{"id": "dev-0304", "set": "dev", "intended": "Do you do the honest effect?", "reader": "Do you do the honest effect?", "same": true, "difference": ""}
+{"id": "dev-0312", "set": "dev", "intended": "Does the poor gentleman feel it?", "reader": "Does the poor gentleman feel it?", "same": true, "difference": ""}
+{"id": "dev-0333", "set": "dev", "intended": "Is the folder stable?", "reader": "Is the folder stable?", "same": true, "difference": ""}
+{"id": "test-0013", "set": "test", "intended": "Does the active woman consider it?", "reader": "Does the active woman consider it?", "same": true, "difference": ""}
+{"id": "test-0018", "set": "test", "intended": "Is the letter hard?", "reader": "Is the letter hard?", "same": true, "difference": ""}
+{"id": "test-0021", "set": "test", "intended": "Do many authorities do it?", "reader": "Do many authorities do it?", "same": true, "difference": ""}
+{"id": "test-0027", "set": "test", "intended": "Does the first individual take it?", "reader": "Does the first individual take it?", "same": true, "difference": ""}
+{"id": "test-0045", "set": "test", "intended": "Is the tradition different?", "reader": "Is the tradition different?", "same": true, "difference": ""}
+{"id": "test-0048", "set": "test", "intended": "Do you find half of the branch?", "reader": "Do you find half of the branch?", "same": true, "difference": ""}
+{"id": "test-0051", "set": "test", "intended": "Is the person necessary?", "reader": "Is the person necessary?", "same": true, "difference": ""}
+{"id": "test-0058", "set": "test", "intended": "Do you stand in the good night?", "reader": "Do you stand in the good night?", "same": true, "difference": ""}
+{"id": "test-0061", "set": "test", "intended": "Do you remember the cheap journal?", "reader": "Do you remember the cheap journal?", "same": true, "difference": ""}
+{"id": "test-0076", "set": "test", "intended": "Does the pressure mean the next thing?", "reader": "Does the pressure mean the next thing?", "same": true, "difference": ""}
+{"id": "test-0093", "set": "test", "intended": "Does the sweet trouble reach you?", "reader": "Does the sweet trouble reach you?", "same": true, "difference": ""}
+{"id": "test-0097", "set": "test", "intended": "Does the fourth mind haunt you?", "reader": "Does the fourth mind haunt you?", "same": true, "difference": ""}
+{"id": "test-0133", "set": "test", "intended": "Do you thank the Jewish week?", "reader": "Do you thank the Jewish week?", "same": true, "difference": ""}
+{"id": "test-0145", "set": "test", "intended": "Is it impossible to recode the shore?", "reader": "Is recoding the shore impossible?", "same": true, "difference": ""}
+{"id": "test-0164", "set": "test", "intended": "Does the central partner emerge?", "reader": "Does the central partner emerge?", "same": true, "difference": ""}
+{"id": "test-0171", "set": "test", "intended": "Does the death produce a reasonable thing?", "reader": "Does death produce a reasonable thing?", "same": true, "difference": ""}
+{"id": "test-0189", "set": "test", "intended": "Does the criminal choice transform?", "reader": "Does the criminal choice transform?", "same": true, "difference": ""}
+{"id": "test-0214", "set": "test", "intended": "Does the beautiful boy train?", "reader": "Does the beautiful boy train?", "same": true, "difference": ""}
+{"id": "test-0233", "set": "test", "intended": "Do you perceive the solid noise?", "reader": "Do you perceive the solid noise?", "same": true, "difference": ""}
+{"id": "test-0242", "set": "test", "intended": "Do you draw the dark dress?", "reader": "Do you draw the dark dress?", "same": true, "difference": ""}
+{"id": "test-0254", "set": "test", "intended": "Do you dominate the humble bar?", "reader": "Do you dominate the humble bar?", "same": true, "difference": ""}
+{"id": "test-0265", "set": "test", "intended": "Do you review the tough length?", "reader": "Do you review the tough length?", "same": true, "difference": ""}
+{"id": "test-0286", "set": "test", "intended": "Does the interested researcher carry it?", "reader": "Does the interested researcher carry it?", "same": true, "difference": ""}
+{"id": "test-0288", "set": "test", "intended": "Does the valuable translation continue?", "reader": "Is the valuable translation continuing?", "same": true, "difference": ""}
+{"id": "test-0348", "set": "test", "intended": "Can the positive response fly?", "reader": "Can the positive response fly?", "same": true, "difference": ""}
+{"id": "test-0351", "set": "test", "intended": "Do you complete the usual commodity?", "reader": "Do you complete the usual commodity?", "same": true, "difference": ""}
+{"id": "test-0358", "set": "test", "intended": "Do you use the global sand?", "reader": "Do you use the global sand?", "same": true, "difference": ""}
+{"id": "test-0375", "set": "test", "intended": "Do you report the white wisdom?", "reader": "Do you report the white wisdom?", "same": true, "difference": ""}
+{"id": "test-0383", "set": "test", "intended": "Is the border minimum?", "reader": "Is the border minimum?", "same": true, "difference": ""}
+{"id": "test-0407", "set": "test", "intended": "Do you promote the upcoming epistle?", "reader": "Will you promote the upcoming epistle?", "same": true, "difference": ""}
+{"id": "test-0415", "set": "test", "intended": "Do you understand the young input?", "reader": "Do you understand the young input?", "same": true, "difference": ""}
+{"id": "test-0434", "set": "test", "intended": "Do you ban the ideal surprise?", "reader": "Do you ban the ideal surprise?", "same": true, "difference": ""}
+{"id": "test-0435", "set": "test", "intended": "Is the silent nucleus here?", "reader": "Is the silent nucleus here?", "same": true, "difference": ""}
+{"id": "test-0448", "set": "test", "intended": "Do you locate the exclusive lead?", "reader": "Do you locate the exclusive lead?", "same": true, "difference": ""}
+{"id": "test-0467", "set": "test", "intended": "Does the valid will stay?", "reader": "Will the valid will stay?", "same": true, "difference": ""}
+{"id": "test-0486", "set": "test", "intended": "Do you boost the kind numeral?", "reader": "Do you boost the kind numeral?", "same": true, "difference": ""}
+{"id": "test-0493", "set": "test", "intended": "Do you criticize the modern first vowel?", "reader": "Do you criticize the modern vowel-first?", "same": false, "difference": "first vowel vs vowel-first"}
+{"id": "test-0500", "set": "test", "intended": "Do you make the decision independent?", "reader": "Do you make the independent decision?", "same": true, "difference": ""}
+{"id": "test-0503", "set": "test", "intended": "Do you estimate the present commit?", "reader": "Do you estimate the present commitment?", "same": false, "difference": "commit vs commitment"}
+{"id": "test-0508", "set": "test", "intended": "Do you obtain the thirsty fact?", "reader": "Do you obtain the thirsty fact?", "same": true, "difference": ""}
+{"id": "test-0509", "set": "test", "intended": "Do you pay the afraid vegetable?", "reader": "Do you pay the afraid vegetable?", "same": true, "difference": ""}
+{"id": "test-0527", "set": "test", "intended": "Do you see the good lunch?", "reader": "Do you see the good lunch?", "same": true, "difference": ""}
+{"id": "test-0528", "set": "test", "intended": "Does the reader have water?", "reader": "Does the reader have water?", "same": true, "difference": ""}
+{"id": "test-0529", "set": "test", "intended": "Do you hire the decidable syllogism?", "reader": "Do you hire the decidable syllogism?", "same": true, "difference": ""}
+{"id": "test-0547", "set": "test", "intended": "Do you talk about the circular carrot?", "reader": "Do you talk about the circular carrot?", "same": true, "difference": ""}
+{"id": "test-0566", "set": "test", "intended": "Do you make the adult contradiction?", "reader": "Do you make the adult contradiction?", "same": true, "difference": ""}
+{"id": "test-0616", "set": "test", "intended": "Does the scientific page threaten you?", "reader": "Does the scientific page threaten you?", "same": true, "difference": ""}
+{"id": "test-0625", "set": "test", "intended": "Do you test the early master?", "reader": "Do you test the early master?", "same": true, "difference": ""}
+{"id": "test-0626", "set": "test", "intended": "Do you eat the sure cheese?", "reader": "Do you eat the cheese?", "same": false, "difference": "missing \"sure\""}
+{"id": "test-0631", "set": "test", "intended": "Do you count the main scene?", "reader": "Do you count the main scene?", "same": true, "difference": ""}
+{"id": "test-0645", "set": "test", "intended": "Do you grant the English arm?", "reader": "Do you grant the English arm?", "same": true, "difference": ""}
+{"id": "test-0669", "set": "test", "intended": "Does the stranger block the middle?", "reader": "Does the stranger block the middle?", "same": true, "difference": ""}
+{"id": "test-0671", "set": "test", "intended": "Do you put the temporary people here?", "reader": "Do you put the temporary people here?", "same": true, "difference": ""}
+{"id": "test-0673", "set": "test", "intended": "Do you give the absolute luck?", "reader": "Do you give the absolute luck?", "same": true, "difference": ""}
+{"id": "test-0711", "set": "test", "intended": "Do you print the native snow?", "reader": "Do you print the native snow?", "same": true, "difference": ""}
+{"id": "test-0716", "set": "test", "intended": "Do you check the negative crime?", "reader": "Do you check the negative crime?", "same": true, "difference": ""}
+{"id": "test-0721", "set": "test", "intended": "Do you see the open month?", "reader": "Do you see the open month?", "same": true, "difference": ""}
+{"id": "test-0735", "set": "test", "intended": "Does the hard poet dance?", "reader": "Does the hard poet dance?", "same": true, "difference": ""}
+{"id": "test-0748", "set": "test", "intended": "Do you roll the next air?", "reader": "Do you roll the next air?", "same": true, "difference": ""}
+{"id": "test-0755", "set": "test", "intended": "Does the single circulation sound?", "reader": "Does the single circulation sound?", "same": true, "difference": ""}
+{"id": "test-0767", "set": "test", "intended": "Do you abandon the warm age?", "reader": "Do you abandon the warm age?", "same": true, "difference": ""}
+{"id": "test-0775", "set": "test", "intended": "Does the concerned ability conform?", "reader": "Does the concerned ability conform?", "same": true, "difference": ""}
+{"id": "test-0776", "set": "test", "intended": "Does the practical being finish?", "reader": "Does the practical being finish?", "same": true, "difference": ""}
+{"id": "test-0777", "set": "test", "intended": "Shall the same phrase be here?", "reader": "Is the same phrase here?", "same": false, "difference": "modal verb changed"}
+{"id": "test-0779", "set": "test", "intended": "Does the artistic future do it?", "reader": "Does the artistic future do it?", "same": true, "difference": ""}
+{"id": "test-0780", "set": "test", "intended": "Do you sit for the appropriate hour?", "reader": "Do you sit for the appropriate hour?", "same": true, "difference": ""}
+{"id": "test-0825", "set": "test", "intended": "Do you condemn the next proposal?", "reader": "Do you condemn the next proposal?", "same": true, "difference": ""}
+{"id": "test-0840", "set": "test", "intended": "Do you leave the wedding?", "reader": "Do you leave the wedding?", "same": true, "difference": ""}
+{"id": "test-0854", "set": "test", "intended": "Do you handle the long argument?", "reader": "Do you handle the long argument?", "same": true, "difference": ""}
+{"id": "test-0864", "set": "test", "intended": "Do you google the light top?", "reader": "Do you google the light top?", "same": true, "difference": ""}
+{"id": "test-0875", "set": "test", "intended": "Do you fulfil the dead evening?", "reader": "Do you fulfil the dead evening?", "same": true, "difference": ""}
+{"id": "test-0902", "set": "test", "intended": "Does the hot answer come?", "reader": "Does the hot answer come?", "same": true, "difference": ""}
+{"id": "test-0907", "set": "test", "intended": "Do you walk to the far computer?", "reader": "Do you walk to the far computer?", "same": true, "difference": ""}
+{"id": "test-0920", "set": "test", "intended": "Do you pretend the fair edition?", "reader": "Do you pretend the fair edition?", "same": true, "difference": ""}
+{"id": "test-0931", "set": "test", "intended": "Does the different unit operate?", "reader": "Does the different unit operate?", "same": true, "difference": ""}
+{"id": "test-0933", "set": "test", "intended": "Do you do the humble ton?", "reader": "Do you do the humble ton?", "same": true, "difference": ""}
+{"id": "test-0942", "set": "test", "intended": "Must the high curve go?", "reader": "Must the high curve go?", "same": true, "difference": ""}
+{"id": "test-0952", "set": "test", "intended": "Do you update the new place?", "reader": "Do you update the new place?", "same": true, "difference": ""}
+{"id": "test-0961", "set": "test", "intended": "Does the musical municipality start?", "reader": "Does the musical municipality start?", "same": true, "difference": ""}
+{"id": "test-0962", "set": "test", "intended": "Can the Japanese part go?", "reader": "Can the Japanese part go?", "same": true, "difference": ""}
+{"id": "test-0964", "set": "test", "intended": "Do you achieve the strange variable?", "reader": "Do you achieve the strange variable?", "same": true, "difference": ""}
+{"id": "test-0969", "set": "test", "intended": "Do you approve the brave pizza?", "reader": "Do you approve the brave pizza?", "same": true, "difference": ""}
+{"id": "test-0993", "set": "test", "intended": "Do you lose the soft bit?", "reader": "Do you lose the soft bit?", "same": true, "difference": ""}
+{"id": "test-1021", "set": "test", "intended": "Do you ask about the fast blood?", "reader": "Do you ask about the fast blood?", "same": true, "difference": ""}
+{"id": "test-1035", "set": "test", "intended": "Do you lose the Turkish test?", "reader": "Do you lose the Turkish test?", "same": true, "difference": ""}
+{"id": "test-1036", "set": "test", "intended": "Do you burn the second hour?", "reader": "Do you burn the second hour?", "same": true, "difference": ""}
+{"id": "exp-test-0030", "set": "test", "intended": "Do you lie?", "reader": "Do you lie?", "same": true, "difference": ""}
+{"id": "exp-test-0140", "set": "test", "intended": "Can I have an apple?", "reader": "Can I have an apple?", "same": true, "difference": ""}
+{"id": "exp-test-0160", "set": "test", "intended": "Can you give me a book?", "reader": "Can you give me a book?", "same": true, "difference": ""}
+{"id": "exp-test-0195", "set": "test", "intended": "Does the dog sleep?", "reader": "Does the dog sleep?", "same": true, "difference": ""}
