@@ -1,0 +1,36 @@
+{
+  "model": "meta-llama/Llama-3.2-1B",
+  "rows": 2525,
+  "word_occurrences": 14780,
+  "vocab_size": 128000,
+  "len_tokenizer": 128256,
+  "talema_sentence_tokens": {
+    "mean": 10.453069306930693,
+    "median": 10
+  },
+  "json_sentence_tokens": {
+    "mean": 19.09980198019802,
+    "median": 18
+  },
+  "talema_sentence_tokens_per_talema_word": {
+    "mean": 2.125238634140309,
+    "median": 1.8
+  },
+  "json_sentence_tokens_per_talema_word": {
+    "mean": 3.5355035701885282,
+    "median": 3.25
+  },
+  "isolated_word_tokens": {
+    "mean": 1.6143437077131257,
+    "median": 2.0
+  },
+  "single_token_word_fraction": 0.46474966170500676,
+  "single_token_unique_word_fraction": 0.07489760093622001,
+  "talema_micro_tokens_per_word": 1.7857916102841678,
+  "json_micro_tokens_per_word": 3.2629905277401896,
+  "elapsed_s": 1.0563354339974467,
+  "example": {
+    "talema": "buke fore leseri keda de gage keda .",
+    "json": "[\"book\",[\"for\",[\"reader\",\"every\",[\"of\",[\"age\",\"every\"]]]]]"
+  }
+}

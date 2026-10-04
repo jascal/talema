@@ -1,0 +1,56 @@
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  11%|█         | 220/2076 [00:00<00:00, 2193.39it/s]Loading weights:  21%|██        | 440/2076 [00:00<00:00, 2134.00it/s]Loading weights:  32%|███▏      | 654/2076 [00:00<00:00, 1840.67it/s][W929 20:20:28.886912990 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 5637144576 bytes (free: 213385216, total: 8080195584).
+[W929 20:20:28.887114769 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 5637144576 bytes (free: 213385216, total: 8080195584).
+Loading weights:  36%|███▋      | 754/2076 [00:01<00:02, 535.18it/s] 
+Traceback (most recent call last):
+  File "/home/allans/code/talema/research/preflight/p2_lora.py", line 29, in <module>
+    model=AutoModelForCausalLM.from_pretrained(path,**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 402, in from_pretrained
+    return model_class.from_pretrained(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/modeling_utils.py", line 4313, in from_pretrained
+    loading_info, disk_offload_index = cls._load_pretrained_model(model, state_dict, checkpoint_files, load_config)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/modeling_utils.py", line 4456, in _load_pretrained_model
+    loading_info, disk_offload_index = convert_and_load_state_dict_in_model(
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/core_model_loading.py", line 1754, in convert_and_load_state_dict_in_model
+    realized_value = mapping.convert(
+                     ^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/core_model_loading.py", line 1008, in convert
+    collected_tensors = self.materialize_tensors()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/core_model_loading.py", line 970, in materialize_tensors
+    tensors = [future.result() for future in tensors if future.result() is not None]
+                                                        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/core_model_loading.py", line 1262, in _job
+    return _materialize_copy(tensor, device, dtype)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/allans/code/talema/research/.venv/lib/python3.12/site-packages/transformers/core_model_loading.py", line 1240, in _materialize_copy
+    tensor = tensor.to(device=device, dtype=dtype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 5.25 GiB. GPU 0 has a total capacity of 7.53 GiB of which 203.50 MiB is free. Process 35679 has 924.00 MiB memory in use. Including non-PyTorch memory, this process has 6.41 GiB memory in use. Of the allocated memory 1.83 GiB is allocated by PyTorch, and 4.50 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+{
+  "model": "google/gemma-4-e4b-it",
+  "sequence_length": 1024,
+  "batch_size": 1,
+  "r": 16,
+  "alpha": 32,
+  "target_modules": "all-linear (PEFT excludes output head)",
+  "dtype": "bf16",
+  "seed": 20260929,
+  "status": "NOT-FIT",
+  "peak_allocated_bytes": 6792691712,
+  "peak_reserved_bytes": 6794772480,
+  "peak_host_rss_bytes": 3117301760,
+  "median_step_s": null,
+  "error": "OutOfMemoryError('CUDA out of memory. Tried to allocate 5.25 GiB. GPU 0 has a total capacity of 7.53 GiB of which 203.50 MiB is free. Process 35679 has 924.00 MiB memory in use. Including non-PyTorch memory, this process has 6.41 GiB memory in use. Of the allocated memory 1.83 GiB is allocated by PyTorch, and 4.50 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)')"
+}
